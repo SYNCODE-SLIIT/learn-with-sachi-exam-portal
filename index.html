@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exam Kuppi Portal</title>
+<style>
+:root{
+  --bg:#000; --side:#0a0a0a; --surf:#111; --surf2:#181818; --line:#2a2a2a; --line2:#3c3c3c;
+  --txt:#f4f4f4; --muted:#a6a6a6; --faint:#747474;
+  --y:#ffd400; --y2:#b89600; --y3:#6f5b00; --ytext:#000;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:"Segoe UI","Nirmala UI",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--txt);line-height:1.55;min-height:100vh;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+a{color:inherit;text-decoration:none}
+svg{display:block}
+::selection{background:var(--y);color:#000}
+.view{display:none}
+.view.on{display:block;animation:fin .35s ease}
+@keyframes fin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* ================= landing */
+.land{max-width:1100px;margin:0 auto;padding:0 24px;min-height:100vh;display:flex;flex-direction:column;justify-content:center}
+.land h1{font-size:clamp(42px,7.4vw,88px);line-height:1;font-weight:800;letter-spacing:-2.5px;text-align:center}
+.land h1 span{color:var(--y)}
+.rule{width:84px;height:5px;background:var(--y);margin:26px auto 0}
+.mods{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:60px}
+@media(max-width:760px){.mods{grid-template-columns:1fr}}
+.mcard{position:relative;display:flex;flex-direction:column;padding:34px 34px 30px;background:var(--surf);border:1px solid var(--line);min-height:330px;transition:border-color .25s,transform .25s,background .25s}
+.mcard::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--y)}
+.mcard:hover{border-color:var(--y);transform:translateY(-6px);background:var(--surf2)}
+.mcard .code{font-size:13px;font-weight:700;letter-spacing:3px;color:var(--y)}
+.mcard h2{font-size:clamp(26px,3vw,34px);line-height:1.12;margin:10px 0 10px;font-weight:700}
+.mcard p{color:var(--muted);font-size:15px;max-width:380px}
+.mstats{display:flex;gap:30px;margin-top:auto;padding-top:30px}
+.mstats b{display:block;font-size:36px;line-height:1;font-weight:800;color:var(--txt)}
+.mstats span{font-size:12px;color:var(--muted);letter-spacing:.8px;text-transform:uppercase}
+.mopen{display:inline-flex;align-items:center;gap:10px;margin-top:26px;font-weight:700;color:var(--y);font-size:15px;letter-spacing:.3px}
+.mopen svg{transition:transform .25s}.mcard:hover .mopen svg{transform:translateX(7px)}
+.lfoot{margin:54px 0 40px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.lbtn{padding:11px 22px;border:1px solid var(--line2);background:transparent;font-size:14px;font-weight:600;color:var(--txt);transition:.2s}
+.lbtn:hover{border-color:var(--y);color:var(--y)}
+
+/* ================= module shell */
+.shell{display:grid;grid-template-columns:300px 1fr;min-height:100vh}
+.side{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:22px 18px 18px}
+.back{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:13.5px;font-weight:600;transition:.2s;align-self:flex-start}
+.back:hover{color:var(--y)}
+.sh{margin:22px 0 18px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.sh .code{font-size:12px;font-weight:700;letter-spacing:2.6px;color:var(--y)}
+.sh h2{font-size:20px;line-height:1.2;font-weight:700;margin:5px 0 12px}
+.cd{display:flex;gap:8px}
+.cd div{flex:1;border:1px solid var(--line);padding:8px 10px}
+.cd b{display:block;font-size:20px;line-height:1.1;color:var(--y);font-weight:800}
+.cd span{font-size:10.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
+.search{display:flex;gap:9px;align-items:center;border:1px solid var(--line2);padding:0 12px;color:var(--faint);margin-bottom:18px}
+.search:focus-within{border-color:var(--y);color:var(--y)}
+.search input{flex:1;min-width:0;height:40px;border:0;outline:0;background:none;color:var(--txt);font:inherit;font-size:14px}
+.ng{font-size:11px;font-weight:700;letter-spacing:2.2px;text-transform:uppercase;color:var(--faint);margin:6px 0 8px 2px}
+.navlist{display:flex;flex-direction:column;gap:3px;margin-bottom:16px}
+.ni{display:flex;align-items:center;gap:11px;padding:10px 12px;border-left:3px solid transparent;text-align:left;width:100%;font-size:14px;font-weight:500;color:var(--muted);transition:.18s;position:relative}
+.ni:hover{background:var(--surf);color:var(--txt)}
+.ni.on{background:var(--surf2);border-left-color:var(--y);color:var(--txt);font-weight:700}
+.ni .no{flex:none;min-width:30px;font-size:12px;font-weight:800;letter-spacing:.4px;color:var(--y)}
+.ni .nt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ni .cv{flex:none;font-size:11.5px;color:var(--faint)}
+.ni.full .cv{color:var(--y)}
+.ni .dot{flex:none;width:8px;height:8px;background:var(--y)}
+.ni .dot.o{background:transparent;border:1.5px solid var(--faint)}
+.sp{flex:1}
+.prog{border-top:1px solid var(--line);padding-top:14px;font-size:12.5px;color:var(--muted)}
+.prog .tr{height:6px;background:var(--surf2);margin-top:8px}
+.prog .fl{height:100%;width:0;background:var(--y);transition:width .4s}
+.prog b{color:var(--txt)}
+.sfoot{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.sfoot a{font-size:12px;font-weight:600;color:var(--faint);border-bottom:1px solid var(--line2);padding-bottom:1px}
+.sfoot a:hover{color:var(--y);border-color:var(--y)}
+
+.main{padding:44px 54px 70px;min-width:0}
+.main .inner{max-width:880px}
+.eyebrow{font-size:12.5px;font-weight:700;letter-spacing:2.6px;text-transform:uppercase;color:var(--y)}
+.main h1{font-size:clamp(28px,4vw,44px);line-height:1.1;font-weight:800;letter-spacing:-1px;margin:6px 0 8px}
+.lede{color:var(--muted);font-size:15px;max-width:640px}
+.ysep{width:56px;height:4px;background:var(--y);margin:20px 0 26px}
+
+/* exam map */
+.bars{display:flex;flex-direction:column}
+.bar{display:grid;grid-template-columns:190px 1fr 124px;gap:16px;align-items:center;padding:13px 12px;margin:0 -12px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .15s}
+.bar:hover{background:var(--surf)}
+.bar .nm{font-size:14.5px;font-weight:600}
+.bar .nm i{font-style:normal;color:var(--y);font-weight:800;margin-right:10px}
+.bar .tr{height:12px;background:var(--surf2);border:1px solid var(--line)}
+.bar .fl{height:100%;width:var(--w,0%);background:var(--y);animation:grow 1s cubic-bezier(.2,.8,.2,1) .15s both}
+.bar.p-mid .fl{background:var(--y2)}.bar.p-low .fl{background:var(--y3)}.bar.p-skip .fl{background:#3a3a3a}
+@keyframes grow{from{width:0}}
+.bar .vl{text-align:right;color:var(--muted);font-size:13px;white-space:nowrap}
+.legend{display:flex;gap:22px;margin-top:18px;font-size:12.5px;color:var(--muted);flex-wrap:wrap}
+.legend i{display:inline-block;width:11px;height:11px;margin-right:7px;vertical-align:-1px}
+
+/* rules */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:30px}
+.stats div{border:1px solid var(--line);background:var(--surf);padding:18px 14px;text-align:center;border-top:3px solid var(--y)}
+.stats b{display:block;font-size:24px;line-height:1.15;color:var(--y);font-weight:800}
+.stats span{font-size:12px;color:var(--muted)}
+.rules{display:flex;flex-direction:column;gap:0;counter-reset:r}
+.rules div{display:flex;gap:18px;align-items:flex-start;padding:17px 4px;border-bottom:1px solid var(--line);font-size:16px}
+.rules i{counter-increment:r;flex:none;width:32px;height:32px;background:var(--y);color:#000;font-style:normal;font-weight:800;font-size:14px;display:grid;place-items:center}
+.rules i::before{content:counter(r)}
+
+/* lecture view */
+.lhead{display:flex;gap:18px;align-items:flex-start}
+.lbig{flex:none;width:64px;height:64px;background:var(--y);color:#000;display:grid;place-items:center;font-weight:800;font-size:22px}
+.tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.tg{font-size:11.5px;font-weight:700;padding:3px 10px;letter-spacing:.3px;border:1px solid var(--line2);color:var(--muted)}
+.tg.hot{background:var(--y);border-color:var(--y);color:#000}
+.tg.mid{border-color:var(--y2);color:var(--y2)}
+.tg.low{border-color:var(--y3);color:#9b8400}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0 18px}
+.tbtn{padding:9px 16px;border:1px solid var(--line2);font-size:13px;font-weight:600;color:var(--muted);transition:.18s}
+.tbtn:hover{border-color:var(--y);color:var(--y)}
+.tbtn.on{background:var(--y);border-color:var(--y);color:#000}
+
+/* tree */
+.rootrow{display:flex;align-items:center;gap:14px;padding:13px 18px;background:var(--surf);border:1px solid var(--line);border-left:4px solid var(--y)}
+.rootrow b{font-size:16.5px}.rootrow .cnt{margin-left:auto;color:var(--muted);font-size:13px}
+.rootrow.sm{padding:10px 16px;margin-top:14px}.rootrow.sm b{font-size:15px}
+.children{margin-left:26px;padding:6px 0 4px 26px}
+.children>.node{position:relative}
+.children>.node::before{content:"";position:absolute;left:-26px;top:-6px;bottom:0;border-left:1.5px solid var(--line2)}
+.children>.node:last-child::before{bottom:auto;height:calc(var(--tick) + 6px)}
+.children>.node::after{content:"";position:absolute;left:-26px;top:var(--tick);width:20px;border-top:1.5px solid var(--line2)}
+.lv2{--tick:26px}.lv3{--tick:15px}
+.kids{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease}
+.node.open>.kids{grid-template-rows:1fr}
+.kin{overflow:hidden}
+.nrow{width:100%;text-align:left;display:flex;gap:13px;align-items:center}
+.topic>.nrow{padding:10px 12px;margin:3px 0;border:1px solid transparent;transition:.15s}
+.topic>.nrow:hover{background:var(--surf);border-color:var(--line)}
+.topic.open>.nrow{background:var(--surf);border-color:var(--line2)}
+.ck{flex:none;width:22px;height:22px;border:1.5px solid var(--faint);display:grid;place-items:center;color:transparent;transition:.15s}
+.ck:hover{border-color:var(--y)}
+.topic.done .ck{background:var(--y);border-color:var(--y);color:#000}
+.ttx{flex:1;min-width:0;font-weight:600;font-size:15px}
+.ttx small{display:block;font-weight:400;font-size:12px;color:var(--faint)}
+.topic.done .ttx{color:var(--muted)}
+.yield{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;background:var(--y);color:#000;padding:1px 8px;margin-right:8px;vertical-align:1px}
+.chev{flex:none;width:28px;height:28px;display:grid;place-items:center;color:var(--muted);transition:transform .25s}
+.node.open>.nrow .chev{transform:rotate(90deg);color:var(--y)}
+.leaf{padding:5px 0 5px 4px;font-size:14.5px;position:relative}
+.leaf b{color:var(--y)}
+.leaf table{width:100%;border-collapse:collapse;font-size:13.5px;margin:2px 0}
+.leaf td,.leaf th{border:1px solid var(--line2);padding:7px 11px;text-align:left;vertical-align:top}
+.leaf th{background:var(--y);color:#000;font-weight:700}
+.leaf.note .lf{border-left:3px solid var(--y);background:var(--surf);padding:8px 14px;font-size:13.5px}
+.leaf.note .lf::before{content:"NOTE  ";font-weight:800;color:var(--y);letter-spacing:.8px;font-size:11px}
+.etip{margin:14px 0 6px;padding:16px 20px;background:var(--y);color:#000;font-size:14.5px;font-weight:500}
+.etip b{letter-spacing:1px;text-transform:uppercase;font-size:11.5px;margin-right:10px;background:#000;color:var(--y);padding:2px 8px}
+.lnav{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
+.lnav button{padding:11px 20px;border:1px solid var(--line2);font-size:13.5px;font-weight:600;color:var(--txt);transition:.18s}
+.lnav button:hover:not(:disabled){border-color:var(--y);color:var(--y)}
+.lnav button:disabled{opacity:.3;cursor:default}
+.hide{display:none!important}
+.empty{color:var(--muted);padding:30px 0}
+
+/* ================= responsive */
+@media(max-width:900px){
+  .shell{grid-template-columns:1fr}
+  .side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding:16px 16px 6px}
+  .sh{margin:14px 0 12px;padding-bottom:12px}
+  .navlist{flex-direction:row;overflow-x:auto;gap:6px;padding-bottom:10px;margin-bottom:8px}
+  .ni{flex:none;width:auto;border-left:0;border-bottom:3px solid transparent;padding:9px 13px;white-space:nowrap}
+  .ni.on{border-bottom-color:var(--y);border-left-color:transparent}
+  .ni .nt{max-width:150px}.ni .cv,.ni .dot{display:none}
+  .ng,.sp,.sfoot{display:none}
+  .prog{border-top:0;padding-top:0;margin-bottom:12px}
+  .main{padding:28px 18px 56px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .bar{grid-template-columns:1fr;gap:6px}.bar .vl{text-align:left}
+  .children{margin-left:10px;padding-left:18px}
+  .children>.node::before,.children>.node::after{left:-18px}.children>.node::after{width:14px}
+  .rootrow .cnt{display:none}
+  .lbig{width:50px;height:50px;font-size:18px}
+  .leaf table{display:block;overflow-x:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= landing -->
+<section class="view" id="v-land">
+  <div class="land">
+    <h1>Exam <span>Kuppi Portal</span></h1>
+    <div class="rule"></div>
+    <div class="mods" id="mods"></div>
+    <div class="lfoot">
+      <a class="lbtn" href="https://whatsapp.com/channel/0029VbAOUZj6hENiKN0n9K2y" target="_blank" rel="noopener">Learn with Sachi on WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= module -->
+<section class="view" id="v-mod">
+  <div class="shell">
+    <aside class="side" id="side"></aside>
+    <main class="main"><div class="inner" id="main"></div></main>
+  </div>
+</section>
+
+<script>
+const li=a=>"<ul>"+a.map(x=>"<li>"+x+"</li>").join("")+"</ul>";
+const tip=t=>'<div class="tip">'+t+'</div>';
+const DATA={
+hci:{
+ key:"hci",name:"Human Computer Interaction",code:"IT3060",date:[10,29],drive:"https://drive.google.com/drive/folders/10buIjxId_D9DDx8CcCl0pB1D9Rixxtb7?usp=sharing",color:"#38bdf8",
+ desc:"8 lectures · 4 scenario-style questions · 2 hours",
+ mapSub:"2023 / 2024 papers වල ප්‍රශ්න lecture එකකට map කරපු approximate marks (මගේ mapping).",
+ fmt:[["2 hrs","Paper duration"],["4 Qs","All compulsory"],["10 min","Reading time"],["100","Total marks"]],
+ rules:["<b>Marks = Points.</b> 6 marks → 3 points × 2 lines","<b>Scenario නම</b> හැම answer එකකම (Ryan, FitTrack…)","<b>Agree/Disagree</b> → decision + UX terms + example","<b>Define → Explain → Example</b>; Compare = table","Persona / storyboard / wireframe → boxes + labels"],
+ plan:[["Intro + Exam map","8–10 min"],["L1 HCI & UX","22 min"],["L2 Design Mindset","20 min"],["L3 User Research","30 min"],["Break","10 min"],["L4 Ideation & Interactions","22 min"],["L5 Principles","15 min"],["L6 Prototyping","22 min"],["L7 Usability Evaluation","25 min"],["Live scenario drill + Q&A","20 min"]],
+ planSub:"Full plan ≈ 3 hrs (fast plan ≈ 2 hrs: L5 & L4 interface types ඉක්මනින් යන්න).",
+ lectures:[
+ {n:1,t:"Overview of HCI & UX",p:"hot",w:24.5,wl:"≈ 28 / 21 marks",s:"Definitions, UX factors, contexts, social issues, accessibility",
+  tags:["2019","2022","2023","2024"],
+  topics:[
+   {t:"HCI & UX definitions",h:1,b:li(["<b>HCI</b> = study of how people interact with computing technology — <i>design, evaluation & implementation</i> of interactive systems for human use (ACM SIGCHI).","<b>Goals:</b> usable products · improve existing ones · find tasks software can solve. <b>Interdisciplinary.</b>","<b>UX</b> = all aspects of end-user interaction with company, services & products (Norman & Nielsen)."])},
+   {t:"UX factors – Morville's 7 (U-U-F-C-D-A-V)",h:1,sub:"2023 · 2024",b:li(["<b>Useful</b> – serves a real need · <b>Usable</b> – effective & efficient","<b>Findable</b> – easy to locate · <b>Credible</b> – trustworthy","<b>Desirable</b> – chosen over alternatives · <b>Accessible</b> – all abilities","<b>Valuable</b> – value to user & business"])},
+   {t:"UI vs UX",h:1,sub:"2023 Q1(b)",b:li(["<b>UI</b> = look & feel (layout, colour, buttons, typography).","<b>UX</b> = the whole experience (needs, emotions, usability, usefulness). UI ⊂ UX."])},
+   {t:"User-Centered Design & HCI benefits",b:li(["<b>4 steps:</b> understand context → specify requirements → design → evaluate (iterate).","<b>Advantages:</b> ↑ sales/↓ support cost · safer · recognises diversity.","<b>HCI benefits:</b> productivity ↑ · training ↓ · quality · satisfaction · market share ↑ (2024 Q1a)."])},
+   {t:"Contexts of HCI (4 + social)",h:1,sub:"2023 Q1(d) · 2024 Q1(c)",b:li(["Context = actual conditions under which a system is used.","<b>User</b> (profile, location, people) · <b>Time</b> (time zone, season) · <b>Physical</b> (noise, light, temperature) · <b>Computing</b> (network, bandwidth, devices) · Social (5th)."])+tip("Definition + 2 types with examples = 4 marks.")},
+   {t:"Social issues & multi-cultural interaction",sub:"2019 · 2024",b:li(["11 issues: privacy & security · literacy · business needs · gender · age · government · technology diversity · emergencies · personal needs · cultural · human diversity.","Multi-cultural: language, date formats, LTR/RTL, currency, colours, symbols."])},
+   {t:"Accessibility – 4 disabilities + fixes",h:1,sub:"2023 · 2024",b:'<table><tr><th>Type</th><th>Design for it</th></tr><tr><td><b>Visual</b></td><td>Screen reader, high contrast, scalable text, not colour-only (8% men colour-blind)</td></tr><tr><td><b>Auditory</b></td><td>Captions, transcripts, visual alerts</td></tr><tr><td><b>Motor</b></td><td>Voice input, Sticky Keys, eye tracking, big targets</td></tr><tr><td><b>Cognitive</b></td><td>Simple language, sitemap, spell-checker</td></tr></table>'}
+  ],tip:"L1 = 20–28 marks of every paper. UX factors, contexts, accessibility ඉතා වැදගත්."},
+ {n:2,t:"Design Mindset",p:"hot",w:15.8,wl:"≈ 13 / 18.5 marks",s:"Design Thinking · Participatory Design · Behavioral sciences",tags:["2022","2023","2024"],
+  topics:[
+   {t:"Design Thinking – 5 phases",h:1,sub:"10 marks every year",b:li(["<b>1 Empathize</b> – interview, observe, immerse; drop assumptions.","<b>2 Define</b> – human-centred problem statement: “[User] needs [need] because [insight]”.","<b>3 Ideate</b> – brainstorm, brainwrite, SCAMPER; quantity first.","<b>4 Prototype</b> – cheap scaled-down versions; accept / improve / reject.","<b>5 Test</b> – with real users; results feed back (non-linear, iterative)."])+tip("Write 2 lines per phase naming <b>your scenario</b> (e.g. Ryan, Wooden Creations).")},
+   {t:"Participatory Design",h:1,sub:"all 4 papers",b:li(["Users + developers + business reps design <b>together</b> — user = partner.","<b>Why:</b> realistic expectations · ↓ resistance · user voice · <b>mutual learning</b>.","<b>Limits:</b> time, proximity, access to right users. <b>Designers:</b> coordinate · facilitate · prepare · advocate."])},
+   {t:"Behavioral science & cognition",sub:"2024 Q2(f)",b:li(["Behaviour = conscious & non-conscious <b>decisions</b>; emotion appraisal.","Cognition: attention · perception · memory · learning · problem-solving → reduce cognitive load."])}
+  ],tip:"Design Thinking template එක හැම scenario එකකටම පාවිච්චි කරන්න."},
+ {n:3,t:"Need Finding & User Research",p:"hot",w:21.3,wl:"≈ 20 / 22.5 marks",s:"Users · Interviews · Personas · Storyboards · Contextual inquiry · Scenarios",tags:["2019","2022","2023","2024"],
+  topics:[
+   {t:"Users & user groups",h:1,b:li(["<b>Primary</b> (frequent) · <b>Secondary</b> (occasional / via intermediary) · <b>Tertiary</b> (affected / influence purchase) – Eason.","“You are NOT the user.”"])+tip("“3 user groups” → name + 1-line description + need.")},
+   {t:"Research methods",b:li(["<b>Without product:</b> interviews, focus groups, surveys, contextual inquiry, diary, card sorting.","<b>With product:</b> usability lab, eye tracking, A/B, click-stream, concept testing, benchmarking.","Axes: attitudinal vs behavioural · qualitative vs quantitative."])},
+   {t:"Interviews – 3 types",h:1,sub:"2024 Q2(d)",b:'<table><tr><th>Type</th><th>Style</th></tr><tr><td><b>Structured</b></td><td>Closed, preset Qs · comparable data · inflexible</td></tr><tr><td><b>Unstructured</b></td><td>No preset, open-ended · rich · hard to analyse</td></tr><tr><td><b>Semi-structured</b></td><td>Preset open Qs + follow-ups · balance</td></tr></table>'},
+   {t:"Focus groups & surveys",b:li(["<b>Focus group</b> 3–10 people: broad views, debate; needs skilled facilitator, dominant members.","<b>Survey</b> 6 steps: topic → sample → questions → evaluate → send → analyse."])},
+   {t:"Personas",h:1,sub:"every paper",b:li(["Fictional archetype from real research data — name, life, goals.","<b>Template:</b> Picture · Demographics · Behaviors · Goals & pain points.","Types: goal-directed · role-based · engaging · fictional."])+tip("Draw 4 boxes, give a name, keep it realistic.")},
+   {t:"Storyboards & Scenarios",sub:"2019 · 2022",b:li(["<b>Storyboard</b> – panels showing a task: Character · Scene · Plot (6–8 panels + captions).","<b>Scenario</b> – Who · Why · What goals · How (+ barriers); present tense."])},
+   {t:"Contextual Inquiry",sub:"2019",b:li(["Observe users <b>in their context</b>; partnership: user = master, you = apprentice.","Record: quotes “ ” = said, plain = done, ( ) = interpretation.","CI = what users <b>do</b>; interviews = what they <b>say</b>."])}
+  ],tip:"Scenario එකකට user groups + persona + interview/technique ප්‍රශ්න හැම අවුරුද්දෙම."},
+ {n:4,t:"Design for Different Interactions",p:"mid",w:9.5,wl:"≈ 6 / 13 marks",s:"Ideation · 5 dimensions · IA · Interaction types",tags:["2019","2022","2024"],
+  topics:[
+   {t:"Ideation rules & techniques",h:1,sub:"every paper",b:li(["<b>Golden rules:</b> no bad ideas · capture everything · hybrid (individual → group) · quantity over quality.","<b>Mind map · Worst possible idea · SCAMPER</b> (Substitute, Combine, Adapt, Modify, Put to another use, Eliminate, Reverse)."])},
+   {t:"Brainstorm vs Brainwrite",h:1,sub:"2023 Q2(d)",b:'<table><tr><th></th><th>Brainstorm</th><th>Brainwrite</th></tr><tr><td>Mode</td><td>Verbal, free-flow, 6–10 people</td><td>Silent, written; 3 ideas × 3 min; pass papers</td></tr><tr><td>Participation</td><td>Loud members dominate / blocking</td><td>Equal opportunity, anonymous</td></tr></table>'},
+   {t:"Interaction design – 5 dimensions",sub:"2024 Q4(a)",b:li(["<b>1D</b> Words · <b>2D</b> Visual · <b>3D</b> Physical objects/space · <b>4D</b> Time · <b>5D</b> Behaviour."])},
+   {t:"Interaction types",h:1,sub:"2019 · 2022 · 2024",b:li(["<b>Instructing</b> (commands) · <b>Conversing</b> (talk) · <b>Manipulating</b> (drag, zoom – direct manipulation) · <b>Exploring</b> (move through environments).","Interaction type = what user does · Interface type = the UI (touch, speech…)."])},
+   {t:"Information architecture",b:li(["Organising content: objects · choices · disclosure · exemplars · front doors · multiple classifications · focused navigation · growth."])},
+   {t:"Functional vs Non-functional †",sub:"2024 Q3(b) – not in slides",b:li(["<b>Functional</b> = what the system does (schedule, search, book).","<b>Non-functional</b> = how well (performance, security, usability, accessibility)."])}
+  ],tip:"Ideation + interaction types හැම අවුරුද්දෙම; interface types list ඉක්මනින්."},
+ {n:5,t:"Design Recommendations",p:"mid",w:3.5,wl:"≈ 3 / 4 marks",s:"Principles · Standards · Best practices · Usability process",tags:["2022","2023","2024"],
+  topics:[
+   {t:"Design principles (6)",h:1,sub:"2022 · 2024",b:li(["<b>Visibility</b> – core functions prominent · <b>Feedback</b> – immediate, specific, in context","<b>Constraints</b> – physical, logical, cultural · <b>Affordance</b> – looks usable (perceived)","<b>Mapping</b> – controls ↔ effects · <b>Consistency</b> – aesthetic, functional, internal, external"])},
+   {t:"Best practices (pick 3)",sub:"2023 Q3(d)",b:li(["Colour palette · colour-blind awareness · typefaces · font pairing (max 2) · images · grid · visual hierarchy · white space."])},
+   {t:"Usability process & goals",b:li(["10 steps: users & tasks → competitive analysis → usability goals → PD → consistency → heuristics → prototypes → testing → iterate → real use.","Goals: effectiveness, efficiency, safety, utility, learnability, memorability — make them <b>measurable</b>."])}
+  ],tip:"Image-based UI ප්‍රශ්න (ADAS) වලට principles 4 apply කරන්න."},
+ {n:6,t:"UX Engineering – Prototyping",p:"hot",w:13,wl:"≈ 15 / 11 marks",s:"Prototype · Fidelity · Low-fi · Hi-fi",tags:["2019","2022","2023","2024"],
+  topics:[
+   {t:"Why prototype?",h:1,b:li(["Test the <b>flow</b> & get feedback before building: <b>Visualization</b> + <b>Feedback</b> → saves time & money.","“Prototype not needed” → <b>Disagree</b>."])},
+   {t:"Low vs High fidelity",h:1,sub:"2022 Q2(b)",b:'<table><tr><th></th><th>Low-fi</th><th>Hi-fi</th></tr><tr><td>Content</td><td>Rough / placeholder</td><td>Realistic</td></tr><tr><td>Interaction</td><td>Little / none</td><td>Clickable, animated</td></tr><tr><td>Aesthetics</td><td>Hand-drawn</td><td>Final look</td></tr><tr><td>Use</td><td>Early, cheap, fast</td><td>Testing, sign-off</td></tr></table>'},
+   {t:"Low-fi techniques",b:li(["Sketches · paper prototypes · storyboards · Wizard-of-Oz · index cards · wireframes."])},
+   {t:"Hi-fi techniques",h:1,sub:"2019 · 2023 · 2024",b:li(["<b>Click-through</b> · <b>interactive</b> · <b>digital</b> · <b>coded (HTML/CSS)</b> — closest to final, best for user feedback."])},
+   {t:"Which prototype for management?",h:1,sub:"2023 · 2024",b:li(["<b>High-fidelity</b> — management can experience interactions & overall structure.","Examples: click-through (Figma / XD) · coded / interactive prototype."])+tip("Horizontal = many features, shallow · Vertical = few features, deep.")}
+  ],tip:"Lo-fi vs Hi-fi + 'which one for…' ප්‍රශ්නය හැම අවුරුද්දෙම."},
+ {n:7,t:"Usability Evaluation",p:"hot",w:12.5,wl:"≈ 15 / 10 marks",s:"Formative / Summative · Heuristics · Think-aloud · User testing",tags:["2022","2023","2024"],
+  topics:[
+   {t:"Usability & 5 dimensions",sub:"2023 Q4(a)",b:li(["ISO 9241-11: specified users, goals, effectiveness, efficiency, satisfaction, context.","<b>Learnability · Efficiency · Memorability · Errors · Satisfaction.</b>"])},
+   {t:"Formative vs Summative",h:1,sub:"2022 · 2023 · 2024",b:li(["<b>Formative</b> – during design, iterative, <b>qualitative</b>.","<b>Summative</b> – after completion / before redesign, compare products, <b>quantitative</b>."])},
+   {t:"Heuristic evaluation (Nielsen's 10)",h:1,sub:"2022 · 2023 · 2024",b:li(["3–5 experts inspect UI against heuristics: inspect → compare → list problems & justify.","Status visibility · real-world match · user control · consistency · error prevention · recognition > recall · flexibility · minimalism · error recovery · help & documentation."])},
+   {t:"Think-aloud",h:1,sub:"2022 · 2023 · 2024",b:li(["Users <b>verbalise thoughts</b> while doing tasks → reveals <b>why</b> (Nielsen: most valuable method).","Neutral prompts (“What are you thinking?”); avoid leading questions. – unnatural, affects timing."])},
+   {t:"Cognitive walkthrough & user testing",b:li(["Walkthrough: prototype + tasks + action sequence → 5 questions per step → report.","Roles: <b>User · Observer · Moderator</b>. Pilot first."])},
+   {t:"Ethics, measures, reliability & validity",b:li(["Informed consent, withdraw anytime, confidentiality, test the system not the user.","Measures: time, errors, success ratio, help use…"])}
+  ],tip:"Q4 (15 marks) = ඔක්කොම මේ lecture එකෙන් — පහසුම marks."},
+ {n:8,t:"Getting Ready for the Industry",p:"skip",w:0,wl:"not asked",s:"Importance of HCI · Tools · Careers",tags:[],
+  topics:[
+   {t:"Importance, tools & careers",b:li(["Untrained users everywhere → clear, intuitive systems; critical in safety-critical systems.","Tools: Figma, Adobe XD, UXPin, Sketch, Photoshop, Illustrator; editors: Brackets, Atom, Sublime, WebStorm; jQuery, Sass, JS.","Careers: UX/UI designer, interaction designer, usability engineer, UX researcher."])}
+  ],tip:"2019–2024 papers වල කවදාවත් ඇහුවේ නෑ — skim කරන්න."}
+ ]},
+bmit:{
+ key:"bmit",name:"Business Management for IT",code:"IT3090 / IE3060",date:[11,3],drive:"https://drive.google.com/drive/folders/1QkmtqfC97O_1RfxcvF3jyMGPbWj0gxCi?usp=sharing",color:"#fbbf24",
+ desc:"7 lectures · calculations + theory · calculators allowed",
+ mapSub:"Past papers 5ක් (2019, 2022, 2023, 2023 ISE, 2024) වල topic එක කී වතාවක් ආවද. (Lectures exam importance අනුව order කරලා)",
+ fmt:[["2–3 hrs","Paper duration"],["4 Qs","All compulsory"],["Allowed","Calculators"],["5","Papers analysed"]],
+ rules:["<b>Accounting equation + ratios</b> හැම paper එකෙම","<b>Working</b> පෙන්නන්න: formula → substitution → answer","<b>Interpret</b> කරන්න: improved/declined + ඇයි","Cost නොදුන්නොත් <b>assumption</b> ලියන්න","Demand/Supply: <b>D shift → P,Q එකම දිශාව</b>"],
+ plan:[["Intro + Exam map","10 min"],["L4 Accounting equation (practice)","30 min"],["L4 Ratios & interpretation","30 min"],["L5 Demand & Supply calculations","30 min"],["Break","10 min"],["L2 + L3 Management & HRM","30 min"],["L6 Marketing, pricing, value chain","20 min"],["L1 Business forms (quick)","10 min"],["Past-paper drill + Q&A","20 min"]],
+ planSub:"Kuppi Oct 30 — calculations මුලින්ම (marks වැඩිම), theory පස්සේ.",
+ lectures:[
+ {n:4,t:"Accounting & Finance",p:"hot",w:100,wl:"5 / 5 papers",s:"Accounting equation · Ratios · Sources of finance · Target costing",tags:["2019","2022","2023","ISE","2024"],
+  topics:[
+   {t:"Elements: Asset, Liability, Capital, Income, Expense",b:li(["<b>Asset</b> – controlled resource, future benefits · <b>Liability</b> – present obligation · <b>Capital = Assets − Liabilities</b>.","<b>Fixed assets</b> – long-term, for use (land, machinery) · <b>Current assets</b> – within 12 months (stock, debtors, cash)."])},
+   {t:"Accounting equation – A = L + C",h:1,sub:"every paper · up to 30 marks",b:li(["Every transaction affects ≥ 2 items → equation always tallies.","Invest cash: Cash ↑ Capital ↑ · Buy on credit: Asset ↑ Creditors ↑ · Pay creditor: Cash ↓ Creditors ↓ · Expense: Cash ↓ Capital ↓ · Drawings: Cash ↓ Capital ↓ · Loan: Cash ↑ Loan ↑ · Sale at profit: Cash/Debtors ↑ Inventory ↓ Capital ↑."])+tip("Make a table, tick the total, and verify Assets = Liabilities + Capital at the end.")},
+   {t:"Ratios – formulas",h:1,sub:"every paper",b:'<table><tr><th>Ratio</th><th>Formula</th></tr><tr><td>Gross profit rate</td><td>GP ÷ Revenue × 100</td></tr><tr><td>Net profit rate</td><td>NP ÷ Revenue × 100</td></tr><tr><td>Current ratio</td><td>CA ÷ CL (2.0)</td></tr><tr><td>Quick ratio</td><td>(CA − Inventory) ÷ CL (1.0)</td></tr><tr><td>Receivable days</td><td>Receivables × 365 ÷ Revenue</td></tr><tr><td>Gearing</td><td>Debt ÷ Equity × 100</td></tr><tr><td>† Inventory turnover</td><td>COGS ÷ Inventory</td></tr><tr><td>† Total assets turnover</td><td>Revenue ÷ Total assets</td></tr></table>'},
+   {t:"Interpreting ratios",h:1,b:li(["Template: “[Ratio] increased/decreased from X to Y → means … → good/bad because … → suggestion.”","Higher profit rates = better · higher liquidity = safer · lower receivable days = better · higher gearing = higher risk."])},
+   {t:"Sources of finance",sub:"2024 Q4(b)",b:li(["<b>Internal:</b> own capital, savings, sale of assets, retained profit.","<b>External:</b> debentures, overdraft, <b>hire purchase</b>, bank loans."])},
+   {t:"Target costing & mark-up",sub:"2019 · 2022",b:li(["<b>Mark-up price</b> = cost × (1 + %). <b>Target cost</b> = selling price − required profit.","Current cost > target cost → cost gap; reduce design/manufacturing cost."])}
+  ],tip:"මුලින්ම මේක පුරුදු වෙන්න — marks 40–60% මෙතනින්."},
+ {n:5,t:"Economics – Demand & Supply",p:"hot",w:80,wl:"4 / 5 papers",s:"Demand · Supply · Equilibrium · Shifts · PPC · Market structures",tags:["2019","2022","2023","ISE","2024"],
+  topics:[
+   {t:"Equilibrium – solve the equations",h:1,sub:"2019 · 2023 · ISE · 2024",b:li(["<b>Qd = Qs</b> → solve for P → substitute to get Q (check with both).","Example: Qd = 5000 − 100P, Qs = 3000 + 300P → 2000 = 400P → <b>P = 5, Q = 4,500</b>.","Surplus (QS > QD) at high price · shortage at low price."])},
+   {t:"Shifts of demand & supply",h:1,sub:"2019 · 2022",b:'<table><tr><th>Shift</th><th>P</th><th>Q</th></tr><tr><td>Demand ↑</td><td>↑</td><td>↑</td></tr><tr><td>Demand ↓</td><td>↓</td><td>↓</td></tr><tr><td>Supply ↑</td><td>↓</td><td>↑</td></tr><tr><td>Supply ↓</td><td>↑</td><td>↓</td></tr></table>'+tip("Demand shift → P & Q same direction. Supply shift → opposite.")},
+   {t:"Law of demand & QD vs demand",sub:"2023 · ISE",b:li(["Price ↑ → QD ↓ (negative relationship, ceteris paribus).","Change in <b>quantity</b> demanded = price only (movement along curve). Change in <b>demand</b> = other factors (curve shifts).","Factors: income, tastes, substitutes/complements, expectations, population."])},
+   {t:"Supply & its factors",b:li(["Price ↑ → QS ↑. Shifts: technology, input prices, related goods, expectations, taxes/subsidies, number of suppliers."])},
+   {t:"PPC & market structures",sub:"ISE · 2024",b:li(["<b>PPF assumptions:</b> two goods · fixed resources · fixed technology · full employment.","On curve = efficient · inside = inefficient · outside = unattainable.","Perfect competition · Monopoly · Monopolistic · Oligopoly."])}
+  ],tip:"Equations + shift diagrams පුරුදු කළොත් full marks."},
+ {n:6,t:"Marketing & Value Chain",p:"mid",w:80,wl:"4 / 5 papers",s:"4Ps · Value chain · Pricing · Segmentation · Product levels",tags:["2019","2022","ISE","2024"],
+  topics:[
+   {t:"Marketing & 4Ps",b:li(["Marketing = identify, anticipate & profitably satisfy customer requirements.","<b>Product · Price · Place · Promotion</b>. Customer = buys; consumer = uses."])},
+   {t:"Porter's Value Chain",sub:"2019 MCQ",b:li(["<b>Primary:</b> inbound logistics · operations · outbound logistics · marketing & sales · service.","<b>Support:</b> procurement · technology development · HRM · firm infrastructure."])},
+   {t:"Pricing – skimming vs penetration †",h:1,sub:"2022 · 2024",b:li(["<b>Skimming</b> = high launch price (unique / luxury / niche).","<b>Penetration</b> = low price to gain share fast (mass, competitive market)."])},
+   {t:"Segmentation, product levels, intermediaries †",sub:"2024",b:li(["Segments: geographic · demographic · psychographic · behavioural.","<b>Kotler's 5 levels:</b> core benefit → basic → expected → augmented → potential.","Intermediaries: reach, cost efficiency, expertise, storage, risk sharing."])},
+   {t:"Marketing myopia †",sub:"ISE 2023",b:li(["Focusing on products instead of customer needs (Levitt) — prevent with customer orientation, research, innovation."])}
+  ],tip:"† = slides වල නෑ, නමුත් past papers වල ඇහුවා."},
+ {n:3,t:"Managing People (HRM)",p:"mid",w:60,wl:"3 / 5 papers",s:"HRP · Recruitment · T&D · Rewards · Labour law",tags:["2019","2023","ISE"],
+  topics:[
+   {t:"Employees – a unique resource",h:1,sub:"2023 Q2(d)",b:li(["“Other resources make things possible; only people make things happen.” Decide on all resources, creative, appreciate with experience, hard to copy."])},
+   {t:"HR planning – surplus & shortage",b:li(["Process: forecast demand → estimate supply → compare → strategies → evaluate.","<b>Surplus:</b> freeze hiring, attrition, early retirement, lay-off, termination. <b>Shortage:</b> overtime, subcontract, part-time, temporary, full-time hire."])},
+   {t:"Recruitment & selection",h:1,b:li(["Internal: word of mouth, promotions, job postings. External: advertising, agencies, head-hunters, campus, referrals, e-recruitment.","Selection steps: screening → tests → interviews → references → medical → decision."])},
+   {t:"Training & development",b:li(["On-the-job · job rotation · case study · understudy · assignments."])},
+   {t:"Rewards, grievances & labour law",sub:"ISE Q1(d)",b:li(["Direct (wages, bonus, commission) vs indirect (insurance, pensions, leave). Financial vs non-financial incentives. Fringe benefits ≠ performance-linked.","<b>EPF</b> 8% + 12% · <b>ETF</b> 3% (employer)."])}
+  ],tip:"Retention strategies & recruitment methods ප්‍රශ්න scenario එකකට."},
+ {n:2,t:"Basics of Management",p:"mid",w:40,wl:"2 / 5 papers",s:"Functions · SMART · Leadership · Maslow · Tuckman",tags:["2019","2023"],
+  topics:[
+   {t:"Management functions & efficiency vs effectiveness",b:li(["<b>Planning · Organizing · Leading · Controlling.</b>","Effectiveness = doing the right things · Efficiency = doing things right."])},
+   {t:"Vision → Mission → Goals → SMART objectives",h:1,sub:"2023 Q1(b)",b:li(["SMART: Specific · Measurable · Achievable · Rational · Time-bound.","Example: “Increase solar heater sales by 20% within 12 months.”"])},
+   {t:"Leadership – Lewin's 3 styles",h:1,sub:"2023 Q1(d)",b:li(["<b>Autocratic</b> (alone) · <b>Participative</b> (involves group) · <b>Laissez-faire</b> (full freedom).","Pick one for the scenario and justify."])},
+   {t:"Maslow's hierarchy",h:1,sub:"2023 Q1(c)",b:li(["Physiological → Security → Belongingness → Esteem → Self-actualization. Only unsatisfied needs motivate.","Apply to scenario: salary, job security, team, recognition, challenging work."])},
+   {t:"Tuckman – team stages",sub:"2019 Q2",b:li(["<b>Forming</b> (anxious) → <b>Storming</b> (conflict) → <b>Norming</b> (cooperation) → <b>Performing</b> (goals achieved)."])}
+  ],tip:"Scenario ප්‍රශ්න: තීරණයක් + හේතු."},
+ {n:1,t:"Business & Management Intro",p:"low",w:40,wl:"2 / 5 papers",s:"Business goals · Scarcity · Business forms",tags:["ISE","2019"],
+  topics:[
+   {t:"Goals, resources & scarcity",b:li(["Goals: financial · growth · customer · employee development · social.","Factors of production: <b>Land · Labour · Capital · Entrepreneurship</b>. Scarcity → choice → <b>opportunity cost</b>."])},
+   {t:"Sole trader · Partnership · Company",h:1,sub:"ISE 2023 Q1(b)",b:li(["<b>Sole trader:</b> all profits, full control, easy to start; Limitations: limited capital, <b>unlimited liability</b>.","<b>Partnership:</b> 2–20 persons; shared risk; disagreements. <b>Company:</b> separate legal entity, limited liability, perpetual life.","Pvt Ltd: ≤ 50 shareholders, no public shares · PLC: public shares, ≥ 2 directors."])}
+  ],tip:"Sole trader benefits & challenges ISE paper එකේ ඇහුවා."},
+ {n:7,t:"Sustainability Management",p:"skip",w:0,wl:"not asked",s:"Brundtland definition · Data centres · Microsoft",tags:[],
+  topics:[
+   {t:"Key facts",b:li(["Sustainability = meeting present needs without compromising future generations.","Data centres ≈ 1% of world electricity. Microsoft: carbon negative by 2030."])}
+  ],tip:"කවදාවත් ඇහුවේ නෑ — skim කරන්න."}
+ ]}
+};
+
+
+
+
+
+/* ------------------------------------------------------------------ helpers */
+const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let done=store.get("lws_done",{}),mod=null,sec="map",query="",hotOnly=false;
+const $=s=>document.querySelector(s);
+const SH={hci:{1:"HCI and UX",2:"Design Mindset",3:"User Research",4:"Interactions",5:"Principles",6:"Prototyping",7:"Evaluation",8:"Industry"},bmit:{1:"Business Intro",2:"Management",3:"HRM",4:"Accounting",5:"Economics",6:"Marketing",7:"Sustainability"}};
+const PL={hot:"High priority",mid:"Medium",low:"Low",skip:"Not asked"};
+const MON=["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const I={
+ arrow:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+ back:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"><path d="M15 18l-6-6 6-6"/></svg>',
+ chev:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="square"><path d="M9 6l6 6-6 6"/></svg>',
+ tick:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="square"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+ ext:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"><path d="M7 17L17 7M9 7h8v8"/></svg>',
+ search:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>'
+};
+const daysTo=(m,d)=>{const n=new Date(),a=new Date(n.getFullYear(),n.getMonth(),n.getDate()),t=new Date(n.getFullYear(),m-1,d);return Math.round((t-a)/864e5)};
+function countText(M){const dd=daysTo(...M.date);return dd>0?{n:dd,l:dd===1?"day to go":"days to go"}:dd===0?{n:"Today",l:"exam day"}:{n:"Done",l:"finished"}}
+const topicCount=M=>M.lectures.reduce((a,l)=>a+l.topics.length,0);
+const tid=(M,L,i)=>`${M.key}-${L.n}-${i}`;
+const covered=(M,L)=>L.topics.filter((t,i)=>done[tid(M,L,i)]).length;
+
+/* ------------------------------------------------------------------ landing */
+function renderLanding(){
+  $("#mods").innerHTML=Object.values(DATA).map(M=>{const c=countText(M);return `
+  <a class="mcard" href="#${M.key}">
+    <div class="code">${M.code}</div><h2>${M.name}</h2><p>${M.desc}</p>
+    <div class="mstats"><div><b>${c.n}</b><span>${c.l}</span></div><div><b>${M.lectures.length}</b><span>Lectures</span></div><div><b>${topicCount(M)}</b><span>Topics</span></div></div>
+    <div class="mopen">Open module ${I.arrow}</div></a>`}).join("");
+}
+
+/* ------------------------------------------------------------------ sidebar */
+function renderSide(M){
+  const c=countText(M);
+  $("#side").innerHTML=`
+   <a class="back" href="#">${I.back}All modules</a>
+   <div class="sh"><div class="code">${M.code}</div><h2>${M.name}</h2>
+     <div class="cd"><div><b>${c.n}</b><span>${c.l}</span></div><div><b>${MON[M.date[0]]} ${M.date[1]}</b><span>Exam date</span></div></div></div>
+   <label class="search">${I.search}<input id="q" type="search" placeholder="Search topics" aria-label="Search topics"></label>
+   <div class="ng">Overview</div>
+   <div class="navlist">
+     <button class="ni" data-s="map"><span class="no">01</span><span class="nt">Exam map</span></button>
+     <button class="ni" data-s="rules"><span class="no">02</span><span class="nt">Paper and golden rules</span></button>
+   </div>
+   <div class="ng">Lectures</div>
+   <div class="navlist" id="lnav">${M.lectures.map(L=>`<button class="ni" data-s="l${L.n}" data-n="${L.n}"><span class="no">L${L.n}</span><span class="nt">${SH[M.key][L.n]}</span><span class="cv" data-cv="${L.n}"></span><span class="dot ${L.p==="hot"?"":"o"}" title="${PL[L.p]}"></span></button>`).join("")}</div>
+   <div class="ng">Resources</div>
+   <div class="navlist"><a class="ni" href="${M.drive}" target="_blank" rel="noopener"><span class="no">DR</span><span class="nt">${M.code.split(" ")[0]} Drive folder</span><span class="cv">${I.ext}</span></a></div>
+   <div class="sp"></div>
+   <div class="prog"><div>Topics covered <b id="pc">0/0</b></div><div class="tr"><div class="fl" id="pf"></div></div>
+     <div class="sfoot"><a href="https://whatsapp.com/channel/0029VbAOUZj6hENiKN0n9K2y" target="_blank" rel="noopener">WhatsApp channel</a></div></div>`;
+  document.querySelectorAll(".ni").forEach(b=>b.onclick=()=>{location.hash=`#${M.key}/${b.dataset.s==="map"?"map":b.dataset.s==="rules"?"rules":b.dataset.n}`});
+  $("#q").oninput=e=>{query=e.target.value.trim().toLowerCase();renderMain()};
+}
+function updSide(M){
+  document.querySelectorAll(".ni").forEach(b=>{b.classList.toggle("on",!query&&b.dataset.s===sec)});
+  let tot=0,dn=0;
+  M.lectures.forEach(L=>{const k=covered(M,L);tot+=L.topics.length;dn+=k;const e=document.querySelector(`[data-cv="${L.n}"]`);if(e){e.textContent=k+"/"+L.topics.length;e.parentElement.classList.toggle("full",k===L.topics.length)}});
+  $("#pc").textContent=dn+"/"+tot;$("#pf").style.width=(tot?dn/tot*100:0)+"%";
+}
+
+/* ------------------------------------------------------------------ main panels */
+function head(eyebrow,title,lede){return `<div class="eyebrow">${eyebrow}</div><h1>${title}</h1>${lede?`<p class="lede">${lede}</p>`:""}<div class="ysep"></div>`}
+function viewMap(M){
+  const mx=Math.max(...M.lectures.map(l=>l.w))||1;
+  return head("Overview","Exam map",M.mapSub)+`<div class="bars">`+M.lectures.slice().sort((a,b)=>b.w-a.w).map(L=>`<div class="bar p-${L.p}" data-n="${L.n}"><div class="nm"><i>L${L.n}</i>${SH[M.key][L.n]}</div><div class="tr"><div class="fl" style="--w:${Math.min(Math.max(L.w/mx*100,2),100)}%"></div></div><div class="vl">${L.wl}</div></div>`).join("")+`</div>
+  <div class="legend"><span><i style="background:var(--y)"></i>High priority</span><span><i style="background:var(--y2)"></i>Medium</span><span><i style="background:var(--y3)"></i>Low</span><span><i style="background:#3a3a3a"></i>Not asked</span><span>Select a row to open the lecture</span></div>`;
+}
+function viewRules(M){
+  return head("Overview","Paper and golden rules","How the paper looks, based on the analysed past papers.")+`<div class="stats">${M.fmt.map(f=>`<div><b>${f[0]}</b><span>${f[1]}</span></div>`).join("")}</div><div class="rules">${M.rules.map(r=>`<div><i></i><span>${r}</span></div>`).join("")}</div>`;
+}
+function leaves(html){
+  const d=document.createElement("div");d.innerHTML=html;const out=[];
+  d.childNodes.forEach(n=>{if(n.nodeType!==1)return;
+    if(n.tagName==="UL")n.querySelectorAll(":scope>li").forEach(li=>out.push(`<div class="node leaf"><div class="lf">${li.innerHTML}</div></div>`));
+    else if(n.classList.contains("tip"))out.push(`<div class="node leaf note"><div class="lf">${n.innerHTML}</div></div>`);
+    else out.push(`<div class="node leaf"><div class="lf">${n.outerHTML}</div></div>`);});
+  return out.join("");
+}
+function topicHTML(M,L,T,i,open){
+  const id=tid(M,L,i);
+  return `<div class="node topic ${done[id]?"done":""} ${open?"open":""}" data-id="${id}">
+    <button class="nrow" aria-expanded="${!!open}"><span class="ck" data-ck role="checkbox" aria-label="Mark as covered">${I.tick}</span>
+      <span class="ttx">${T.h?'<span class="yield">High yield</span>':""}${T.t}${T.sub?`<small>Asked: ${T.sub}</small>`:""}</span><span class="chev">${I.chev}</span></button>
+    <div class="kids"><div class="kin"><div class="children lv3">${leaves(T.b)}</div></div></div></div>`;
+}
+function viewLecture(M,n){
+  const idx=M.lectures.findIndex(l=>l.n===n),L=M.lectures[idx],prev=M.lectures[idx-1],next=M.lectures[idx+1];
+  return `<div class="lhead"><div class="lbig">L${L.n}</div><div><div class="eyebrow">Lecture ${L.n}</div><h1 style="margin-bottom:6px">${L.t}</h1><p class="lede">${L.s}</p>
+      <div class="tags"><span class="tg ${L.p}">${PL[L.p]}</span><span class="tg">${L.wl}</span>${L.tags.map(t=>`<span class="tg">${t}</span>`).join("")}</div></div></div>
+    <div class="ysep"></div>
+    <div class="toolbar"><button class="tbtn" data-a="ex">Expand all topics</button><button class="tbtn" data-a="co">Collapse all</button><button class="tbtn ${hotOnly?"on":""}" data-a="hot">High yield only</button></div>
+    <div class="rootrow"><b>${L.t}</b><span class="cnt">${L.topics.length} topics</span></div>
+    <div class="children lv2" id="tp">${L.topics.map((T,i)=>topicHTML(M,L,T,i,false)).join("")}</div>
+    <div class="etip"><b>Exam tip</b>${L.tip}</div>
+    <div class="lnav"><button data-go="${prev?prev.n:""}" ${prev?"":"disabled"}>${prev?"Previous  L"+prev.n:"Start"}</button><button data-go="${next?next.n:""}" ${next?"":"disabled"}>${next?"Next  L"+next.n:"End"}</button></div>`;
+}
+function viewSearch(M){
+  const q=query;let html=head("Search",`Results for "${q}"`,""),n=0;
+  M.lectures.forEach(L=>{
+    const hit=L.topics.map((T,i)=>({T,i})).filter(({T})=>(T.t+" "+(T.sub||"")+" "+T.b).replace(/<[^>]+>/g," ").toLowerCase().includes(q)||L.t.toLowerCase().includes(q));
+    if(!hit.length)return;n+=hit.length;
+    html+=`<div class="rootrow sm"><b>L${L.n}  ${L.t}</b><span class="cnt">${hit.length} match${hit.length>1?"es":""}</span></div><div class="children lv2">${hit.map(({T,i})=>topicHTML(M,L,T,i,true)).join("")}</div>`;
+  });
+  return n?html:head("Search",`Results for "${q}"`,"")+`<div class="empty">No topics match. Try another keyword.</div>`;
+}
+function renderMain(){
+  const M=DATA[mod],m=$("#main");
+  if(query)m.innerHTML=viewSearch(M);
+  else if(sec==="map")m.innerHTML=viewMap(M);
+  else if(sec==="rules")m.innerHTML=viewRules(M);
+  else m.innerHTML=viewLecture(M,+sec.slice(1));
+  m.classList.remove("fade");void m.offsetWidth;
+  wireMain(M);updSide(M);
+}
+function wireMain(M){
+  document.querySelectorAll(".bar").forEach(b=>b.onclick=()=>location.hash=`#${M.key}/${b.dataset.n}`);
+  document.querySelectorAll(".topic").forEach(tp=>{
+    tp.querySelector(":scope>.nrow").onclick=e=>{
+      if(e.target.closest("[data-ck]")){const on=!tp.classList.contains("done");tp.classList.toggle("done",on);if(on)done[tp.dataset.id]=1;else delete done[tp.dataset.id];store.set("lws_done",done);updSide(M);return}
+      const o=!tp.classList.contains("open");tp.classList.toggle("open",o);tp.querySelector(":scope>.nrow").setAttribute("aria-expanded",o)};
+  });
+  document.querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{
+    const a=b.dataset.a;
+    if(a==="ex")document.querySelectorAll(".topic").forEach(t=>t.classList.add("open"));
+    if(a==="co")document.querySelectorAll(".topic").forEach(t=>t.classList.remove("open"));
+    if(a==="hot"){hotOnly=!hotOnly;b.classList.toggle("on",hotOnly);const L=DATA[mod].lectures.find(l=>l.n===+sec.slice(1));document.querySelectorAll(".topic").forEach((t,i)=>t.classList.toggle("hide",hotOnly&&!L.topics[i].h))}
+  });
+  document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{if(b.dataset.go)location.hash=`#${M.key}/${b.dataset.go}`});
+  if(sec.startsWith("l")&&hotOnly){const L=M.lectures.find(l=>l.n===+sec.slice(1));document.querySelectorAll(".topic").forEach((t,i)=>t.classList.toggle("hide",!L.topics[i].h))}
+}
+
+/* ------------------------------------------------------------------ router */
+function show(id){["#v-land","#v-mod"].forEach(s=>$(s).classList.remove("on"));const e=$(id);void e.offsetWidth;e.classList.add("on");window.scrollTo(0,0)}
+function route(){
+  const h=location.hash.replace("#","").split("/");
+  if(DATA[h[0]]){
+    const M=DATA[h[0]];
+    const ns=!h[1]||h[1]==="map"?"map":h[1]==="rules"?"rules":(M.lectures.some(l=>l.n===+h[1])?"l"+(+h[1]):"map");
+    if(mod!==M.key){mod=M.key;query="";hotOnly=false;renderSide(M)}
+    else if(query){query="";$("#q").value=""}
+    sec=ns;if(!$("#v-mod").classList.contains("on"))show("#v-mod");else window.scrollTo(0,0);
+    renderMain();
+    if(h[2]==="all")document.querySelectorAll(".topic").forEach(t=>t.classList.add("open"));
+  }else{mod=null;renderLanding();show("#v-land")}
+}
+window.addEventListener("hashchange",route);route();
+</script>
+</body>
+</html>

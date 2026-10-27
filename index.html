@@ -57,7 +57,7 @@ svg{display:block}
 .cmiss b{display:block;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--y);margin-bottom:5px}
 .csub{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:11.5px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--y);margin-bottom:12px}
 .csub span{font-weight:500;letter-spacing:.3px;text-transform:none;color:var(--muted);font-size:12.5px}
-.clist{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.clist{display:grid;grid-template-columns:1fr;gap:10px}
 .citem{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 15px;background:var(--surf);border:1px solid var(--line);text-align:left;transition:.2s}
 .citem:hover{border-color:var(--y);background:var(--surf2);transform:translateY(-2px)}
 .citem b{display:block;font-size:14px;font-weight:700;color:var(--txt);line-height:1.3}
@@ -637,12 +637,9 @@ function route(){
 /* ------------------------------------------------------------------ syncode cares */
 const CARES_WA="94702911223";
 const CARES_ITEMS=[
-  {t:"Volunteer your technical skills",d:"Share your dev, design, or mentoring skills",m:"Hi SYNCODE Cares! 👋 I came from the Learn with Sachi Kuppi Portal and I'd love to volunteer my technical skills."},
-  {t:"Join our free educational programs",d:"Participate in free kuppi & tech sessions",m:"Hi SYNCODE Cares! 👋 I came from the Learn with Sachi Kuppi Portal and I'd like to join your free educational programs."},
-  {t:"Help create learning resources",d:"Contribute notes, past paper guides & tutorials",m:"Hi SYNCODE Cares! 👋 I came from the Learn with Sachi Kuppi Portal and I'd like to help create learning resources."},
-  {t:"Collaborate on community projects",d:"Build impactful open & social tech initiatives",m:"Hi SYNCODE Cares! 👋 I came from the Learn with Sachi Kuppi Portal and I'm interested in collaborating on community projects."},
-  {t:"Make a donation / support",d:"Support free student resources & community outreach",m:"Hi SYNCODE Cares! 👋 I came from the Learn with Sachi Kuppi Portal and I'd like to make a donation / support SYNCODE Cares."},
-  {t:"Partner with us for digital education",d:"Partner as a club, university group, or sponsor",m:"Hi SYNCODE Cares! 👋 I came from the Learn with Sachi Kuppi Portal and we'd like to partner with SYNCODE Cares to support digital education."}
+  {t:"Volunteer your technical skills",d:"Share your dev, design, mentoring, or learning resources",m:"Hi SYNCODE Cares! 👋 I came from the Learn with Sachi Kuppi Portal and I'd love to volunteer my technical skills."},
+  {t:"Collaborate on community projects",d:"Build impactful open & social tech initiatives together",m:"Hi SYNCODE Cares! 👋 I came from the Learn with Sachi Kuppi Portal and I'm interested in collaborating on community projects."},
+  {t:"Make a donation / support",d:"Support free student resources & digital education",m:"Hi SYNCODE Cares! 👋 I came from the Learn with Sachi Kuppi Portal and I'd like to make a donation / support SYNCODE Cares."}
 ];
 const caresEl=document.createElement("div");
 caresEl.className="cmod";

@@ -43,6 +43,32 @@ svg{display:block}
 .lbtn{padding:11px 22px;border:1px solid var(--line2);background:transparent;font-size:14px;font-weight:600;color:var(--txt);transition:.2s}
 .lbtn:hover{border-color:var(--y);color:var(--y)}
 
+
+.kick{display:none}
+@media(max-width:700px){
+  .land{padding:44px 18px 34px;justify-content:flex-start}
+  .kick{display:inline-flex;align-items:center;gap:10px;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--y);margin-bottom:18px}
+  .kick::before{content:"";width:26px;height:2px;background:var(--y)}
+  .land h1{text-align:left;font-size:min(13.4vw,64px);line-height:1;letter-spacing:-1.5px}
+  .land h1 span{display:block}
+  .rule{margin:22px 0 0;width:64px;height:5px}
+  .mods{gap:16px;margin-top:32px}
+  .mcard{padding:24px 20px 0;min-height:0;overflow:hidden}
+  .mcard h2{font-size:26px;margin:8px 0 8px}
+  .mcard p{font-size:14px}
+  .mstats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;margin:22px -20px 0;padding:0;border-top:1px solid var(--line)}
+  .mstats div{padding:14px 0 13px 20px;border-right:1px solid var(--line)}
+  .mstats div:last-child{border-right:0}
+  .mstats b{font-size:28px}
+  .mstats div:first-child b{color:var(--y)}
+  .mstats span{font-size:10.5px;letter-spacing:.6px}
+  .mopen{margin:0 -20px;padding:16px 20px;background:var(--y);color:#000;justify-content:space-between;font-size:15px;letter-spacing:.4px}
+  .mcard:active{background:var(--surf2)}
+  .mcard:hover{transform:none}
+  .lfoot{flex-direction:column;gap:10px;margin:26px 0 0}
+  .lbtn{width:100%;text-align:center;padding:15px 18px}
+}
+
 /* ================= module shell */
 .shell{display:grid;grid-template-columns:300px 1fr;min-height:100vh}
 .side{position:sticky;top:0;height:100vh;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:22px 18px 18px}
@@ -243,6 +269,7 @@ svg{display:block}
 <!-- ================= landing -->
 <section class="view" id="v-land">
   <div class="land">
+    <div class="kick">Learn with Sachi</div>
     <h1>Exam <span>Kuppi Portal</span></h1>
     <div class="rule"></div>
     <div class="mods" id="mods"></div>

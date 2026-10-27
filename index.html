@@ -39,8 +39,34 @@ svg{display:block}
 .mstats span{font-size:12px;color:var(--muted);letter-spacing:.8px;text-transform:uppercase}
 .mopen{display:inline-flex;align-items:center;gap:10px;margin-top:26px;font-weight:700;color:var(--y);font-size:15px;letter-spacing:.3px}
 .mopen svg{transition:transform .25s}.mcard:hover .mopen svg{transform:translateX(7px)}
-.lfoot{margin:54px 0 40px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.lbtn{padding:11px 22px;border:1px solid var(--line2);background:transparent;font-size:14px;font-weight:600;color:var(--txt);transition:.2s}
+.lfoot{margin:54px 0 18px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.lbtn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:11px 22px;border:1px solid var(--line2);background:transparent;font-size:14px;font-weight:600;color:var(--txt);transition:.2s}
+.lbtn.cares{border-color:var(--y);background:var(--y);color:#000;font-weight:800}
+.lbtn.cares:hover{background:#ffe033;border-color:#ffe033;color:#000;transform:translateY(-2px)}
+.syncfoot{margin:0 0 38px;text-align:center;font-size:13px;color:var(--muted);letter-spacing:.3px}
+.syncfoot a,.syncfoot button{color:var(--txt);font-weight:700;border-bottom:1px solid var(--y);padding-bottom:1px;transition:.2s}
+.syncfoot a:hover,.syncfoot button:hover{color:var(--y)}
+.cmod{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.85);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.cmod.on{display:flex;animation:fin .22s ease}
+.cbox{position:relative;width:100%;max-width:720px;background:var(--side);border:1px solid var(--line2);border-top:5px solid var(--y);padding:34px 34px 26px;margin:auto;box-shadow:0 24px 64px rgba(0,0,0,.85)}
+.cclose{position:absolute;top:18px;right:18px;width:36px;height:36px;border:1px solid var(--line2);color:var(--muted);display:grid;place-items:center;transition:.18s;font-size:18px;line-height:1}
+.cclose:hover{border-color:var(--y);color:var(--y)}
+.cbox h2{font-size:clamp(24px,3.6vw,34px);line-height:1.12;font-weight:800;letter-spacing:-.8px;margin:6px 0 14px}
+.cbox h2 span{color:var(--y)}
+.cmiss{color:var(--txt);font-size:14.5px;line-height:1.6;padding:14px 18px;background:var(--surf);border:1px solid var(--line);border-left:4px solid var(--y);margin-bottom:22px}
+.cmiss b{display:block;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--y);margin-bottom:5px}
+.csub{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:11.5px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--y);margin-bottom:12px}
+.csub span{font-weight:500;letter-spacing:.3px;text-transform:none;color:var(--muted);font-size:12.5px}
+.clist{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.citem{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 15px;background:var(--surf);border:1px solid var(--line);text-align:left;transition:.2s}
+.citem:hover{border-color:var(--y);background:var(--surf2);transform:translateY(-2px)}
+.citem b{display:block;font-size:14px;font-weight:700;color:var(--txt);line-height:1.3}
+.citem small{display:block;font-size:12px;color:var(--muted);margin-top:4px;line-height:1.35}
+.citem .wa-ic{flex:none;width:32px;height:32px;background:var(--y);color:#000;display:grid;place-items:center;transition:transform .2s}
+.citem:hover .wa-ic{transform:translateX(3px)}
+.cfoot{margin-top:22px;padding-top:16px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.cfoot a{color:var(--y);font-weight:700;display:inline-flex;align-items:center;gap:6px}
+.cfoot a:hover{text-decoration:underline}
 .lbtn:hover{border-color:var(--y);color:var(--y)}
 
 
@@ -67,6 +93,9 @@ svg{display:block}
   .mcard:hover{transform:none}
   .lfoot{flex-direction:column;gap:10px;margin:26px 0 0}
   .lbtn{width:100%;text-align:center;padding:15px 18px}
+  .syncfoot{margin:14px 0 10px}
+  .cbox{padding:26px 20px 22px}
+  .clist{grid-template-columns:1fr}
 }
 
 /* ================= module shell */
@@ -275,6 +304,10 @@ svg{display:block}
     <div class="mods" id="mods"></div>
     <div class="lfoot">
       <a class="lbtn" href="https://whatsapp.com/channel/0029VbAOUZj6hENiKN0n9K2y" target="_blank" rel="noopener">Learn with Sachi on WhatsApp</a>
+      <a class="lbtn" href="https://www.youtube.com/@sachithra228" target="_blank" rel="noopener">YouTube (@sachithra228)</a>
+      <button class="lbtn cares" type="button" data-cares>SYNCODE Cares · Contribute</button>
+    </div>
+    <div class="syncfoot">Powered by <a href="https://teamsyncode.com" target="_blank" rel="noopener">SYNCODE (teamsyncode.com)</a> · <button type="button" data-cares>Our Mission &amp; Cares</button>
     </div>
   </div>
 </section>
@@ -476,11 +509,11 @@ function renderSide(M){
    <div class="ng">Lectures</div>
    <div class="navlist" id="lnav">${M.lectures.map(L=>`<button class="ni" data-s="l${L.n}" data-n="${L.n}"><span class="no">L${L.n}</span><span class="nt">${SH[M.key][L.n]}</span><span class="cv" data-cv="${L.n}"></span><span class="dot ${L.p==="hot"?"":"o"}" title="${PL[L.p]}"></span></button>`).join("")}</div>
    <div class="ng">Resources</div>
-   <div class="navlist"><a class="ni" href="${M.drive}" target="_blank" rel="noopener"><span class="no">DR</span><span class="nt">${M.code.split(" ")[0]} Drive folder</span><span class="cv">${I.ext}</span></a></div>
+   <div class="navlist"><a class="ni" href="${M.drive}" target="_blank" rel="noopener"><span class="no">DR</span><span class="nt">${M.code.split(" ")[0]} Drive folder</span><span class="cv">${I.ext}</span></a><a class="ni" href="https://www.youtube.com/@sachithra228" target="_blank" rel="noopener"><span class="no">YT</span><span class="nt">YouTube (@sachithra228)</span><span class="cv">${I.ext}</span></a><button class="ni" type="button" data-cares><span class="no">SC</span><span class="nt">SYNCODE Cares</span><span class="cv">${I.ext}</span></button></div>
    <div class="sp"></div>
    <div class="prog"><div>Topics covered <b id="pc">0/0</b></div><div class="tr"><div class="fl" id="pf"></div></div>
-     <div class="sfoot"><a href="https://whatsapp.com/channel/0029VbAOUZj6hENiKN0n9K2y" target="_blank" rel="noopener">WhatsApp channel</a></div></div>`;
-  document.querySelectorAll(".ni").forEach(b=>b.onclick=()=>{location.hash=`#${M.key}/${b.dataset.s==="map"?"map":b.dataset.s==="rules"?"rules":b.dataset.n}`});
+     <div class="sfoot"><a href="https://whatsapp.com/channel/0029VbAOUZj6hENiKN0n9K2y" target="_blank" rel="noopener">WhatsApp</a><a href="https://www.youtube.com/@sachithra228" target="_blank" rel="noopener">YouTube</a><a href="#" data-cares>SYNCODE Cares</a><a href="https://teamsyncode.com" target="_blank" rel="noopener">teamsyncode.com</a></div></div>`;
+  document.querySelectorAll("button.ni[data-s]").forEach(b=>b.onclick=()=>{location.hash=`#${M.key}/${b.dataset.s==="map"?"map":b.dataset.s==="rules"?"rules":b.dataset.n}`});
   $("#q").oninput=e=>{query=e.target.value.trim().toLowerCase();renderMain()};
 }
 function updSide(M){
@@ -601,6 +634,39 @@ function route(){
     if(h[2]==="all")document.querySelectorAll(".topic").forEach(t=>t.classList.add("open"));
   }else{mod=null;renderLanding();show("#v-land")}
 }
+/* ------------------------------------------------------------------ syncode cares */
+const CARES_WA="94702911223";
+const CARES_ITEMS=[
+  {t:"Volunteer your technical skills",d:"Share your dev, design, or mentoring skills",m:"Hi SYNCODE Cares! 👋 I came from the Learn with Sachi Kuppi Portal and I'd love to volunteer my technical skills."},
+  {t:"Join our free educational programs",d:"Participate in free kuppi & tech sessions",m:"Hi SYNCODE Cares! 👋 I came from the Learn with Sachi Kuppi Portal and I'd like to join your free educational programs."},
+  {t:"Help create learning resources",d:"Contribute notes, past paper guides & tutorials",m:"Hi SYNCODE Cares! 👋 I came from the Learn with Sachi Kuppi Portal and I'd like to help create learning resources."},
+  {t:"Collaborate on community projects",d:"Build impactful open & social tech initiatives",m:"Hi SYNCODE Cares! 👋 I came from the Learn with Sachi Kuppi Portal and I'm interested in collaborating on community projects."},
+  {t:"Make a donation / support",d:"Support free student resources & community outreach",m:"Hi SYNCODE Cares! 👋 I came from the Learn with Sachi Kuppi Portal and I'd like to make a donation / support SYNCODE Cares."},
+  {t:"Partner with us for digital education",d:"Partner as a club, university group, or sponsor",m:"Hi SYNCODE Cares! 👋 I came from the Learn with Sachi Kuppi Portal and we'd like to partner with SYNCODE Cares to support digital education."}
+];
+const caresEl=document.createElement("div");
+caresEl.className="cmod";
+caresEl.id="cares-mod";
+caresEl.setAttribute("role","dialog");
+caresEl.setAttribute("aria-modal","true");
+caresEl.setAttribute("aria-label","SYNCODE Cares");
+caresEl.innerHTML=`<div class="cbox">
+  <button class="cclose" type="button" data-cares-close aria-label="Close">✕</button>
+  <div class="eyebrow">Community Initiative</div>
+  <h2>SYNCODE <span>Cares</span></h2>
+  <div class="cmiss"><b>Our Mission</b>We believe technology is more powerful when it creates opportunities for everyone. Through SYNCODE Cares, we bring together passionate individuals who want to use their knowledge, creativity, and skills to make a positive difference in society.</div>
+  <div class="csub">How You Can Contribute <span>Select a category to message us on WhatsApp (+94 70 291 1223)</span></div>
+  <div class="clist">${CARES_ITEMS.map(c=>`<a class="citem" href="https://wa.me/${CARES_WA}?text=${encodeURIComponent(c.m)}" target="_blank" rel="noopener"><div><b>${c.t}</b><small>${c.d}</small></div><span class="wa-ic" title="Send WhatsApp message">${I.arrow}</span></a>`).join("")}</div>
+  <div class="cfoot"><span>Direct WhatsApp: <strong style="color:var(--txt)">+94 70 291 1223</strong></span><a href="https://teamsyncode.com" target="_blank" rel="noopener">Visit teamsyncode.com ${I.ext}</a></div>
+</div>`;
+document.body.appendChild(caresEl);
+function toggleCares(on){caresEl.classList.toggle("on",on)}
+document.addEventListener("click",e=>{
+  if(e.target.closest("[data-cares]")){e.preventDefault();toggleCares(true)}
+  else if(e.target.closest("[data-cares-close]")||e.target===caresEl){toggleCares(false)}
+});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&caresEl.classList.contains("on"))toggleCares(false)});
+
 window.addEventListener("hashchange",route);route();
 </script>
 </body>

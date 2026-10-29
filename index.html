@@ -111,9 +111,6 @@ svg{display:block}
 .cd div{flex:1;border:1px solid var(--line);padding:8px 10px}
 .cd b{display:block;font-size:20px;line-height:1.1;color:var(--y);font-weight:800}
 .cd span{font-size:10.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
-.search{display:flex;gap:9px;align-items:center;border:1px solid var(--line2);padding:0 12px;color:var(--faint);margin-bottom:18px}
-.search:focus-within{border-color:var(--y);color:var(--y)}
-.search input{flex:1;min-width:0;height:40px;border:0;outline:0;background:none;color:var(--txt);font:inherit;font-size:14px}
 .ng{font-size:11px;font-weight:700;letter-spacing:2.2px;text-transform:uppercase;color:var(--faint);margin:6px 0 8px 2px}
 .navlist{display:flex;flex-direction:column;gap:3px;margin-bottom:16px}
 .ni{display:flex;align-items:center;gap:11px;padding:10px 12px;border-left:3px solid transparent;text-align:left;width:100%;font-size:14px;font-weight:500;color:var(--muted);transition:.18s;position:relative}
@@ -135,7 +132,7 @@ svg{display:block}
 .sfoot a:hover{color:var(--y);border-color:var(--y)}
 
 .main{padding:44px 54px 70px;min-width:0}
-.main .inner{max-width:880px}
+.main .inner{max-width:1240px}
 .eyebrow{font-size:12.5px;font-weight:700;letter-spacing:2.6px;text-transform:uppercase;color:var(--y)}
 .main h1{font-size:clamp(28px,4vw,44px);line-height:1.1;font-weight:800;letter-spacing:-1px;margin:6px 0 8px}
 .lede{color:var(--muted);font-size:15px;max-width:640px}
@@ -157,13 +154,14 @@ svg{display:block}
 
 
 /* exam map charts */
-.inner.wide{max-width:1060px}
+.inner.wide{max-width:none}
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
 .kpi{border:1px solid var(--line);background:var(--surf);padding:18px 18px 16px;border-top:3px solid var(--y)}
 .kpi b{display:block;font-size:34px;line-height:1;font-weight:800;color:var(--y);letter-spacing:-1px}
 .kpi b small{font-size:17px;color:var(--muted);font-weight:700;margin-left:2px}
 .kpi span{display:block;margin-top:8px;font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
 .mgrid{display:grid;grid-template-columns:1fr 1.15fr;gap:20px;margin-bottom:20px}
+@media(min-width:901px){.mgrid.eq{grid-template-columns:1fr 1fr}}
 .pc{border:1px solid var(--line);background:var(--surf);padding:22px}
 .pc h4{font-size:12px;font-weight:700;letter-spacing:2.2px;text-transform:uppercase;color:var(--y)}
 .pc .ps{font-size:13px;color:var(--muted);margin:4px 0 16px}
@@ -271,6 +269,28 @@ svg{display:block}
 .hide{display:none!important}
 .empty{color:var(--muted);padding:30px 0}
 
+
+/* head row, papers and preview */
+.hrow{display:flex;align-items:flex-end;justify-content:space-between;gap:6px 18px;flex-wrap:wrap}
+.pbtn{display:inline-flex;align-items:center;gap:10px;flex:none;background:var(--y);color:#000;border:1px solid var(--y);font-size:13.5px;font-weight:800;letter-spacing:.3px;padding:13px 20px;margin-bottom:8px;transition:.18s}
+.pbtn:hover{background:#000;color:var(--y)}
+.dgroup{margin-bottom:18px}
+.dgl{font-size:11px;font-weight:700;letter-spacing:2.2px;text-transform:uppercase;color:var(--faint);margin-bottom:9px}
+.dtabs{display:flex;gap:8px;flex-wrap:wrap}
+.dtab{display:inline-flex;align-items:center;gap:9px;padding:10px 16px;border:1px solid var(--line2);font-size:13.5px;font-weight:600;color:var(--muted);transition:.18s}
+.dtab:hover{border-color:var(--y);color:var(--y)}
+.dtab.on{background:var(--y);border-color:var(--y);color:#000}
+.dtab small{font-size:11px;font-weight:700;opacity:.65}
+.vbar{display:flex;align-items:center;gap:10px 12px;flex-wrap:wrap;padding:14px 18px;margin-top:6px;border:1px solid var(--line);border-left:4px solid var(--y);background:var(--surf)}
+.vbar .vt{flex:1;min-width:220px}
+.vbar .vt b{display:block;font-size:16px}
+.vbar .vt span{font-size:12.5px;color:var(--muted)}
+.vwrap{display:flex;flex-direction:column;align-items:center;gap:16px;min-height:320px;padding:24px 16px;background:#0a0a0a;border:1px solid var(--line);border-top:0}
+.vpage{position:relative;width:100%;max-width:1000px;background:#fff;box-shadow:0 6px 28px rgba(0,0,0,.7)}
+.vpage canvas{position:absolute;inset:0;width:100%;height:100%}
+.vpage i{position:absolute;z-index:1;right:10px;bottom:8px;padding:4px 8px;background:#000;color:var(--y);font-size:11px;font-weight:700;font-style:normal}
+.vmsg{color:var(--muted);padding:40px 10px;text-align:center;max-width:520px}
+
 /* ================= responsive */
 @media(max-width:900px){
   .shell{grid-template-columns:1fr}
@@ -283,6 +303,7 @@ svg{display:block}
   .ng,.sp,.sfoot{display:none}
   .prog{border-top:0;padding-top:0;margin-bottom:12px}
   .main{padding:28px 18px 56px}
+  .vwrap{padding:14px 8px}.dtab{padding:9px 12px}.pbtn{padding:11px 16px}
   .stats{grid-template-columns:repeat(2,1fr)}
   .bar{grid-template-columns:1fr;gap:6px}.bar .vl{text-align:left}
   .children{margin-left:10px;padding-left:18px}
@@ -465,9 +486,30 @@ bmit:{
 
 /* ------------------------------------------------------------------ helpers */
 const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-let done=store.get("lws_done",{}),mod=null,sec="map",query="",hotOnly=false;
+let done=store.get("lws_done",{}),mod=null,sec="map",pdoc="",curDoc=null,hotOnly=false;
 const $=s=>document.querySelector(s);
 const SH={hci:{1:"HCI and UX",2:"Design Mindset",3:"User Research",4:"Interactions",5:"Principles",6:"Prototyping",7:"Evaluation",8:"Industry"},bmit:{1:"Business Intro",2:"Management",3:"HRM",4:"Accounting",5:"Economics",6:"Marketing",7:"Sustainability"}};
+
+const DOCS={
+ hci:{label:"Past papers",title:"Past papers",count:5,lede:"Final exam papers 2019 to 2025. Select a paper to preview it here, or open it in a new tab.",
+  groups:[{t:"Past papers",items:[
+   {id:"2025",tab:"2025",t:"HCI Final Exam 2025 (November)",sub:"IT3060 · Year 3, Semester 2",file:"papers/hci-2025-november.pdf",kb:215},
+   {id:"2024",tab:"2024",t:"HCI Final Exam 2024 (November)",sub:"IT3060 · Year 3, Semester 2",file:"papers/hci-2024.pdf",kb:183},
+   {id:"2023",tab:"2023",t:"HCI Final Exam 2023",sub:"IT3060 · Year 3, Semester 2",file:"papers/hci-2023.pdf",kb:1251},
+   {id:"2022",tab:"2022",t:"HCI Final Exam 2022",sub:"IT3060 · Year 3, Semester 2",file:"papers/hci-2022.pdf",kb:352},
+   {id:"2019",tab:"2019",t:"HCI Final Exam 2019",sub:"IT3060 · Final examination",file:"papers/hci-2019.pdf",kb:65}]}]},
+ bmit:{label:"Papers and workbook",title:"Papers and workbook",count:6,lede:"The calculation workbook and the final exam papers 2019 to 2024. Select one to preview it here, or open it in a new tab.",
+  groups:[
+   {t:"Calculation workbook",items:[
+    {id:"workbook",tab:"Calculation workbook",t:"BMIT Calculation Workbook",sub:"Formula sheet, worked examples, 14 practice questions and answer key",file:"papers/bmit-calculation-workbook.pdf",kb:581}]},
+   {t:"Past papers",items:[
+    {id:"2024",tab:"2024",t:"BMIT Final Exam 2024 (November)",sub:"IE3060 · Year 3, Semester 1/2",file:"papers/bmit-2024-november.pdf",kb:188},
+    {id:"2023ise",tab:"2023 ISE",t:"BMIT Final Exam 2023 ISE (November)",sub:"IE3060 · Information Systems Engineering",file:"papers/bmit-2023-november-ise.pdf",kb:2035},
+    {id:"2023",tab:"2023",t:"BMIT Final Exam 2023 (November)",sub:"IT3090 · Year 3, Semester 2",file:"papers/bmit-2023-november.pdf",kb:2143},
+    {id:"2022",tab:"2022",t:"BMIT Final Exam 2022 (November)",sub:"IE3060 · Year 3, Semester 2",file:"papers/bmit-2022-november.pdf",kb:178},
+    {id:"2019",tab:"2019",t:"BMIT Final Exam 2019 (October)",sub:"Final term examination",file:"papers/bmit-2019-october.pdf",kb:111}]}]}
+};
+const fmtKB=k=>k>=1024?(k/1024).toFixed(1)+" MB":k+" KB";
 const PL={hot:"High priority",mid:"Medium",low:"Low",skip:"Not asked"};
 const MON=["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const I={
@@ -476,7 +518,7 @@ const I={
  chev:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="square"><path d="M9 6l6 6-6 6"/></svg>',
  tick:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="square"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
  ext:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="square"><path d="M7 17L17 7M9 7h8v8"/></svg>',
- search:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>'
+ doc:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 13h6M9 17h6"/></svg>'
 };
 const daysTo=(m,d)=>{const n=new Date(),a=new Date(n.getFullYear(),n.getMonth(),n.getDate()),t=new Date(n.getFullYear(),m-1,d);return Math.round((t-a)/864e5)};
 function countText(M){const dd=daysTo(...M.date);return dd>0?{n:dd,l:dd===1?"day to go":"days to go"}:dd===0?{n:"Today",l:"exam day"}:{n:"Done",l:"finished"}}
@@ -500,11 +542,11 @@ function renderSide(M){
    <a class="back" href="#">${I.back}All modules</a>
    <div class="sh"><div class="code">${M.code}</div><h2>${M.name}</h2>
      <div class="cd"><div><b>${c.n}</b><span>${c.l}</span></div><div><b>${MON[M.date[0]]} ${M.date[1]}</b><span>Exam date</span></div></div></div>
-   <label class="search">${I.search}<input id="q" type="search" placeholder="Search topics" aria-label="Search topics"></label>
    <div class="ng">Overview</div>
    <div class="navlist">
      <button class="ni" data-s="map"><span class="no">01</span><span class="nt">Exam map</span></button>
      <button class="ni" data-s="rules"><span class="no">02</span><span class="nt">Paper and golden rules</span></button>
+     <button class="ni" data-s="papers"><span class="no">03</span><span class="nt">${DOCS[M.key].label}</span><span class="cv">${DOCS[M.key].count}</span></button>
    </div>
    <div class="ng">Lectures</div>
    <div class="navlist" id="lnav">${M.lectures.map(L=>`<button class="ni" data-s="l${L.n}" data-n="${L.n}"><span class="no">L${L.n}</span><span class="nt">${SH[M.key][L.n]}</span><span class="cv" data-cv="${L.n}"></span><span class="dot ${L.p==="hot"?"":"o"}" title="${PL[L.p]}"></span></button>`).join("")}</div>
@@ -513,18 +555,18 @@ function renderSide(M){
    <div class="sp"></div>
    <div class="prog"><div>Topics covered <b id="pc">0/0</b></div><div class="tr"><div class="fl" id="pf"></div></div>
      <div class="sfoot"><a href="https://whatsapp.com/channel/0029VbAOUZj6hENiKN0n9K2y" target="_blank" rel="noopener">WhatsApp</a><a href="https://www.youtube.com/@sachithra228" target="_blank" rel="noopener">YouTube</a><a href="#" data-cares>SYNCODE Cares</a><a href="https://teamsyncode.com" target="_blank" rel="noopener">teamsyncode.com</a></div></div>`;
-  document.querySelectorAll("button.ni[data-s]").forEach(b=>b.onclick=()=>{location.hash=`#${M.key}/${b.dataset.s==="map"?"map":b.dataset.s==="rules"?"rules":b.dataset.n}`});
-  $("#q").oninput=e=>{query=e.target.value.trim().toLowerCase();renderMain()};
+  document.querySelectorAll("button.ni[data-s]").forEach(b=>b.onclick=()=>{location.hash=`#${M.key}/${b.dataset.s==="map"?"map":b.dataset.s==="rules"?"rules":b.dataset.s==="papers"?"papers":b.dataset.n}`});
 }
 function updSide(M){
-  document.querySelectorAll(".ni").forEach(b=>{b.classList.toggle("on",!query&&b.dataset.s===sec)});
+  document.querySelectorAll(".ni").forEach(b=>{b.classList.toggle("on",b.dataset.s===sec)});
   let tot=0,dn=0;
   M.lectures.forEach(L=>{const k=covered(M,L);tot+=L.topics.length;dn+=k;const e=document.querySelector(`[data-cv="${L.n}"]`);if(e){e.textContent=k+"/"+L.topics.length;e.parentElement.classList.toggle("full",k===L.topics.length)}});
   $("#pc").textContent=dn+"/"+tot;$("#pf").style.width=(tot?dn/tot*100:0)+"%";
 }
 
 /* ------------------------------------------------------------------ main panels */
-function head(eyebrow,title,lede){return `<div class="eyebrow">${eyebrow}</div><h1>${title}</h1>${lede?`<p class="lede">${lede}</p>`:""}<div class="ysep"></div>`}
+function head(eyebrow,title,lede,act){return `<div class="hrow"><div><div class="eyebrow">${eyebrow}</div><h1>${title}</h1></div>${act||""}</div>${lede?`<p class="lede">${lede}</p>`:""}<div class="ysep"></div>`}
+const pBtn=M=>`<a class="pbtn" href="#${M.key}/papers">${I.doc}${DOCS[M.key].label}</a>`;
 const YEARS={hci:["2019","2022","2023","2024"],bmit:["2019","2022","2023","ISE","2024"]};
 const SHADES=["#ffd400","#e8c200","#cba900","#ad8f00","#8a7300","#675600","#4a4a4a","#333"];
 function donutSVG(Ls,tot){
@@ -548,9 +590,9 @@ function viewMap(M){
   const dn=`<div class="pc"><h4>${unit}</h4><div class="ps">${isH?"Average of the 2023 and 2024 papers":"Across the 5 analysed papers"}. Select a slice to open the lecture.</div><div class="dwrap">${donutSVG(asked,tot)}<div class="dl">${asked.map((L,i)=>`<div data-open="${L.n}" data-hi="${L.n}"><i style="background:${SHADES[i]}"></i><em>L${L.n}  ${SH[M.key][L.n]}</em><b>${Math.round(L.w/tot*100)}%</b></div>`).join("")}</div></div></div>`;
   const hm=`<div class="pc"><h4>Past paper heatmap</h4><div class="ps">Which paper each lecture appeared in. Select a row to open it.</div><div class="heat" style="--cols:${yrs.length}"><span></span>${yrs.map(y=>`<span class="hh">${ylab(y)}</span>`).join("")}<span></span>${M.lectures.map(L=>`<span class="hl" data-open="${L.n}"><i>L${L.n}</i>${SH[M.key][L.n]}</span>${yrs.map(y=>`<span class="hc ${L.tags.includes(y)?"on":""}" data-open="${L.n}"></span>`).join("")}<span class="ht">${L.tags.filter(t=>yrs.includes(t)).length}/${yrs.length}</span>`).join("")}</div></div>`;
   const pr=`<div class="pc" style="margin-bottom:20px"><h4>Priority breakdown</h4><div class="ps">How the ${M.lectures.length} lectures split by exam priority.</div><div class="stack">${["hot","mid","low","skip"].filter(k=>cnt[k]).map(k=>`<div style="flex:${cnt[k]};background:${shade[k]}">${cnt[k]}</div>`).join("")}</div><div class="sleg">${[["hot","High priority"],["mid","Medium"],["low","Low"],["skip","Not asked"]].map(([k,l])=>`<span><i style="background:${shade[k]}"></i>${l}</span>`).join("")}</div></div>`;
-  const rk=`<div class="pc" style="margin-bottom:20px"><h4>Ranking</h4><div class="ps">Lectures ordered by exam weight.</div><div class="bars">${all.map(L=>`<div class="bar p-${L.p}" data-n="${L.n}"><div class="nm"><i>L${L.n}</i>${SH[M.key][L.n]}</div><div class="tr"><div class="fl" style="--w:${Math.min(Math.max(L.w/mx*100,2),100)}%"></div></div><div class="vl">${L.wl}</div></div>`).join("")}</div></div>`;
+  const rk=`<div class="pc"><h4>Ranking</h4><div class="ps">Lectures ordered by exam weight.</div><div class="bars">${all.map(L=>`<div class="bar p-${L.p}" data-n="${L.n}"><div class="nm"><i>L${L.n}</i>${SH[M.key][L.n]}</div><div class="tr"><div class="fl" style="--w:${Math.min(Math.max(L.w/mx*100,2),100)}%"></div></div><div class="vl">${L.wl}</div></div>`).join("")}</div></div>`;
   const hyc=`<div class="pc"><h4>High yield topics by lecture</h4><div class="ps">Each block is one topic. Yellow blocks are the topics that were asked most often.</div><div class="hy">${all.map(L=>`<div data-open="${L.n}"><span class="nm"><i>L${L.n}</i>${SH[M.key][L.n]}</span><span class="tk">${L.topics.map(t=>`<i class="${t.h?"on":""}"></i>`).join("")}</span><span class="vl">${L.topics.filter(t=>t.h).length}/${L.topics.length}</span></div>`).join("")}</div></div>`;
-  return head("Overview","Exam map",M.mapSub)+kpi+`<div class="mgrid">${dn}${hm}</div>`+pr+rk+hyc;
+  return head("Overview","Exam map",M.mapSub,pBtn(M))+kpi+`<div class="mgrid">${dn}${hm}</div>`+pr+`<div class="mgrid eq">${rk}${hyc}</div>`;
 }
 function viewRules(M){
   return head("Overview","Paper and golden rules","How the paper looks, based on the analysed past papers.")+`<div class="stats">${M.fmt.map(f=>`<div><b>${f[0]}</b><span>${f[1]}</span></div>`).join("")}</div><div class="rules">${M.rules.map(r=>`<div><i></i><span>${r}</span></div>`).join("")}</div>`;
@@ -581,23 +623,50 @@ function viewLecture(M,n){
     <div class="etip"><b>Exam tip</b>${L.tip}</div>
     <div class="lnav"><button data-go="${prev?prev.n:""}" ${prev?"":"disabled"}>${prev?"Previous  L"+prev.n:"Start"}</button><button data-go="${next?next.n:""}" ${next?"":"disabled"}>${next?"Next  L"+next.n:"End"}</button></div>`;
 }
-function viewSearch(M){
-  const q=query;let html=head("Search",`Results for "${q}"`,""),n=0;
-  M.lectures.forEach(L=>{
-    const hit=L.topics.map((T,i)=>({T,i})).filter(({T})=>(T.t+" "+(T.sub||"")+" "+T.b).replace(/<[^>]+>/g," ").toLowerCase().includes(q)||L.t.toLowerCase().includes(q));
-    if(!hit.length)return;n+=hit.length;
-    html+=`<div class="rootrow sm"><b>L${L.n}  ${L.t}</b><span class="cnt">${hit.length} match${hit.length>1?"es":""}</span></div><div class="children lv2">${hit.map(({T,i})=>topicHTML(M,L,T,i,true)).join("")}</div>`;
-  });
-  return n?html:head("Search",`Results for "${q}"`,"")+`<div class="empty">No topics match. Try another keyword.</div>`;
+function viewPapers(M){
+  const D=DOCS[M.key],all=D.groups.flatMap(g=>g.items);
+  curDoc=all.find(d=>d.id===pdoc)||all[0];
+  const tabs=D.groups.map(g=>`<div class="dgroup"><div class="dgl">${g.t}</div><div class="dtabs">${g.items.map(d=>`<a class="dtab ${d===curDoc?"on":""}" href="#${M.key}/papers/${d.id}">${d.tab}<small>${fmtKB(d.kb)}</small></a>`).join("")}</div></div>`).join("");
+  return head("Resources",D.title,D.lede)+tabs+`<div class="vbar"><div class="vt"><b>${curDoc.t}</b><span>${curDoc.sub} · <span id="pgn">PDF</span></span></div><a class="tbtn on" href="${curDoc.file}" target="_blank" rel="noopener">Open in new tab</a><a class="tbtn" href="${curDoc.file}" download>Download</a></div><div class="vwrap" id="pv"><div class="vmsg">Loading preview...</div></div>`;
+}
+let pdfLib=null,pvTok=0;
+function loadPdfJs(){
+  return pdfLib||(pdfLib=new Promise((ok,no)=>{
+    if(window.pdfjsLib)return ok(window.pdfjsLib);
+    const sc=document.createElement("script");sc.src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+    sc.onload=()=>{window.pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";ok(window.pdfjsLib)};
+    sc.onerror=()=>{pdfLib=null;no(new Error("pdf.js"))};document.head.appendChild(sc)}));
+}
+async function showPdf(file){
+  const tok=++pvTok,box=$("#pv");if(!box)return;
+  try{
+    const pdf=await (await loadPdfJs()).getDocument(file).promise;
+    if(tok!==pvTok)return;
+    const g=$("#pgn");if(g)g.textContent=pdf.numPages+(pdf.numPages>1?" pages":" page");
+    const dpr=Math.min(window.devicePixelRatio||1,2);
+    const io=new IntersectionObserver(es=>es.forEach(async e=>{
+      if(!e.isIntersecting)return;io.unobserve(e.target);
+      const pg=await pdf.getPage(+e.target.dataset.p);if(tok!==pvTok)return;
+      const b=pg.getViewport({scale:1}),vp=pg.getViewport({scale:Math.min(Math.max(e.target.clientWidth,700),1000)*dpr/b.width});
+      const cv=document.createElement("canvas");cv.width=vp.width;cv.height=vp.height;
+      await pg.render({canvasContext:cv.getContext("2d"),viewport:vp}).promise;
+      if(tok===pvTok)e.target.prepend(cv)}),{rootMargin:"700px 0px"});
+    const pages=[];
+    for(let i=1;i<=pdf.numPages;i++){const v=(await pdf.getPage(i)).getViewport({scale:1}),d=document.createElement("div");
+      d.className="vpage";d.dataset.p=i;d.style.aspectRatio=v.width+" / "+v.height;d.innerHTML=`<i>${i} / ${pdf.numPages}</i>`;pages.push(d)}
+    if(tok!==pvTok)return;
+    box.innerHTML="";pages.forEach(d=>{box.appendChild(d);io.observe(d)});
+  }catch(err){if(tok===pvTok)box.innerHTML=`<div class="vmsg">Preview is not available right now. Use <b>Open in new tab</b> or <b>Download</b> above.</div>`}
 }
 function renderMain(){
   const M=DATA[mod],m=$("#main");
-  if(query)m.innerHTML=viewSearch(M);
-  else if(sec==="map")m.innerHTML=viewMap(M);
+  if(sec==="map")m.innerHTML=viewMap(M);
+  else if(sec==="papers")m.innerHTML=viewPapers(M);
   else if(sec==="rules")m.innerHTML=viewRules(M);
   else m.innerHTML=viewLecture(M,+sec.slice(1));
-  m.classList.toggle("wide",!query&&sec==="map");m.classList.remove("fade");void m.offsetWidth;
+  m.classList.toggle("wide",sec==="map"||sec==="papers");m.classList.remove("fade");void m.offsetWidth;
   wireMain(M);updSide(M);
+  if(sec==="papers")showPdf(curDoc.file);else pvTok++;
 }
 function wireMain(M){
   document.querySelectorAll(".bar").forEach(b=>b.onclick=()=>location.hash=`#${M.key}/${b.dataset.n}`);
@@ -626,10 +695,9 @@ function route(){
   const h=location.hash.replace("#","").split("/");
   if(DATA[h[0]]){
     const M=DATA[h[0]];
-    const ns=!h[1]||h[1]==="map"?"map":h[1]==="rules"?"rules":(M.lectures.some(l=>l.n===+h[1])?"l"+(+h[1]):"map");
-    if(mod!==M.key){mod=M.key;query="";hotOnly=false;renderSide(M)}
-    else if(query){query="";$("#q").value=""}
-    sec=ns;if(!$("#v-mod").classList.contains("on"))show("#v-mod");else window.scrollTo(0,0);
+    const ns=!h[1]||h[1]==="map"?"map":h[1]==="rules"?"rules":h[1]==="papers"?"papers":(M.lectures.some(l=>l.n===+h[1])?"l"+(+h[1]):"map");
+    if(mod!==M.key){mod=M.key;hotOnly=false;renderSide(M)}
+    sec=ns;pdoc=ns==="papers"?(h[2]||""):"";if(!$("#v-mod").classList.contains("on"))show("#v-mod");else window.scrollTo(0,0);
     renderMain();
     if(h[2]==="all")document.querySelectorAll(".topic").forEach(t=>t.classList.add("open"));
   }else{mod=null;renderLanding();show("#v-land")}

@@ -329,6 +329,23 @@ svg{display:block}
 .swt span{font-size:12.5px;color:var(--muted)}
 #mnamebox.hide{display:none}
 
+
+.mpub{margin-top:10px;font-size:12.5px;color:var(--muted)}
+.wall{margin-top:46px;max-width:760px;padding-top:26px;border-top:1px solid var(--line)}
+.wh{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.wh h3{font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--y)}
+.wh h3 span{color:var(--muted);font-weight:600;letter-spacing:.4px;text-transform:none;margin-left:8px}
+.wref,.wmod{font-size:12.5px;font-weight:600;color:var(--faint);border-bottom:1px solid var(--line2);padding-bottom:1px;transition:.18s}
+.wref:hover,.wmod:hover{color:var(--y);border-color:var(--y)}
+.wmsg{padding:16px 18px;margin-bottom:10px;border:1px solid var(--line);border-left:4px solid var(--y);background:var(--surf)}
+.wmsg p{font-size:15px;line-height:1.6;word-wrap:break-word;overflow-wrap:anywhere}
+.wmeta{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:12px;color:var(--faint)}
+.wmeta b{color:var(--muted);font-weight:700}
+.wdel{margin-left:auto;padding:4px 10px;border:1px solid #6b2a25;color:#ff8f84;font-size:12px;font-weight:700}
+.wdel:hover{background:#ff6b5e;color:#000;border-color:#ff6b5e}
+.wmsg0{padding:26px 8px;color:var(--muted);font-size:14.5px}
+.wfoot{margin-top:18px;text-align:right}
+
 /* ================= try with me */
 #v-try.on{display:block}
 .tw{height:100vh;height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr) auto;background:var(--bg)}
@@ -755,26 +772,66 @@ function viewLecture(M,n){
     <div class="lnav"><button data-go="${prev?prev.n:""}" ${prev?"":"disabled"}>${prev?"Previous  L"+prev.n:"Start"}</button><button data-go="${next?next.n:""}" ${next?"":"disabled"}>${next?"Next  L"+next.n:"End"}</button></div>`;
 }
 function viewMessage(M){
-  return head("Resources","Message Sachi","Ask a question, request notes, or tell me what to cover.")+
+  return head("Resources","Message Sachi","Ask a question, request notes, or tell me what to cover. Messages appear below for everyone.")+
   `<form class="mform" id="mf" novalidate autocomplete="off">
     <label class="mlab" for="mtxt" style="margin-top:0">Your message</label>
     <textarea id="mtxt" maxlength="1000" placeholder="Type your message here..."></textarea>
     <div class="mrow"><span></span><span><b id="mcnt">0</b> / 1000</span></div>
+    <p class="mpub">Messages are public on this page. Please do not share phone numbers, emails or private details.</p>
     <div class="mswrap"><button type="button" class="sw on" id="msw" role="switch" aria-checked="true" aria-label="Send anonymously"><i></i></button>
-      <div class="swt"><b id="swl">Anonymous</b><span id="swd">Your name is not sent with the message.</span></div></div>
-    <div id="mnamebox" class="hide"><label class="mlab" for="mct">Your name or contact<small>so I can reply</small></label>
-      <input type="text" id="mct" maxlength="80" placeholder="Your name, phone or email"></div>
+      <div class="swt"><b id="swl">Anonymous</b><span id="swd">Your name is not shown with the message.</span></div></div>
+    <div id="mnamebox" class="hide"><label class="mlab" for="mct">Your name<small>shown with your message</small></label>
+      <input type="text" id="mct" maxlength="40" placeholder="Your name"></div>
     <div class="mhp" aria-hidden="true"><label>Do not fill this<input type="text" id="mhp" tabindex="-1" autocomplete="off"></label></div>
     <div class="mact"><button class="pbtn" type="submit" id="msend">Send message</button><span class="mnote">I read every message. Thank you for the feedback.</span></div>
     <div id="mres" role="status" aria-live="polite"></div>
-  </form>`;
+  </form>
+  <section class="wall" id="wall"><div class="wh"><h3>Messages from students<span id="wcnt"></span></h3><button type="button" class="wref" id="wref">Refresh</button></div>
+    <div id="wlist"><div class="wmsg0">Loading messages...</div></div>
+    <div class="wfoot"><button type="button" class="wmod" id="wmod">Moderator</button></div></section>`;
+}
+let wallData=[],adminKey="";
+try{adminKey=sessionStorage.getItem("lws_admin")||""}catch(e){}
+const escH=t=>String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const agoT=ts=>{const s=Math.max(0,(Date.now()-ts)/1000);return s<60?"just now":s<3600?Math.floor(s/60)+" min ago":s<86400?Math.floor(s/3600)+" h ago":s<604800?Math.floor(s/86400)+" d ago":new Date(ts).toLocaleDateString()};
+function drawWall(note){
+  const box=$("#wlist");if(!box)return;
+  $("#wcnt").textContent=wallData.length?`${wallData.length}`:"";
+  $("#wmod").textContent=adminKey?"Moderator mode on (turn off)":"Moderator";
+  box.innerHTML=note?`<div class="wmsg0">${note}</div>`:!wallData.length?`<div class="wmsg0">No messages yet. Be the first to write one.</div>`:
+    wallData.map(m=>`<div class="wmsg"><p>${escH(m.text).replace(/\n/g,"<br>")}</p><div class="wmeta"><b>${m.name?escH(m.name):"Anonymous"}</b><span>${agoT(m.ts)}</span>${adminKey?`<button type="button" class="wdel" data-id="${m.id}">Delete</button>`:""}</div></div>`).join("");
+  box.querySelectorAll(".wdel").forEach(b=>b.onclick=()=>delWall(b.dataset.id));
+}
+async function loadWall(){
+  try{
+    const r=await fetch("/api/messages",{cache:"no-store"});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok){wallData=[];drawWall("The message board is not available yet.");$("#wcnt").textContent="";return}
+    wallData=j.messages||[];drawWall();
+  }catch(e){wallData=[];drawWall("The message board could not be loaded. Please try again.")}
+}
+async function delWall(id){
+  if(!confirm("Delete this message?"))return;
+  try{
+    const r=await fetch("/api/messages?id="+encodeURIComponent(id),{method:"DELETE",headers:{"x-admin-key":adminKey}});
+    if(r.status===401){adminKey="";try{sessionStorage.removeItem("lws_admin")}catch(e){}drawWall();alert("Wrong moderator password.");return}
+    if(!r.ok){alert("Could not delete. Please try again.");return}
+    wallData=wallData.filter(m=>m.id!==id);drawWall();
+  }catch(e){alert("Could not delete. Please check your connection.")}
 }
 function wireMsg(M){
   const f=$("#mf"),txt=$("#mtxt"),res=$("#mres"),btn=$("#msend"),sw=$("#msw");let anon=true;
   const say=(h,err)=>{res.innerHTML=h?`<div class="mmsg ${err?"err":""}">${h}</div>`:""};
+  loadWall();
+  $("#wref").onclick=loadWall;
+  $("#wmod").onclick=()=>{
+    if(adminKey){adminKey="";try{sessionStorage.removeItem("lws_admin")}catch(e){}drawWall();return}
+    const k=prompt("Moderator password");if(!k)return;
+    adminKey=k.trim();try{sessionStorage.setItem("lws_admin",adminKey)}catch(e){}drawWall();
+  };
   sw.onclick=()=>{anon=!anon;sw.classList.toggle("on",anon);sw.setAttribute("aria-checked",anon);
     $("#swl").textContent=anon?"Anonymous":"Not anonymous";
-    $("#swd").textContent=anon?"Your name is not sent with the message.":"Add your name or contact below if you want a reply.";
+    $("#swd").textContent=anon?"Your name is not shown with the message.":"Add your name below. It will be shown with your message.";
     $("#mnamebox").classList.toggle("hide",anon);if(!anon)$("#mct").focus()};
   txt.oninput=()=>{$("#mcnt").textContent=txt.value.length};
   f.onsubmit=async e=>{
@@ -784,20 +841,29 @@ function wireMsg(M){
     if(msg.length<5){say("Please write a little more, at least a few words.",true);txt.focus();return}
     const wait=60000-(Date.now()-store.get("lws_msg_t",0));
     if(wait>0){say(`Please wait <b>${Math.ceil(wait/1000)} seconds</b> before sending another message.`,true);return}
-    if(!MSG_KEY){say("Messages are not switched on yet. Please try again later.",true);return}
     const who=anon?"":$("#mct").value.trim();
     btn.disabled=true;btn.textContent="Sending...";
+    const fail=h=>{btn.disabled=false;btn.textContent="Send message";say(h,true)};
+    let posted=null;
     try{
-      const r=await fetch("https://api.web3forms.com/submit",{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},
-        body:JSON.stringify({access_key:MSG_KEY,subject:`Learn with Sachi portal: Message (${M.code.split(" ")[0]})`,from_name:anon?"Anonymous student":(who||"Student"),module:M.name,contact:anon?"(anonymous)":(who||"(no name given)"),message:msg,botcheck:""})});
+      const r=await fetch("/api/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:msg,name:who,hp:$("#mhp").value})});
       const j=await r.json().catch(()=>({}));
-      if(!r.ok||!j.success)throw new Error(j.message||"failed");
-      store.set("lws_msg_t",Date.now());
-      f.outerHTML=`<div class="mdone"><h3>Message sent</h3><p>Thank you! I will read it soon.${anon?"":" I may reply using the contact you gave."}</p><button class="pbtn" type="button" onclick="renderMain()">Send another</button></div>`;
-    }catch(err){
-      btn.disabled=false;btn.textContent="Send message";
-      say("Sorry, the message could not be sent. Please check your connection and try again.",true);
+      if(r.ok)posted=j.message||null;
+      else if(r.status===400||r.status===429)return fail(j.message||"Please check your message and try again.");
+    }catch(err){}
+    let mailed=false;
+    if(MSG_KEY){
+      try{
+        const r=await fetch("https://api.web3forms.com/submit",{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},
+          body:JSON.stringify({access_key:MSG_KEY,subject:`Learn with Sachi portal: Message (${M.code.split(" ")[0]})`,from_name:anon?"Anonymous student":(who||"Student"),module:M.name,contact:anon?"(anonymous)":(who||"(no name given)"),message:msg,botcheck:""})});
+        const j=await r.json().catch(()=>({}));
+        mailed=r.ok&&!!j.success;
+      }catch(err){}
     }
+    if(!posted&&!mailed)return fail("Sorry, the message could not be sent. Please check your connection and try again.");
+    store.set("lws_msg_t",Date.now());
+    if(posted){wallData.unshift(posted);drawWall()}
+    f.outerHTML=`<div class="mdone"><h3>Message sent</h3><p>Thank you! ${posted?"Your message is now on the wall below.":"I will read it soon."}</p><button class="pbtn" type="button" onclick="renderMain()">Send another</button></div>`;
   };
 }
 function viewPapers(M){

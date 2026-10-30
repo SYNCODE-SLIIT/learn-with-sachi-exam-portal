@@ -318,6 +318,17 @@ svg{display:block}
 .mdone{padding:34px 28px;border:1px solid var(--line);border-top:4px solid var(--y);background:var(--surf);max-width:760px}
 .mdone h3{font-size:22px;margin-bottom:8px}.mdone p{color:var(--muted);margin-bottom:18px}
 
+
+.mswrap{display:flex;align-items:center;gap:14px;margin-top:22px;padding:14px 16px;border:1px solid var(--line);background:var(--surf)}
+.sw{flex:none;position:relative;width:50px;height:28px;border:1px solid var(--line2);background:var(--surf2);transition:.2s}
+.sw i{position:absolute;top:3px;left:3px;width:20px;height:20px;background:var(--faint);transition:.2s}
+.sw.on{background:var(--y);border-color:var(--y)}
+.sw.on i{left:25px;background:#000}
+.sw:focus-visible{outline:2px solid var(--y);outline-offset:2px}
+.swt b{display:block;font-size:15px}
+.swt span{font-size:12.5px;color:var(--muted)}
+#mnamebox.hide{display:none}
+
 /* ================= try with me */
 #v-try.on{display:block}
 .tw{height:100vh;height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr) auto;background:var(--bg)}
@@ -625,7 +636,7 @@ const TRY={bmit:{"meta": {"title": "BMIT Final Exam 2024 (November)", "code": "I
 /* Anonymous messages: delivered to Sachi's email through Web3Forms (https://web3forms.com).
    Paste the free access key between the quotes below. Leave it empty to keep the form switched off. */
 const MSG_KEY="eba312cf-1c03-466c-b5ef-5a9d8ab4c083";
-const MSG={bmit:{cats:["Question","Request notes","Feedback","Something else"]}};
+const MSG={bmit:{}};
 const fmtKB=k=>k>=1024?(k/1024).toFixed(1)+" MB":k+" KB";
 const PL={hot:"High priority",mid:"Medium",low:"Low",skip:"Not asked"};
 const MON=["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -744,25 +755,27 @@ function viewLecture(M,n){
     <div class="lnav"><button data-go="${prev?prev.n:""}" ${prev?"":"disabled"}>${prev?"Previous  L"+prev.n:"Start"}</button><button data-go="${next?next.n:""}" ${next?"":"disabled"}>${next?"Next  L"+next.n:"End"}</button></div>`;
 }
 function viewMessage(M){
-  const c=MSG[M.key];
-  return head("Resources","Message Sachi","Ask a question, request notes, or tell me what to cover. It is anonymous: no name or email is needed.")+
+  return head("Resources","Message Sachi","Ask a question, request notes, or tell me what to cover.")+
   `<form class="mform" id="mf" novalidate autocomplete="off">
-    <span class="mlab">What is it about?</span>
-    <div class="mchips" id="mcats">${c.cats.map((t,i)=>`<button type="button" class="mchip ${i===0?"on":""}" data-c="${t}">${t}</button>`).join("")}</div>
-    <label class="mlab" for="mtxt">Your message</label>
+    <label class="mlab" for="mtxt" style="margin-top:0">Your message</label>
     <textarea id="mtxt" maxlength="1000" placeholder="Type your message here..."></textarea>
-    <div class="mrow"><span>Anonymous by default</span><span><b id="mcnt">0</b> / 1000</span></div>
-    <label class="mlab" for="mct">Name or contact<small>optional, only if you want a reply</small></label>
-    <input type="text" id="mct" maxlength="80" placeholder="Leave empty to stay anonymous">
+    <div class="mrow"><span></span><span><b id="mcnt">0</b> / 1000</span></div>
+    <div class="mswrap"><button type="button" class="sw on" id="msw" role="switch" aria-checked="true" aria-label="Send anonymously"><i></i></button>
+      <div class="swt"><b id="swl">Anonymous</b><span id="swd">Your name is not sent with the message.</span></div></div>
+    <div id="mnamebox" class="hide"><label class="mlab" for="mct">Your name or contact<small>so I can reply</small></label>
+      <input type="text" id="mct" maxlength="80" placeholder="Your name, phone or email"></div>
     <div class="mhp" aria-hidden="true"><label>Do not fill this<input type="text" id="mhp" tabindex="-1" autocomplete="off"></label></div>
     <div class="mact"><button class="pbtn" type="submit" id="msend">Send message</button><span class="mnote">I read every message. Thank you for the feedback.</span></div>
     <div id="mres" role="status" aria-live="polite"></div>
   </form>`;
 }
 function wireMsg(M){
-  const f=$("#mf"),txt=$("#mtxt"),res=$("#mres"),btn=$("#msend");let cat=MSG[M.key].cats[0];
+  const f=$("#mf"),txt=$("#mtxt"),res=$("#mres"),btn=$("#msend"),sw=$("#msw");let anon=true;
   const say=(h,err)=>{res.innerHTML=h?`<div class="mmsg ${err?"err":""}">${h}</div>`:""};
-  document.querySelectorAll("#mcats .mchip").forEach(b=>b.onclick=()=>{cat=b.dataset.c;document.querySelectorAll("#mcats .mchip").forEach(x=>x.classList.toggle("on",x===b))});
+  sw.onclick=()=>{anon=!anon;sw.classList.toggle("on",anon);sw.setAttribute("aria-checked",anon);
+    $("#swl").textContent=anon?"Anonymous":"Not anonymous";
+    $("#swd").textContent=anon?"Your name is not sent with the message.":"Add your name or contact below if you want a reply.";
+    $("#mnamebox").classList.toggle("hide",anon);if(!anon)$("#mct").focus()};
   txt.oninput=()=>{$("#mcnt").textContent=txt.value.length};
   f.onsubmit=async e=>{
     e.preventDefault();say("");
@@ -772,14 +785,15 @@ function wireMsg(M){
     const wait=60000-(Date.now()-store.get("lws_msg_t",0));
     if(wait>0){say(`Please wait <b>${Math.ceil(wait/1000)} seconds</b> before sending another message.`,true);return}
     if(!MSG_KEY){say("Messages are not switched on yet. Please try again later.",true);return}
+    const who=anon?"":$("#mct").value.trim();
     btn.disabled=true;btn.textContent="Sending...";
     try{
       const r=await fetch("https://api.web3forms.com/submit",{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},
-        body:JSON.stringify({access_key:MSG_KEY,subject:`Learn with Sachi portal: ${cat} (${M.code.split(" ")[0]})`,from_name:"Anonymous student",category:cat,module:M.name,contact:$("#mct").value.trim()||"(anonymous)",message:msg,botcheck:""})});
+        body:JSON.stringify({access_key:MSG_KEY,subject:`Learn with Sachi portal: Message (${M.code.split(" ")[0]})`,from_name:anon?"Anonymous student":(who||"Student"),module:M.name,contact:anon?"(anonymous)":(who||"(no name given)"),message:msg,botcheck:""})});
       const j=await r.json().catch(()=>({}));
       if(!r.ok||!j.success)throw new Error(j.message||"failed");
       store.set("lws_msg_t",Date.now());
-      f.outerHTML=`<div class="mdone"><h3>Message sent</h3><p>Thank you! I will read it soon. If you left a contact, I may reply.</p><button class="pbtn" type="button" onclick="renderMain()">Send another</button></div>`;
+      f.outerHTML=`<div class="mdone"><h3>Message sent</h3><p>Thank you! I will read it soon.${anon?"":" I may reply using the contact you gave."}</p><button class="pbtn" type="button" onclick="renderMain()">Send another</button></div>`;
     }catch(err){
       btn.disabled=false;btn.textContent="Send message";
       say("Sorry, the message could not be sent. Please check your connection and try again.",true);

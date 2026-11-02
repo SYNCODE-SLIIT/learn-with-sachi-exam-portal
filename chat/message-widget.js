@@ -1,5 +1,6 @@
 /* Message Sachi: a floating chat-style message box shown on every page of the portal.
-   Messages are delivered privately to Sachi's email through Web3Forms (https://web3forms.com).
+   Every message is emailed to Sachi through Web3Forms (https://web3forms.com). Unless the sender unticks
+   "Show on the public wall", it is also posted to the public wall (api/messages.js, Upstash Redis).
    The access key below is a public form key (it only allows sending to Sachi's inbox). */
 (function () {
   'use strict';
@@ -60,6 +61,21 @@
   '.lwsc-send svg{width:20px;height:20px}' +
   '.lwsc-note{display:flex;justify-content:space-between;gap:8px;margin-top:8px;font-size:11.5px;color:#8a8a8a}' +
   '.lwsc-note button{background:none;border:0;color:#ffd400;cursor:pointer;font:600 11.5px "Segoe UI",system-ui,sans-serif;padding:0}' +
+  '.lwsc-tabs{display:flex;background:#141414;border-bottom:1px solid #2a2a2a}' +
+  '.lwsc-tab{flex:1;background:none;border:0;border-bottom:3px solid transparent;color:#a6a6a6;padding:10px 8px;font:700 13px/1 "Segoe UI",system-ui,sans-serif;letter-spacing:.4px;cursor:pointer}' +
+  '.lwsc-tab:hover{color:#f4f4f4}.lwsc-tab.on{color:#ffd400;border-bottom-color:#ffd400}' +
+  '.lwsc-tab small{font-weight:600;color:#8a8a8a;margin-left:4px}' +
+  '.lwsc-wallpane{flex:1;overflow-y:auto;padding:14px;display:none;flex-direction:column;gap:10px;background:#0a0a0a}.lwsc-wallpane.on{display:flex}' +
+  '.lwsc-wh{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;color:#a6a6a6}' +
+  '.lwsc-wh button{background:none;border:1px solid #3c3c3c;color:#ffd400;border-radius:8px;padding:5px 10px;font:600 12px "Segoe UI",system-ui,sans-serif;cursor:pointer}' +
+  '.lwsc-wh button:hover{border-color:#ffd400}' +
+  '.lwsc-card{background:#161616;border:1px solid #2a2a2a;border-left:3px solid #ffd400;border-radius:10px;padding:10px 12px}' +
+  '.lwsc-card p{margin:0 0 6px;white-space:pre-wrap;word-wrap:break-word}' +
+  '.lwsc-meta{display:flex;gap:10px;align-items:center;font-size:12px;color:#8a8a8a}.lwsc-meta b{color:#d6d6d6}' +
+  '.lwsc-del{margin-left:auto;background:none;border:1px solid #7a2a2a;color:#ff8a8a;border-radius:6px;padding:2px 8px;font:600 11px "Segoe UI",system-ui,sans-serif;cursor:pointer}' +
+  '.lwsc-empty{padding:26px 10px;text-align:center;color:#8a8a8a;border:1px dashed #3c3c3c;border-radius:10px}' +
+  '.lwsc-mod{background:none;border:0;color:#8a8a8a;font:11.5px "Segoe UI",system-ui,sans-serif;cursor:pointer;text-decoration:underline;align-self:center;margin-top:4px}' +
+  '.lwsc-pub{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px;color:#d6d6d6;cursor:pointer}.lwsc-pub input{accent-color:#ffd400;width:16px;height:16px}' +
   '.lwsc-hp{position:absolute;left:-9999px;opacity:0;height:0;width:0}' +
   '@media (max-width:560px){.lwsc-btn{height:54px;padding:0 15px}.lwsc-btn span{display:none}.lwsc-panel{right:0;left:0;bottom:0;width:100%;height:82vh;border-radius:16px 16px 0 0;max-height:none}}' +
   '@media (prefers-reduced-motion:reduce){.lwsc-btn.pulse::after,.lwsc-panel.on,.lwsc-m,.lwsc-t i{animation:none}}' +
@@ -78,13 +94,16 @@
   panel.className = 'lwsc-panel'; panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-label', 'Message Sachi');
   panel.innerHTML =
     '<div class="lwsc-head"><div class="lwsc-av">S</div><div><b>Sachi</b><small>I read every message</small></div><button class="lwsc-x" type="button" aria-label="Close chat">&#10005;</button></div>' +
+    '<div class="lwsc-tabs" role="tablist"><button class="lwsc-tab on" type="button" data-tab="chat" role="tab">Chat</button><button class="lwsc-tab" type="button" data-tab="wall" role="tab">Public wall<small id="lwscCnt"></small></button></div>' +
     '<div class="lwsc-body" id="lwscBody" aria-live="polite"></div>' +
+    '<div class="lwsc-wallpane" id="lwscWallPane"></div>' +
     '<form class="lwsc-foot" id="lwscForm" autocomplete="off">' +
       '<div class="lwsc-opt" id="lwscOpt"><input id="lwscName" maxlength="40" placeholder="Your name (optional)"><input id="lwscContact" maxlength="80" placeholder="Email or phone so I can reply (optional)"></div>' +
       '<input class="lwsc-hp" id="lwscHp" tabindex="-1" aria-hidden="true">' +
+      '<label class="lwsc-pub"><input type="checkbox" id="lwscPub" checked> Also show my message on the public wall</label>' +
       '<div class="lwsc-row"><textarea id="lwscText" rows="1" maxlength="1000" placeholder="Type your message..." aria-label="Your message"></textarea>' +
       '<button class="lwsc-send" id="lwscSend" type="submit" aria-label="Send message">' + sendIcon + '</button></div>' +
-      '<div class="lwsc-note"><span>Only Sachi sees this. No passwords please.</span><button type="button" id="lwscMore">Add name / contact</button></div>' +
+      '<div class="lwsc-note"><span id="lwscNote"></span><button type="button" id="lwscMore">Add name / contact</button></div>' +
     '</form>';
 
   document.body.appendChild(btn);
@@ -92,7 +111,10 @@
 
   var body = panel.querySelector('#lwscBody'), form = panel.querySelector('#lwscForm'), text = panel.querySelector('#lwscText'),
       send = panel.querySelector('#lwscSend'), opt = panel.querySelector('#lwscOpt'), more = panel.querySelector('#lwscMore');
+  var wallPane = panel.querySelector('#lwscWallPane'), pub = panel.querySelector('#lwscPub'), noteEl = panel.querySelector('#lwscNote'), cnt = panel.querySelector('#lwscCnt');
   var history = store.get(STORE, []);
+  var wall = [], wallNote = '', admin = '';
+  try { admin = sessionStorage.getItem('lws_admin') || ''; } catch (e) { /* ignore */ }
   var busy = false;
 
   function bubble(kind, html, save) {
@@ -124,6 +146,53 @@
   }
   function grow() { text.style.height = 'auto'; text.style.height = Math.min(text.scrollHeight, 110) + 'px'; }
 
+
+  /* ---------- public wall ---------- */
+  function ago(ts) { var s = Math.max(0, (Date.now() - ts) / 1000); return s < 60 ? 'just now' : s < 3600 ? Math.floor(s / 60) + ' min ago' : s < 86400 ? Math.floor(s / 3600) + ' h ago' : s < 604800 ? Math.floor(s / 86400) + ' d ago' : new Date(ts).toLocaleDateString(); }
+  function drawWall() {
+    cnt.textContent = wall.length ? ' (' + wall.length + ')' : '';
+    var h = '<div class="lwsc-wh"><span>Messages from students. Public, newest first.</span><button type="button" id="lwscRef">Refresh</button></div>';
+    if (wallNote) h += '<div class="lwsc-empty">' + esc(wallNote) + '</div>';
+    else if (!wall.length) h += '<div class="lwsc-empty">No messages yet. Be the first to write one.</div>';
+    else h += wall.map(function (m) {
+      return '<div class="lwsc-card"><p>' + esc(m.text) + '</p><div class="lwsc-meta"><b>' + (m.name ? esc(m.name) : 'Anonymous') + '</b><span>' + ago(m.ts) + '</span>' +
+        (admin ? '<button type="button" class="lwsc-del" data-id="' + esc(m.id) + '">Delete</button>' : '') + '</div></div>';
+    }).join('');
+    h += '<button type="button" class="lwsc-mod" id="lwscMod">' + (admin ? 'Moderator mode on (turn off)' : 'Moderator') + '</button>';
+    wallPane.innerHTML = h;
+    wallPane.querySelector('#lwscRef').onclick = loadWall;
+    wallPane.querySelector('#lwscMod').onclick = function () {
+      if (admin) { admin = ''; try { sessionStorage.removeItem('lws_admin'); } catch (e) { /* ignore */ } drawWall(); return; }
+      var k = prompt('Moderator password'); if (!k) return;
+      admin = k.trim(); try { sessionStorage.setItem('lws_admin', admin); } catch (e) { /* ignore */ } drawWall();
+    };
+    [].forEach.call(wallPane.querySelectorAll('.lwsc-del'), function (b) { b.onclick = function () { delWall(b.getAttribute('data-id')); }; });
+  }
+  function loadWall() {
+    wallNote = '';
+    fetch('/api/messages', { cache: 'no-store' }).then(function (r) { return r.json().then(function (j) { return { r: r, j: j }; }, function () { return { r: r, j: {} }; }); })
+      .then(function (x) { if (!x.r.ok) { wall = []; wallNote = 'The public wall is not available yet.'; } else { wall = x.j.messages || []; } drawWall(); })
+      .catch(function () { wall = []; wallNote = 'The wall could not be loaded. Please try again.'; drawWall(); });
+  }
+  function delWall(id) {
+    if (!confirm('Delete this message?')) return;
+    fetch('/api/messages?id=' + encodeURIComponent(id), { method: 'DELETE', headers: { 'x-admin-key': admin } }).then(function (r) {
+      if (r.status === 401) { admin = ''; try { sessionStorage.removeItem('lws_admin'); } catch (e) { /* ignore */ } drawWall(); alert('Wrong moderator password.'); return; }
+      if (!r.ok) { alert('Could not delete. Please try again.'); return; }
+      wall = wall.filter(function (m) { return m.id !== id; }); drawWall();
+    }).catch(function () { alert('Could not delete. Please check your connection.'); });
+  }
+  function showTab(name) {
+    [].forEach.call(panel.querySelectorAll('.lwsc-tab'), function (t) { t.classList.toggle('on', t.getAttribute('data-tab') === name); });
+    body.style.display = name === 'chat' ? '' : 'none';
+    wallPane.classList.toggle('on', name === 'wall');
+    if (name === 'wall') { drawWall(); loadWall(); }
+    else body.scrollTop = body.scrollHeight;
+  }
+  [].forEach.call(panel.querySelectorAll('.lwsc-tab'), function (t) { t.onclick = function () { showTab(t.getAttribute('data-tab')); }; });
+  function updNote() { noteEl.textContent = pub.checked ? 'Public wall: no phone numbers or emails in the message.' : 'Private: only Sachi sees this.'; }
+  pub.onchange = updNote; updNote();
+
   function open(on) {
     panel.classList.toggle('on', on);
     btn.setAttribute('aria-expanded', String(on));
@@ -141,41 +210,62 @@
     e.preventDefault();
     if (busy) return;
     if (panel.querySelector('#lwscHp').value) return;            // honeypot
+    showTab('chat');
     var msg = text.value.trim();
     if (msg.length < 5) { bubble('err', 'Please write a little more, at least a few words.', false); return; }
     var wait = WAIT - (Date.now() - store.get(LAST, 0));
     if (wait > 0) { bubble('err', 'Please wait ' + Math.ceil(wait / 1000) + ' seconds before sending another message.', false); return; }
     var name = panel.querySelector('#lwscName').value.trim(), contact = panel.querySelector('#lwscContact').value.trim();
+    var onWall = pub.checked;
     var mine = bubble('me', esc(msg), false);
     text.value = ''; grow(); busy = true; send.disabled = true;
 
-    var page = (document.title || '') + ' | ' + location.pathname + location.hash;
-    fetch('https://api.web3forms.com/submit', {
-      method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({
-        access_key: KEY,
-        subject: 'Learn with Sachi portal: new message',
-        from_name: name || 'Student (anonymous)',
-        name: name || '(no name given)',
-        contact: contact || '(no contact given)',
-        page: page,
-        message: msg,
-        botcheck: ''
-      })
-    }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok && j.success }; }, function () { return { ok: r.ok }; }); })
-      .catch(function () { return { ok: false }; })
-      .then(function (res) {
-        busy = false; send.disabled = false;
-        if (res.ok) {
-          store.set(LAST, Date.now());
-          history.push({ k: 'me', h: esc(msg) }); history = history.slice(-KEEP); store.set(STORE, history);
-          typing(900, function () { bubble('bot', 'Thank you! Your message has been sent to me. ' + (contact ? 'I’ll get back to you soon.' : 'If you want a reply, add your email or phone with “Add name / contact”.'), true); });
-        } else {
-          mine.remove();
-          bubble('err', 'Sorry, the message could not be sent. Please check your connection and try again. Your text is back in the box so you can resend it.', false);
-          text.value = msg; grow();
-        }
-      });
+    function fail(html) {
+      busy = false; send.disabled = false; mine.remove();
+      bubble('err', html, false); text.value = msg; grow();
+    }
+    function mail() {
+      var page = (document.title || '') + ' | ' + location.pathname + location.hash;
+      return fetch('https://api.web3forms.com/submit', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: KEY,
+          subject: 'Learn with Sachi portal: new message' + (onWall ? ' (public wall)' : ' (private)'),
+          from_name: name || 'Student (anonymous)',
+          name: name || '(no name given)',
+          contact: contact || '(no contact given)',
+          page: page,
+          visibility: onWall ? 'posted on the public wall' : 'private',
+          message: msg,
+          botcheck: ''
+        })
+      }).then(function (r) { return r.json().then(function (j) { return r.ok && !!j.success; }, function () { return r.ok; }); })
+        .catch(function () { return false; });
+    }
+    function done(posted, mailed) {
+      busy = false; send.disabled = false;
+      if (!posted && !mailed) return fail('Sorry, the message could not be sent. Please check your connection and try again. Your text is back in the box so you can resend it.');
+      store.set(LAST, Date.now());
+      history.push({ k: 'me', h: esc(msg) }); history = history.slice(-KEEP); store.set(STORE, history);
+      if (posted) { wall.unshift(posted); cnt.textContent = ' (' + wall.length + ')'; }
+      var reply = posted ? 'Thank you! Your message is now on the public wall and I have received it.' : (onWall ? 'Thank you! The public wall is not available right now, so your message was sent privately to me.' : 'Thank you! Your message was sent privately to me.');
+      if (!contact) reply += ' If you want a reply, add your email or phone with “Add name / contact”. Only I can see that.';
+      typing(900, function () { bubble('bot', reply, true); });
+    }
+
+    var postP = !onWall ? Promise.resolve({ posted: null }) :
+      fetch('/api/messages', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: msg, name: name, hp: '' }) })
+        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { r: r, j: j }; }); })
+        .then(function (x) {
+          if (x.r.ok) return { posted: x.j.message || null };
+          if (x.r.status === 400 || x.r.status === 429) return { stop: (x.j.message || 'Please check your message and try again.') + (x.r.status === 400 ? ' Or untick “public wall” to send it privately.' : '') };
+          return { posted: null };       // wall not set up: still email it
+        }).catch(function () { return { posted: null }; });
+
+    postP.then(function (res) {
+      if (res.stop) return fail(esc(res.stop));
+      return mail().then(function (mailed) { done(res.posted, mailed); });
+    });
   };
 
   render();

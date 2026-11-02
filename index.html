@@ -672,12 +672,22 @@ const topicCount=M=>M.lectures.reduce((a,l)=>a+l.topics.length,0);
 const tid=(M,L,i)=>`${M.key}-${L.n}-${i}`;
 const covered=(M,L)=>L.topics.filter((t,i)=>done[tid(M,L,i)]).length;
 
+/* modules that live on their own page inside this site (folder with its own index.html) */
+const EXT=[
+ {code:"IT4090",name:"Cloud Computing",date:[11,16],href:"cloud-computing/",lectures:12,topics:70,
+  desc:"12 lectures · MCQ, short answers and structured questions · 2 hours"}
+];
+
 /* ------------------------------------------------------------------ landing */
 function renderLanding(){
   $("#mods").innerHTML=Object.values(DATA).map(M=>{const c=countText(M);return `
   <a class="mcard" href="#${M.key}">
     <div class="code">${M.code}</div><h2>${M.name}</h2><p>${M.desc}</p>
     <div class="mstats"><div><b>${c.n}</b><span>${c.l}</span></div><div><b>${M.lectures.length}</b><span>Lectures</span></div><div><b>${topicCount(M)}</b><span>Topics</span></div></div>
+    <div class="mopen">Open module ${I.arrow}</div></a>`}).join("")+EXT.map(M=>{const c=countText(M);return `
+  <a class="mcard" href="${M.href}">
+    <div class="code">${M.code}</div><h2>${M.name}</h2><p>${M.desc}</p>
+    <div class="mstats"><div><b>${c.n}</b><span>${c.l}</span></div><div><b>${M.lectures}</b><span>Lectures</span></div><div><b>${M.topics}</b><span>Topics</span></div></div>
     <div class="mopen">Open module ${I.arrow}</div></a>`}).join("");
 }
 

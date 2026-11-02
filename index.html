@@ -25,6 +25,7 @@ svg{display:block}
 .land{max-width:1100px;margin:0 auto;padding:0 24px;min-height:100vh;display:flex;flex-direction:column;justify-content:center}
 .land h1{font-size:clamp(42px,7.4vw,88px);line-height:1;font-weight:800;letter-spacing:-2.5px;text-align:center}
 .land h1 span{color:var(--y)}
+.ybk{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;margin:0 0 22px;color:var(--muted);font-size:14px;font-weight:600;transition:.2s}.ybk:hover{color:var(--y)}.ybk[hidden]{display:none}
 .rule{width:84px;height:5px;background:var(--y);margin:26px auto 0}
 .mods{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:60px}
 @media(max-width:760px){.mods{grid-template-columns:1fr}}
@@ -458,6 +459,7 @@ svg{display:block}
 <!-- ================= landing -->
 <section class="view" id="v-land">
   <div class="land">
+    <a class="ybk" id="ybk" href="#" hidden></a>
     <div class="kick">Learn with Sachi</div>
     <h1>Exam <span>Kuppi Portal</span></h1>
     <div class="rule"></div>
@@ -673,29 +675,48 @@ const tid=(M,L,i)=>`${M.key}-${L.n}-${i}`;
 const covered=(M,L)=>L.topics.filter((t,i)=>done[tid(M,L,i)]).length;
 
 /* modules that live on their own page inside this site (folder with its own index.html) */
-const EXT=[
- {code:"IT4090",name:"Cloud Computing",date:[11,16],href:"cloud-computing/",lectures:12,topics:70,
-  desc:"12 lectures · MCQ, short answers and structured questions · 2 hours"}
+const EXT={
+ cc:{code:"IT4090",name:"Cloud Computing",date:[11,16],href:"cloud-computing/",lectures:12,topics:70,
+  desc:"12 lectures · MCQ, short answers and structured questions · 2 hours"},
+ ime:{code:"IME",name:"Innovation Management and Entrepreneurship",date:[11,13],soon:true,
+  desc:"Exam 13 Nov · 12:00 PM – 2:00 PM · notes and practice coming soon"}
+};
+/* year boxes shown on the landing page; each year box opens its own module list */
+const YEARBOX=[
+ {key:"y3",num:"3",name:"3rd",desc:"Human Computer Interaction · Business Management for IT",mods:["hci","bmit"]},
+ {key:"y4",num:"4",name:"4th",desc:"Cloud Computing · Innovation Management and Entrepreneurship",mods:["cc","ime"]}
 ];
+const modOf=k=>DATA[k]||EXT[k];
+const yearBack={hci:"y3",bmit:"y3"};
 
 /* ------------------------------------------------------------------ landing */
+function cardMod(M,href){const c=countText(M);
+  const stats=`<div><b>${c.n}</b><span>${c.l}</span></div>`+(M.soon?"":`<div><b>${M.lectures.length||M.lectures}</b><span>Lectures</span></div><div><b>${M.topics||topicCount(M)}</b><span>Topics</span></div>`);
+  const open=M.soon?`<div class="mopen" style="color:var(--muted)">Coming soon</div>`:`<div class="mopen">Open module ${I.arrow}</div>`;
+  const inner=`<div class="code">${M.code}</div><h2>${M.name}</h2><p>${M.desc}</p><div class="mstats">${stats}</div>${open}`;
+  return M.soon?`<div class="mcard" style="opacity:.78;cursor:default" aria-disabled="true">${inner}</div>`:`<a class="mcard" href="${href}">${inner}</a>`;
+}
 function renderLanding(){
-  $("#mods").innerHTML=Object.values(DATA).map(M=>{const c=countText(M);return `
-  <a class="mcard" href="#${M.key}">
-    <div class="code">${M.code}</div><h2>${M.name}</h2><p>${M.desc}</p>
-    <div class="mstats"><div><b>${c.n}</b><span>${c.l}</span></div><div><b>${M.lectures.length}</b><span>Lectures</span></div><div><b>${topicCount(M)}</b><span>Topics</span></div></div>
-    <div class="mopen">Open module ${I.arrow}</div></a>`}).join("")+EXT.map(M=>{const c=countText(M);return `
-  <a class="mcard" href="${M.href}">
-    <div class="code">${M.code}</div><h2>${M.name}</h2><p>${M.desc}</p>
-    <div class="mstats"><div><b>${c.n}</b><span>${c.l}</span></div><div><b>${M.lectures}</b><span>Lectures</span></div><div><b>${M.topics}</b><span>Topics</span></div></div>
-    <div class="mopen">Open module ${I.arrow}</div></a>`}).join("");
+  const k=location.hash.replace("#","").split("/")[0];
+  const Y=YEARBOX.find(y=>y.key===k),bk=$("#ybk"),h1=$("#v-land h1");
+  if(!Y){
+    bk.hidden=true;h1.innerHTML='Exam <span>Kuppi Portal</span>';
+    $("#mods").innerHTML=YEARBOX.map(y=>{
+      const ms=y.mods.map(modOf),known=ms.filter(m=>!m.soon),lec=known.reduce((a,m)=>a+(m.lectures.length||m.lectures),0);
+      return `<a class="mcard" href="#${y.key}"><div class="code">YEAR ${y.num}</div><h2>${y.name} Year</h2><p>${y.desc}</p>
+      <div class="mstats"><div><b>${ms.length}</b><span>Modules</span></div><div><b>${lec}</b><span>Lectures</span></div></div>
+      <div class="mopen">Open ${y.name} year ${I.arrow}</div></a>`}).join("");
+    return;
+  }
+  bk.hidden=false;bk.innerHTML=`${I.back}All years`;h1.innerHTML=`${Y.name} <span>Year</span>`;
+  $("#mods").innerHTML=Y.mods.map(key=>{const M=modOf(key);return cardMod(M,DATA[key]?"#"+key:M.href)}).join("");
 }
 
 /* ------------------------------------------------------------------ sidebar */
 function renderSide(M){
   const c=countText(M);
   $("#side").innerHTML=`
-   <a class="back" href="#">${I.back}All modules</a>
+   <a class="back" href="#${yearBack[M.key]||""}">${I.back}All modules</a>
    <div class="sh"><div class="code">${M.code}</div><h2>${M.name}</h2>
      <div class="cd"><div><b>${c.n}</b><span>${c.l}</span></div><div><b>${MON[M.date[0]]} ${M.date[1]}</b><span>Exam date</span></div></div></div>
    <div class="ng">Overview</div>

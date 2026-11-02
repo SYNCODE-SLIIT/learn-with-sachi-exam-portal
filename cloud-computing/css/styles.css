@@ -65,7 +65,7 @@ a.mcard:hover{border-color:var(--y);transform:translateY(-2px)}
 .ni .dot.new{background:transparent;border-color:var(--y)}
 .ni .dot.low{border-color:#777}
 .ni.done .r{color:var(--ok)}
-.main{padding:40px clamp(18px,4vw,56px) 70px;max-width:1180px;width:100%;min-width:0}
+.main{padding:40px clamp(18px,3.4vw,64px) 70px;max-width:none;width:100%;min-width:0}
 .panel,.stat,.kv div{min-width:0}
 .g2 > *{min-width:0}
 .menu{display:none}
@@ -91,7 +91,7 @@ a.mcard:hover{border-color:var(--y);transform:translateY(-2px)}
 .panel{background:var(--panel);border:1px solid var(--line);padding:22px;margin-bottom:20px}
 .panel h3{margin:0 0 4px;font:700 13px/1.3 Consolas,monospace;letter-spacing:.14em;color:var(--y);text-transform:uppercase}
 .panel > p{margin:0 0 16px;color:var(--muted);font-size:14px}
-.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
 
 /* donut + legend */
 .donut{display:flex;gap:26px;align-items:center;flex-wrap:wrap}
@@ -256,6 +256,7 @@ select{width:100%;background:var(--panel2);color:var(--text);border:1px solid va
 .cl span{color:var(--muted);font-size:14px}
 
 /* ---------- responsive ---------- */
+@media (max-width:1100px){.g2{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:900px){
   .shell{grid-template-columns:minmax(0,1fr)}
   .side{position:fixed;inset:0 auto 0 0;width:min(86vw,320px);z-index:30;transform:translateX(-100%);transition:transform .2s;height:100vh}
@@ -263,7 +264,7 @@ select{width:100%;background:var(--panel2);color:var(--text);border:1px solid va
   .menu{display:inline-flex;position:sticky;top:0;z-index:20;width:100%;justify-content:space-between;align-items:center;background:#0d0d0d;border:0;border-bottom:1px solid var(--line);padding:12px 18px;font-weight:700}
   .menu span{color:var(--y);font:700 12px Consolas,monospace;letter-spacing:.12em}
   .main{padding:26px 16px 60px}
-  .g2{grid-template-columns:1fr}
+  .g2{grid-template-columns:minmax(0,1fr)}
   .donut svg{width:170px;height:170px}
   .th{padding:12px}
   .qtext{font-size:16px}

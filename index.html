@@ -81,6 +81,35 @@ body.yelbody{background:var(--y)}
 @keyframes waverise{to{transform:translateX(-140px)}}
 @keyframes waveslide{to{transform:translateY(-50%)}}
 @media (prefers-reduced-motion:reduce){.wave-in,.wave-svg{animation:none}}
+/* year page: the two modules are two full-height halves of the screen */
+#v-land:not(.yel) .land{max-width:none;width:100%;padding:0;display:block;min-height:100vh}
+#v-land:not(.yel) .ypill,#v-land:not(.yel) .rule{display:none}
+#v-land:not(.yel) .ybk{position:absolute;top:26px;left:clamp(20px,3vw,44px);z-index:5;margin:0}
+#v-land:not(.yel) h1{position:absolute;top:18px;left:0;right:0;z-index:4;text-align:center;font-size:clamp(28px,3.2vw,42px);letter-spacing:-1px;pointer-events:none}
+#v-land:not(.yel) .mods{margin:0;height:100vh;min-height:560px;gap:0;grid-template-columns:repeat(2,minmax(0,1fr))}
+#v-land:not(.yel) .mcard{min-height:0;height:100%;padding:clamp(110px,16vh,150px) clamp(28px,6vw,96px) clamp(36px,7vh,70px);border:0;border-left:1px solid rgba(255,212,0,.35);background:transparent;justify-content:flex-start;transition:background .45s ease,color .45s ease}
+#v-land:not(.yel) .mcard:first-child{border-left:0}
+#v-land:not(.yel) .mcard::before{width:0}
+#v-land:not(.yel) .mcard .code{font-size:clamp(13px,1.1vw,16px)}
+#v-land:not(.yel) .mcard h2{font-size:clamp(36px,4.6vw,78px);line-height:1.04;letter-spacing:-1.5px;margin:14px 0 18px;max-width:11em}
+#v-land:not(.yel) .mcard p{font-size:clamp(15px,1.25vw,19px);max-width:30em}
+#v-land:not(.yel) .mcard .mstats{margin-top:auto;gap:clamp(24px,3.4vw,56px)}
+#v-land:not(.yel) .mcard .mstats b{font-size:clamp(40px,4.4vw,72px)}
+#v-land:not(.yel) .mcard .mopen{font-size:clamp(15px,1.3vw,19px);margin-top:clamp(22px,4vh,40px)}
+#v-land:not(.yel) .mcard:hover{transform:none;background:var(--y);color:#000}
+#v-land:not(.yel) .mcard:hover .code,#v-land:not(.yel) .mcard:hover .mopen,#v-land:not(.yel) .mcard:hover p,#v-land:not(.yel) .mcard:hover .mstats b,#v-land:not(.yel) .mcard:hover .mstats span{color:#000}
+#v-land:not(.yel) .mcard[aria-disabled="true"]:hover{background:transparent;color:inherit}
+#v-land:not(.yel) .mcard[aria-disabled="true"]:hover .code,#v-land:not(.yel) .mcard[aria-disabled="true"]:hover .mopen{color:var(--y)}
+#v-land:not(.yel) .mcard[aria-disabled="true"]:hover p,#v-land:not(.yel) .mcard[aria-disabled="true"]:hover .mstats span{color:var(--muted)}
+#v-land:not(.yel) .mcard[aria-disabled="true"]:hover .mstats b{color:var(--txt)}
+@media(max-width:900px){
+  #v-land:not(.yel) .land{padding:24px 0 0}
+  #v-land:not(.yel) .ybk{position:static;margin:0 0 6px 20px}
+  #v-land:not(.yel) h1{position:static;margin:6px 0 18px;pointer-events:auto}
+  #v-land:not(.yel) .mods{height:auto;min-height:0;grid-template-columns:minmax(0,1fr)}
+  #v-land:not(.yel) .mcard{min-height:62vh;padding:42px 24px 38px;border-left:0;border-top:1px solid rgba(255,212,0,.35)}
+  #v-land:not(.yel) .mcard:first-child{border-top:0}
+}
 .lfoot[hidden],.syncfoot[hidden],.ysub[hidden],.ypill[hidden]{display:none!important}
 .mods{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media(max-width:900px){.mods{grid-template-columns:minmax(0,1fr)}}

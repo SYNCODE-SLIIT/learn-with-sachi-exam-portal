@@ -164,6 +164,7 @@
           <ul class="legend">${slices.map((s, i) => `<li><i style="background:${SHADES[i % SHADES.length]}"></i><a href="#/cc/lecture/${s.n}">L${s.n} ${esc(s.label)}</a><b>${Math.round(s.v / tot * 100)}%</b></li>`).join('')}</ul></div></div>
       <div class="panel"><h3>Past-paper heatmap</h3><p>Questions per lecture by type. Select a row to open the lecture.</p>
         <div class="heatwrap"><table class="heat"><thead><tr><th></th><th>MCQ</th><th>Short</th><th>Struct.</th><th></th></tr></thead><tbody>${heat}</tbody></table></div>
+      </div>
     </div>
     <div class="g2">
       <div class="panel"><h3>Priority breakdown</h3><p>How the ${totals.lectures} lectures split by exam priority.</p>

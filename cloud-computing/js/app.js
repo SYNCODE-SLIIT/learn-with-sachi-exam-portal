@@ -88,7 +88,7 @@
     <div class="shell ${sideOpen ? 'menu-open' : ''}" id="shell">
       <button class="menu" id="menuBtn" aria-label="Open menu"><span>${esc(cc.code)}</span> ${esc(cc.name)} &#9776;</button>
       <aside class="side">
-        <a class="back" href="../">&larr; All modules</a>
+        <a class="back" href="../#y4">&larr; All modules</a>
         <div class="code">${esc(cc.code)}</div>
         <h2>${esc(cc.name)}</h2>
         <div class="count">

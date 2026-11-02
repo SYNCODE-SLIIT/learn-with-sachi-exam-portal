@@ -104,7 +104,6 @@
         ${nav('map', '#/' + KEY, '01', 'Exam map')}
         ${nav('rules', '#/' + KEY + '/rules', '02', 'Paper and golden rules')}
         ${nav('practice', '#/' + KEY + '/practice', '03', 'Practice questions', String(totals.all))}
-        ${nav('contact', '#/' + KEY + '/contact', '04', 'Message Sachi')}
         <div class="navgrp">Lectures</div>
         ${lecNav}
       </aside>
@@ -116,7 +115,6 @@
     const $main = document.getElementById('main');
     if (page === 'rules') { document.title = 'Paper and golden rules | ' + cc.name; $main.innerHTML = viewRules(); }
     else if (page === 'practice') { document.title = 'Practice | ' + cc.name; renderPractice($main); }
-    else if (page === 'contact') { document.title = 'Message Sachi | ' + cc.name; $main.innerHTML = viewContact(); }
     else if (page === 'lecture' && lecByN(lecN)) { const lec = lecByN(lecN); document.title = 'L' + lec.n + ' ' + lec.title + ' | ' + cc.name; $main.innerHTML = viewLecture(lec); bindLecture(lec); }
     else { document.title = 'Exam map | ' + cc.name; $main.innerHTML = viewMap(); }
   }
@@ -195,19 +193,6 @@
     <p class="muted" style="margin:0 0 6px">${cc.cheatIntro || 'Scenario questions usually reduce to one of these. Learn them cold.'}</p>
     <div class="tw"><table class="tbl cheat"><thead><tr><th>${(cc.cheatHead || ['If the question says…', 'Answer'])[0]}</th><th>${(cc.cheatHead || ['If the question says…', 'Answer'])[1]}</th></tr></thead><tbody>
       ${cc.cheat.map((c) => `<tr><td>${cc.cheatHtml ? c[0] : esc(c[0])}</td><td>${cc.cheatHtml ? c[1] : esc(c[1])}</td></tr>`).join('')}</tbody></table></div>`;
-  }
-
-  /* ---------- contact ---------- */
-  function viewContact() {
-    return `
-    <div class="eyebrow">Overview</div><h1 style="font-size:clamp(30px,4vw,44px);margin:8px 0 10px">Message Sachi</h1>
-    <div class="rule"></div>
-    <p class="lede" style="margin-bottom:22px">Found a mistake, want a topic explained, or need more practice questions? Reach out.</p>
-    <div class="clist">
-      <a class="cl" href="${cc.links.whatsapp}" target="_blank" rel="noopener"><span class="ic">WA</span><div><b>Learn with Sachi on WhatsApp</b><span>Updates, notes and announcements</span></div></a>
-      <a class="cl" href="${cc.links.youtube}" target="_blank" rel="noopener"><span class="ic">YT</span><div><b>YouTube (@sachithra228)</b><span>Kuppi sessions and walkthroughs</span></div></a>
-      <a class="cl" href="${cc.links.syncode}" target="_blank" rel="noopener"><span class="ic">SY</span><div><b>SYNCODE (teamsyncode.com)</b><span>The team behind this portal</span></div></a>
-    </div>`;
   }
 
   /* ---------- lecture page ---------- */

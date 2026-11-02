@@ -745,7 +745,7 @@ const TRY={bmit:{"meta": {"title": "BMIT Final Exam 2024 (November)", "code": "I
 /* Anonymous messages: delivered to Sachi's email through Web3Forms (https://web3forms.com).
    Paste the free access key between the quotes below. Leave it empty to keep the form switched off. */
 const MSG_KEY="eba312cf-1c03-466c-b5ef-5a9d8ab4c083";
-const MSG={bmit:{}};
+const MSG={};   /* the old per-module Message Sachi page was replaced by the floating chat on every page (chat/message-widget.js) */
 const fmtKB=k=>k>=1024?(k/1024).toFixed(1)+" MB":k+" KB";
 const PL={hot:"High priority",mid:"Medium",low:"Low",skip:"Not asked"};
 const MON=["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
@@ -1174,5 +1174,6 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&caresEl.classList.c
 
 window.addEventListener("hashchange",route);route();
 </script>
+<script src="chat/message-widget.js" defer></script>
 </body>
 </html>

@@ -63,6 +63,6 @@ When it is approved, set `WHATSAPP_TEMPLATE=portal_message` in Vercel. The porta
 ## Notes
 
 - Conversations are kept for 14 days in your Redis store and can only be read by the browser that started them (a random 128-bit id).
-- Students can add an email or phone with **Add name**; it is only shown to you in WhatsApp.
+- Students are not asked for a name, email or phone. They only type a message. You answer in WhatsApp and the reply shows in their chat when they come back to the site.
 - The public wall was removed. Old wall messages may still be in Redis under the key `lws:messages`; delete that key in the Upstash console if you do not want them kept.
 - Meta's free test number is meant for development. If you later want your own brand number or a verified business name, Meta's business verification is needed.

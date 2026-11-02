@@ -1,6 +1,6 @@
 /* Message Sachi: a floating chat shown on every page of the portal.
    Visitor messages go to Sachi's WhatsApp (through /api/chat -> WhatsApp Cloud API). Sachi replies in WhatsApp
-   and the reply appears in this chat (the widget polls /api/chat). If live chat is not switched on, or WhatsApp
+   and the reply appears in this chat. Students are never asked for an email, phone or name (the widget polls /api/chat). If live chat is not switched on, or WhatsApp
    cannot be reached, the message is emailed to Sachi through Web3Forms instead (one way, no replies here).
    The Web3Forms key is a public form key: it only allows sending to Sachi's inbox. */
 (function () {
@@ -9,7 +9,6 @@
   window.__lwsChat = true;
 
   var MAIL_KEY = 'eba312cf-1c03-466c-b5ef-5a9d8ab4c083';
-  var WA_NUMBER = '94702911223';
   var STORE = 'lws_chat_v2', SID_KEY = 'lws_sid', SEEN = 'lws_chat_seen';
   var KEEP = 60;                 // messages remembered in this browser
   var POLL_OPEN = 4000, POLL_CLOSED = 25000;
@@ -92,19 +91,18 @@
     '<div class="lwsc-head"><div class="lwsc-av">S</div><div><b>Sachi</b><small>Chat with me. My replies appear here.</small></div><button class="lwsc-x" type="button" aria-label="Close chat">&#10005;</button></div>' +
     '<div class="lwsc-body" id="lwscBody" aria-live="polite"></div>' +
     '<form class="lwsc-foot" id="lwscForm" autocomplete="off">' +
-      '<div class="lwsc-opt" id="lwscOpt"><input id="lwscName" maxlength="40" placeholder="Your name (optional)"><input id="lwscContact" maxlength="80" placeholder="Email or phone (optional)"></div>' +
       '<input class="lwsc-hp" id="lwscHp" tabindex="-1" aria-hidden="true">' +
       '<div class="lwsc-row"><textarea id="lwscText" rows="1" maxlength="1000" placeholder="Type your message..." aria-label="Your message"></textarea>' +
       '<button class="lwsc-send" id="lwscSend" type="submit" aria-label="Send message">' + sendIcon + '</button></div>' +
-      '<div class="lwsc-note"><span>Goes to my WhatsApp. No passwords please.</span><span><a id="lwscWa" href="https://wa.me/' + WA_NUMBER + '" target="_blank" rel="noopener">Open WhatsApp</a> · <button type="button" id="lwscMore">Add name</button></span></div>' +
+      '<div class="lwsc-note"><span>Your message goes straight to Sachi’s WhatsApp.</span></div>' +
     '</form>';
 
   document.body.appendChild(btn);
   document.body.appendChild(panel);
 
   var body = panel.querySelector('#lwscBody'), form = panel.querySelector('#lwscForm'), text = panel.querySelector('#lwscText'),
-      send = panel.querySelector('#lwscSend'), opt = panel.querySelector('#lwscOpt'), more = panel.querySelector('#lwscMore'),
-      dot = btn.querySelector('#lwscDot'), waLink = panel.querySelector('#lwscWa');
+      send = panel.querySelector('#lwscSend'),
+      dot = btn.querySelector('#lwscDot');
 
   /* ---------- conversation state ---------- */
   var log = store.get(STORE, []);           // [{ id, r: 'v'|'s'|'b', t, ts }]  v = visitor, s = Sachi, b = note from the widget
@@ -180,8 +178,7 @@
   panel.querySelector('.lwsc-x').onclick = function () { open(false); btn.focus(); };
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && panel.classList.contains('on')) { open(false); btn.focus(); } });
   document.addEventListener('visibilitychange', function () { if (!document.hidden) poll(); });
-  more.onclick = function () { var on = opt.classList.toggle('on'); more.textContent = on ? 'Hide' : 'Add name'; if (on) panel.querySelector('#lwscName').focus(); };
-  text.addEventListener('input', function () { grow(); waLink.href = 'https://wa.me/' + WA_NUMBER + (text.value.trim() ? '?text=' + encodeURIComponent(text.value.trim()) : ''); });
+  text.addEventListener('input', grow);
   text.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit', { cancelable: true })); } });
 
   /* ---------- sending ---------- */
@@ -202,7 +199,7 @@
     if (panel.querySelector('#lwscHp').value) return;            // honeypot
     var msg = text.value.trim();
     if (msg.length < 2) { note('Please write a little more.', 'err'); return; }
-    var name = panel.querySelector('#lwscName').value.trim(), contact = panel.querySelector('#lwscContact').value.trim();
+    var name = '', contact = '';        // students are never asked for contact details
     var pending = node({ r: 'v', t: msg, ts: Date.now() }, 'pend'); body.appendChild(pending); body.scrollTop = body.scrollHeight;
     text.value = ''; grow(); busy = true; send.disabled = true;
 
@@ -214,7 +211,7 @@
       if (first) {
         log.push({ id: 'b' + Date.now(), r: 'b', src: 'local', ts: m.ts + 1, t: how === 'wa'
           ? 'Got it! I’ve passed this to Sachi on WhatsApp. When Sachi replies, it will show up right here, even if you close this window.'
-          : 'Sent to Sachi by email. Live replies are not switched on right now, so add your email or phone with “Add name” if you want an answer.' });
+          : 'Sent to Sachi by email. Live replies are not switched on right now, so an answer may not appear here.' });
       }
       save(); render(); if (how === 'wa') poll();
     }

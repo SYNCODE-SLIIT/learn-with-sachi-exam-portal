@@ -25,31 +25,65 @@ svg{display:block}
 .land{max-width:1100px;margin:0 auto;padding:0 24px;min-height:100vh;display:flex;flex-direction:column;justify-content:center}
 .land h1{font-size:clamp(42px,7.4vw,88px);line-height:1;font-weight:800;letter-spacing:-2.5px;text-align:center}
 .land h1 span{color:var(--y)}
-/* year-select page: yellow, with a black wave when a year is chosen */
+/* year-select page: yellow patterned page; choosing a year sweeps a black wave right to left */
 body.yelbody{background:var(--y)}
-#v-land.yel{background:var(--y);color:#000}
-#v-land.yel .land h1{color:#000}
+#v-land.yel{color:#000;
+  background:
+   radial-gradient(circle at 12% 18%,rgba(255,255,255,.34),transparent 38%),
+   radial-gradient(circle at 92% 88%,rgba(0,0,0,.16),transparent 42%),
+   radial-gradient(rgba(0,0,0,.2) 1.6px,transparent 1.7px) 0 0/26px 26px,
+   var(--y)}
+#v-land.yel::before,#v-land.yel::after{content:"";position:absolute;pointer-events:none;border:2px solid rgba(0,0,0,.16);border-radius:50%}
+#v-land.yel::before{width:520px;height:520px;right:-170px;top:-190px;box-shadow:0 0 0 38px rgba(0,0,0,.05),0 0 0 76px rgba(0,0,0,.035)}
+#v-land.yel::after{width:420px;height:420px;left:-150px;bottom:-170px;box-shadow:0 0 0 34px rgba(0,0,0,.05),0 0 0 68px rgba(0,0,0,.035)}
+#v-land{position:relative;overflow:hidden}
+#v-land:not(.yel){background:radial-gradient(rgba(255,212,0,.09) 1.4px,transparent 1.5px) 0 0/30px 30px,radial-gradient(circle at 50% -10%,rgba(255,212,0,.12),transparent 55%),#000}
+.land{position:relative;z-index:1}
+.ypill{align-self:center;display:inline-flex;align-items:center;gap:10px;margin:0 auto 22px;padding:8px 18px;font-size:12px;font-weight:800;letter-spacing:3px;text-transform:uppercase;border:1px solid var(--y);color:var(--y);background:transparent}
+#v-land.yel .ypill{background:#000;color:var(--y);border-color:#000}
+.ypill::before{content:"";width:8px;height:8px;background:currentColor;display:inline-block}
+.ysub{text-align:center;font-size:clamp(15px,1.6vw,18px);margin:18px auto 0;max-width:520px;font-weight:600;color:var(--muted)}
+#v-land.yel .ysub{color:rgba(0,0,0,.78)}
+#v-land.yel .land h1{color:#000;text-shadow:5px 5px 0 rgba(255,255,255,.35)}
 #v-land.yel .rule{background:#000}
-#v-land.yel .lbtn{border-color:#000;color:#000}
+#v-land.yel .mods{margin-top:44px}
+/* year boxes */
+#v-land.yel .mcard{min-height:300px;background:#0d0d0d;color:#f4f4f4;border:2px solid #000;box-shadow:10px 10px 0 rgba(0,0,0,.9);overflow:hidden}
+#v-land.yel .mcard:hover{transform:translate(-4px,-4px);box-shadow:16px 16px 0 #000;border-color:#000;background:#151515}
+#v-land.yel .mcard h2{color:#fff;font-size:clamp(34px,4vw,48px);letter-spacing:-1px}
+#v-land.yel .mcard p{color:#cfcfcf}
+#v-land.yel .mcard .code{color:var(--y)}
+#v-land.yel .mcard .mstats b{color:#fff}
+#v-land.yel .mcard .mstats span{color:#a6a6a6}
+.ynum{position:absolute;right:18px;bottom:-34px;font-size:230px;line-height:1;font-weight:900;color:transparent;-webkit-text-stroke:2px rgba(255,212,0,.28);pointer-events:none;transition:.35s}
+.mcard:hover .ynum{-webkit-text-stroke-color:rgba(255,212,0,.6);transform:translateY(-8px)}
+#v-land.yel .lbtn{border-color:#000;color:#000;background:rgba(255,255,255,.28)}
 #v-land.yel .lbtn:hover{background:#000;color:var(--y);border-color:#000;transform:translateY(-2px)}
 #v-land.yel .lbtn.cares{background:#000;border-color:#000;color:var(--y)}
 #v-land.yel .lbtn.cares:hover{background:#1a1a1a;color:#ffe033}
-#v-land.yel .syncfoot{color:rgba(0,0,0,.72)}
+#v-land.yel .syncfoot{color:rgba(0,0,0,.75)}
 #v-land.yel .syncfoot a,#v-land.yel .syncfoot button{color:#000;border-bottom-color:#000}
-#v-land.yel .syncfoot a:hover,#v-land.yel .syncfoot button:hover{color:#000;opacity:.7}
-#v-land.yel .mcard{box-shadow:0 18px 40px rgba(0,0,0,.28)}
-#v-land:not(.yel) .mcard{animation:cardin .65s cubic-bezier(.2,.7,.2,1) backwards}
-#v-land:not(.yel) .mcard:nth-child(2){animation-delay:.14s}
-@keyframes cardin{from{opacity:0;transform:translateY(34px)}to{opacity:1;transform:none}}
-.wave{position:fixed;inset:0;z-index:900;overflow:hidden;pointer-events:all;transition:opacity .45s ease}
+/* year page (black): slow, staged reveal after the wave */
+#v-land:not(.yel) .ybk,#v-land:not(.yel) .ypill,#v-land:not(.yel) h1,#v-land:not(.yel) .rule{animation:revealup 1s cubic-bezier(.2,.7,.2,1) .35s backwards}
+#v-land:not(.yel) h1{animation-delay:.5s}
+#v-land:not(.yel) .rule{animation-delay:.65s}
+#v-land:not(.yel) .mcard{animation:revealup 1.1s cubic-bezier(.2,.7,.2,1) 1s backwards}
+#v-land:not(.yel) .mcard:nth-child(2){animation-delay:1.35s}
+@keyframes revealup{from{opacity:0;transform:translateY(38px)}to{opacity:1;transform:none}}
+/* wave: black fills the screen from the right edge to the left with a wavy leading edge */
+.wave{position:fixed;inset:0;z-index:900;overflow:hidden;pointer-events:all;transition:opacity .7s ease .1s}
 .wave.out{opacity:0;pointer-events:none}
-.wave-in{position:absolute;left:0;top:0;width:100%;height:calc(100% + 120px);transform:translateY(100%);animation:waverise .95s cubic-bezier(.65,0,.35,1) forwards}
-.wave-svg{display:block;width:200%;height:120px;animation:waveslide 1.1s linear infinite}
+.wave-in{position:absolute;left:0;top:0;height:100%;width:calc(100% + 140px);display:flex;transform:translateX(100%);animation:waverise 1.7s cubic-bezier(.77,0,.18,1) forwards}
+.wave-box{width:140px;height:100%;flex:none;overflow:hidden}
+.wave-svg{display:block;width:100%;height:200%;animation:waveslide 1.5s linear infinite}
 .wave-svg path{fill:#000}
-.wave-body{background:#000;height:calc(100% - 119px)}
-@keyframes waverise{to{transform:translateY(-120px)}}
-@keyframes waveslide{to{transform:translateX(-50%)}}
+.wave-body{flex:1;background:#000;margin-left:-1px}
+@keyframes waverise{to{transform:translateX(-140px)}}
+@keyframes waveslide{to{transform:translateY(-50%)}}
 @media (prefers-reduced-motion:reduce){.wave-in,.wave-svg{animation:none}}
+.lfoot[hidden],.syncfoot[hidden],.ysub[hidden],.ypill[hidden]{display:none!important}
+.mods{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:900px){.mods{grid-template-columns:minmax(0,1fr)}}
 .ybk{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;margin:0 0 22px;color:var(--muted);font-size:14px;font-weight:600;transition:.2s}.ybk:hover{color:var(--y)}.ybk[hidden]{display:none}
 .rule{width:84px;height:5px;background:var(--y);margin:26px auto 0}
 .mods{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:60px}
@@ -485,9 +519,11 @@ body.yelbody{background:var(--y)}
 <section class="view" id="v-land">
   <div class="land">
     <a class="ybk" id="ybk" href="#" hidden></a>
+    <div class="ypill" id="ypill">Learn with Sachi · SLIIT</div>
     <div class="kick">Learn with Sachi</div>
     <h1>Exam <span>Kuppi Portal</span></h1>
     <div class="rule"></div>
+    <p class="ysub" id="ysub"></p>
     <div class="mods" id="mods"></div>
     <div class="lfoot">
       <a class="lbtn" href="https://whatsapp.com/channel/0029VbAOUZj6hENiKN0n9K2y" target="_blank" rel="noopener">Learn with Sachi on WhatsApp</a>
@@ -725,12 +761,12 @@ function renderLanding(){
   const k=location.hash.replace("#","").split("/")[0];
   const Y=YEARBOX.find(y=>y.key===k),bk=$("#ybk"),h1=$("#v-land h1"),L=$("#v-land");
   L.classList.toggle("yel",!Y);
-  L.querySelector(".kick").hidden=!Y;L.querySelector(".lfoot").hidden=!!Y;L.querySelector(".syncfoot").hidden=!!Y;
+  $("#ysub").hidden=!!Y;$("#ysub").textContent="Choose your year to open your modules";L.querySelector(".lfoot").hidden=!!Y;L.querySelector(".syncfoot").hidden=!!Y;
   if(!Y){
     bk.hidden=true;h1.innerHTML='Sachi-Portal';
     $("#mods").innerHTML=YEARBOX.map(y=>{
       const ms=y.mods.map(modOf),known=ms.filter(m=>!m.soon),lec=known.reduce((a,m)=>a+(m.lectures.length||m.lectures),0);
-      return `<a class="mcard" href="#${y.key}" data-year><div class="code">YEAR ${y.num}</div><h2>${y.name} Year</h2><p>${y.desc}</p>
+      return `<a class="mcard" href="#${y.key}" data-year><span class="ynum" aria-hidden="true">${y.num}</span><div class="code">YEAR ${y.num}</div><h2>${y.name} Year</h2><p>${y.desc}</p>
       <div class="mstats"><div><b>${ms.length}</b><span>Modules</span></div><div><b>${lec}</b><span>Lectures</span></div></div>
       <div class="mopen">Open ${y.name} year ${I.arrow}</div></a>`}).join("");
     return;
@@ -1071,9 +1107,9 @@ function waveTo(hash){
   if(document.querySelector(".wave"))return;
   if(matchMedia("(prefers-reduced-motion: reduce)").matches){location.hash=hash;return}
   const w=document.createElement("div");w.className="wave";
-  w.innerHTML='<div class="wave-in"><svg class="wave-svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0 60 C100 10 200 10 300 60 S500 110 600 60 S800 10 900 60 S1100 110 1200 60 V120 H0Z"/></svg><div class="wave-body"></div></div>';
+  w.innerHTML='<div class="wave-in"><div class="wave-box"><svg class="wave-svg" viewBox="0 0 120 1200" preserveAspectRatio="none"><path d="M120 0 L60 0 C10 100 10 200 60 300 S110 500 60 600 S10 800 60 900 S110 1100 60 1200 L120 1200Z"/></svg></div><div class="wave-body"></div></div>';
   document.body.appendChild(w);
-  setTimeout(()=>{location.hash=hash;w.classList.add("out");setTimeout(()=>w.remove(),500)},980);
+  setTimeout(()=>{location.hash=hash;w.classList.add("out");setTimeout(()=>w.remove(),900)},1800);
 }
 document.addEventListener("click",e=>{const a=e.target.closest("a[data-year]");if(!a)return;e.preventDefault();waveTo(a.getAttribute("href"))});
 

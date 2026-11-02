@@ -5,6 +5,9 @@
    The Web3Forms key is a public form key: it only allows sending to Sachi's inbox. */
 (function () {
   'use strict';
+  /* Master switch: the chat is hidden for now. Set to true to show it on every page again. */
+  var ENABLED = false;
+  if (!ENABLED) return;
   if (window.__lwsChat) return;
   window.__lwsChat = true;
 

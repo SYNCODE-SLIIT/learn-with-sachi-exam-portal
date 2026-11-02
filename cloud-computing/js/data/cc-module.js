@@ -1,7 +1,18 @@
 /* Cloud Computing (IT4090) module definition. Change examDate here when the date is confirmed (YYYY-MM-DD). */
 window.PORTAL = window.PORTAL || { modules: {} };
+window.PORTAL.key = 'cc';
 window.PORTAL.modules.cc = {
   id: 'cc',
+  shorts: { 1: 'Introduction to Cloud', 2: 'Core Services & Infrastructure', 3: 'Compute & Storage', 4: 'Cloud Networking', 5: 'HA & Disaster Recovery', 6: 'Security & Monitoring', 7: 'Database & Analytics', 8: 'Cloud Migration', 9: 'Cloud Native Apps', 10: 'Infrastructure as Code', 11: 'Containerization', 12: 'Container Orchestration' },
+  priority: { high: 10, med: 3 },
+  newFrom: 8,
+  lecturesStat: 'Lectures in exam (L1–L12)',
+  mapLede: 'Priority comes from how often each lecture appeared in the mid-term past papers, because no final paper was available.',
+  mapNote: '<b>Honest scope note.</b> The past-paper analysis covers <b>Lectures 1–7 only</b> (mid-term). Lectures 8–12 are examined in the final but had no past questions, so they are marked <b>New in final</b> and their notes are written from the course outline since the slides were not in the folder.',
+  shareDesc: 'Mid-term questions per lecture (MCQ, short answer, structured).',
+  heatDesc: 'Questions per lecture by type.',
+  rankDesc: 'Lectures ordered by mid-term weight.',
+  rankExtra: '<li><a href="#/cc/lecture/8"><span class="k">L8–12</span><span class="nm">Migration to Orchestration</span><span class="v">new in final</span></a></li>',
   code: 'IT4090',
   name: 'Cloud Computing',
   year: 'Year 4 · Semester 2',

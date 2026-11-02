@@ -12,7 +12,7 @@ Open http://localhost:5173
 
 ## Deploy
 
-It is a plain static site. Copy this `cloud-computing` folder next to the main portal's index.html; Vercel serves it at /cloud-computing/.
+It is a plain static site. Deploy the whole repository. This folder needs the shared `../exam-engine/` folder next to it; Vercel serves it at /cloud-computing/.
 
 ## Modules
 

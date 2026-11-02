@@ -11,25 +11,30 @@
     get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage may be blocked */ } }
   };
-  const SOURCE_LABEL = { past: 'Past paper', adapted: 'Past paper (reworded options)', practice: 'Practice' };
+  const SOURCE_LABEL = Object.assign({ past: 'Past paper', adapted: 'Past paper (reworded options)', practice: 'Practice' }, (P.modules[P.key || 'cc'] || {}).sourceLabels);
 
-  /* ---------- build the Cloud Computing module from raw data ---------- */
-  const cc = P.modules.cc;
-  cc.lectures = P.ccLectures.slice().sort((a, b) => a.n - b.n);
-  const mcq = P.ccMcqRaw.map((r, i) => ({
+  /* ---------- build the module (key is set by the module's own data file) ---------- */
+  const KEY = P.key || 'cc';
+  const cc = P.modules[KEY];   // 'cc' here just means 'the current module'
+  cc.lectures = P[KEY + 'Lectures'].slice().sort((a, b) => a.n - b.n);
+  const mcq = P[KEY + 'McqRaw'].map((r, i) => ({
     id: 'm' + (i + 1), kind: 'mcq', lec: r[0], src: r[1], q: r[2], opts: r[3],
     ans: r[4].split('').map((c) => L.indexOf(c)), exp: r[5]
   }));
-  const short = P.ccShortRaw.map((r, i) => ({ id: 's' + (i + 1), kind: 'short', lec: r[0], src: r[1], q: r[2], a: r[3] }));
-  const struct = P.ccStructuredRaw.map((r, i) => ({ id: 't' + (i + 1), kind: 'struct', lec: r[0], src: r[1], title: r[2], q: r[3], a: r[4], hint: r[5] }));
+  const short = P[KEY + 'ShortRaw'].map((r, i) => ({ id: 's' + (i + 1), kind: 'short', lec: r[0], src: r[1], q: r[2], a: r[3], paper: r[4] }));
+  const struct = P[KEY + 'StructuredRaw'].map((r, i) => ({ id: 't' + (i + 1), kind: 'struct', lec: r[0], src: r[1], title: r[2], q: r[3], a: r[4], hint: r[5], paper: r[6] }));
   const isPast = (q) => q.src === 'past' || q.src === 'adapted';
   const pastCount = (n, kind) => [mcq, short, struct].reduce((t, arr) => t + arr.filter((q) => q.lec === n && isPast(q) && (!kind || q.kind === kind)).length, 0);
-  const SHORT = { 1: 'Introduction to Cloud', 2: 'Core Services & Infrastructure', 3: 'Compute & Storage', 4: 'Cloud Networking', 5: 'HA & Disaster Recovery', 6: 'Security & Monitoring', 7: 'Database & Analytics', 8: 'Cloud Migration', 9: 'Cloud Native Apps', 10: 'Infrastructure as Code', 11: 'Containerization', 12: 'Container Orchestration' };
+  const SHORT = cc.shorts || {};
+  const TAB = Object.assign({ mcq: 'MCQ', short: 'Short answers', struct: 'Structured / essay' }, cc.tabNames);
   cc.lectures.forEach((lec) => {
     lec.short = SHORT[lec.n] || lec.title;
     lec.past = pastCount(lec.n);
     lec.pastBy = { mcq: pastCount(lec.n, 'mcq'), short: pastCount(lec.n, 'short'), struct: pastCount(lec.n, 'struct') };
-    lec.priority = lec.past >= 10 ? 'high' : lec.past >= 3 ? 'med' : lec.past >= 1 ? 'low' : (lec.n > 7 ? 'new' : 'none');
+    lec.pastByPaper = {};
+    (cc.papers || []).forEach((pp) => { lec.pastByPaper[pp.id] = [mcq, short, struct].reduce((t, arr) => t + arr.filter((q) => q.lec === lec.n && isPast(q) && (q.paper || '').split(',').includes(pp.id)).length, 0); });
+    const th = cc.priority || { high: 10, med: 3 };
+    lec.priority = lec.past >= th.high ? 'high' : lec.past >= th.med ? 'med' : lec.past >= 1 ? 'low' : (lec.n >= (cc.newFrom || 999) ? 'new' : 'none');
     lec.hyCount = lec.topics.filter((t) => t.hy).length;
   });
   const PRI_LABEL = { high: 'High priority', med: 'Medium', low: 'Low', new: 'New in final', none: 'Not asked' };
@@ -43,8 +48,8 @@
   const lecByN = (n) => cc.lectures.find((l) => l.n === Number(n));
 
   /* ---------- progress ---------- */
-  const DONE_KEY = 'kuppi.cc.done';
-  const STAT_KEY = 'kuppi.cc.qstat';
+  const DONE_KEY = 'kuppi.' + KEY + '.done';
+  const STAT_KEY = 'kuppi.' + KEY + '.qstat';
   let done = store.get(DONE_KEY, {});
   let qstat = store.get(STAT_KEY, {});
   const lecDone = (lec) => lec.topics.filter((t) => done[t.id]).length;
@@ -59,7 +64,7 @@
   function go() {
     const p = parse();
     sideOpen = false;
-    if (p[0] !== 'cc') { location.replace('#/cc'); return; }
+    if (p[0] !== KEY) { location.replace('#/' + KEY); return; }
     renderModule(p.slice(1));
     window.scrollTo(0, 0);
   }
@@ -77,7 +82,7 @@
     const dl = daysLeft(cc);
     const lecNav = cc.lectures.map((l) => {
       const d = lecDone(l);
-      return `<a class="ni ${lecN === l.n ? 'on' : ''} ${d === l.topics.length ? 'done' : ''}" href="#/cc/lecture/${l.n}">
+      return `<a class="ni ${lecN === l.n ? 'on' : ''} ${d === l.topics.length ? 'done' : ''}" href="#/${KEY}/lecture/${l.n}">
         <span class="k">L${l.n}</span><span class="t">${esc(l.short)}</span>
         <span class="r">${d}/${l.topics.length}</span><i class="dot ${l.priority}" title="${PRI_LABEL[l.priority]}"></i></a>`;
     }).join('');
@@ -96,10 +101,10 @@
           <div><b>${cc.examDate ? esc(new Date(cc.examDate + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })) : '2 h'}</b><span>${cc.examDate ? esc(cc.examTime || 'Exam date') : 'Duration'}</span></div>
         </div>
         <div class="navgrp" style="margin-top:0;border:0;padding-top:0">Overview</div>
-        ${nav('map', '#/cc', '01', 'Exam map')}
-        ${nav('rules', '#/cc/rules', '02', 'Paper and golden rules')}
-        ${nav('practice', '#/cc/practice', '03', 'Practice questions', String(totals.all))}
-        ${nav('contact', '#/cc/contact', '04', 'Message Sachi')}
+        ${nav('map', '#/' + KEY, '01', 'Exam map')}
+        ${nav('rules', '#/' + KEY + '/rules', '02', 'Paper and golden rules')}
+        ${nav('practice', '#/' + KEY + '/practice', '03', 'Practice questions', String(totals.all))}
+        ${nav('contact', '#/' + KEY + '/contact', '04', 'Message Sachi')}
         <div class="navgrp">Lectures</div>
         ${lecNav}
       </aside>
@@ -137,42 +142,43 @@
     const slices = ranked.map((l) => ({ label: l.short, v: l.past, n: l.n }));
     const cnt = { high: 0, med: 0, low: 0, new: 0 };
     cc.lectures.forEach((l) => { if (cnt[l.priority] !== undefined) cnt[l.priority]++; });
-    const cell = (v) => `<td class="c ${v >= 8 ? 'l3' : v >= 3 ? 'l2' : v >= 1 ? 'l1' : ''}">${v || ''}</td>`;
+    const cell = (v) => `<td class="c ${v >= (cc.heatHi || 8) ? 'l3' : v >= (cc.heatMid || 3) ? 'l2' : v >= 1 ? 'l1' : ''}">${v || ''}</td>`;
+    const cols = cc.papers ? cc.papers.map((pp) => [pp.label, (l) => l.pastByPaper[pp.id]]) : [['MCQ', (l) => l.pastBy.mcq], ['Short', (l) => l.pastBy.short], ['Struct.', (l) => l.pastBy.struct]];
     const heat = cc.lectures.map((l) => `<tr class="${l.past ? '' : 'nodata'}">
-        <td class="lab"><a href="#/cc/lecture/${l.n}"><span class="k">L${l.n}</span>${esc(l.short)}</a></td>
-        ${cell(l.pastBy.mcq)}${cell(l.pastBy.short)}${cell(l.pastBy.struct)}
-        <td class="t">${l.past ? l.past : 'new in final'}</td></tr>`).join('');
-    const hyRows = cc.lectures.map((l) => `<div class="hyrow"><a href="#/cc/lecture/${l.n}"><span class="k">L${l.n}</span>${esc(l.short)}</a>
+        <td class="lab"><a href="#/${KEY}/lecture/${l.n}"><span class="k">L${l.n}</span>${esc(l.short)}</a></td>
+        ${cols.map((c) => cell(c[1](l))).join('')}
+        <td class="t">${l.past ? l.past : (cc.noDataLabel || 'new in final')}</td></tr>`).join('');
+    const hyRows = cc.lectures.map((l) => `<div class="hyrow"><a href="#/${KEY}/lecture/${l.n}"><span class="k">L${l.n}</span>${esc(l.short)}</a>
         <span>${l.topics.map((t) => `<i class="blk ${t.hy ? 'hy' : ''}" title="${esc(t.t)}"></i>`).join(' ')}</span><span class="n">${l.hyCount}/${l.topics.length}</span></div>`).join('');
     const maxBar = cc.lectures.length;
     return `
     <div class="ph"><div><div class="eyebrow">Overview</div><h1>Exam map</h1>
-      <p class="lede">${esc(cc.examNote)}. Priority comes from how often each lecture appeared in the mid-term past papers, because no final paper was available.</p></div>
-      <a class="btn" href="#/cc/practice">Practice questions</a></div>
+      <p class="lede">${esc(cc.examNote)}. ${cc.mapLede || ''}</p></div>
+      <a class="btn" href="#/${KEY}/practice">Practice questions</a></div>
     <div class="rule"></div>
-    <div class="note"><b>Honest scope note.</b> The past-paper analysis covers <b>Lectures 1–7 only</b> (mid-term). Lectures 8–12 are examined in the final but had no past questions, so they are marked <b>New in final</b> and their notes are written from the course outline since the slides were not in the folder.</div>
+    ${cc.mapNote ? `<div class="note">${cc.mapNote}</div>` : ''}
     <div class="stats">
-      <div class="stat"><b>${totals.lectures}</b><span>Lectures in exam (L1–L12)</span></div>
+      <div class="stat"><b>${totals.lectures}</b><span>${cc.lecturesStat || 'Lectures in exam'}</span></div>
       <div class="stat"><b>${cnt.high}</b><span>High priority lectures</span></div>
       <div class="stat"><b>${totals.hy}<small>/${totals.topics}</small></b><span>High-yield topics</span></div>
       <div class="stat"><b>${totals.past}</b><span>Past-paper questions</span></div>
       <div class="stat"><b>${totals.all}</b><span>Practice questions</span></div>
     </div>
     <div class="g2">
-      <div class="panel"><h3>Share of past questions</h3><p>Mid-term questions per lecture (MCQ, short answer, structured).</p>
+      <div class="panel"><h3>Share of past questions</h3><p>${cc.shareDesc || 'Past questions per lecture.'}</p>
         <div class="donut">${donut(slices, tot)}
-          <ul class="legend">${slices.map((s, i) => `<li><i style="background:${SHADES[i % SHADES.length]}"></i><a href="#/cc/lecture/${s.n}">L${s.n} ${esc(s.label)}</a><b>${Math.round(s.v / tot * 100)}%</b></li>`).join('')}</ul></div></div>
-      <div class="panel"><h3>Past-paper heatmap</h3><p>Questions per lecture by type. Select a row to open the lecture.</p>
-        <div class="heatwrap"><table class="heat"><thead><tr><th></th><th>MCQ</th><th>Short</th><th>Struct.</th><th></th></tr></thead><tbody>${heat}</tbody></table></div>
+          <ul class="legend">${slices.map((s, i) => `<li><i style="background:${SHADES[i % SHADES.length]}"></i><a href="#/${KEY}/lecture/${s.n}">L${s.n} ${esc(s.label)}</a><b>${Math.round(s.v / tot * 100)}%</b></li>`).join('')}</ul></div></div>
+      <div class="panel"><h3>Past-paper heatmap</h3><p>${cc.heatDesc || 'Questions per lecture by type.'} Select a row to open the lecture.</p>
+        <div class="heatwrap"><table class="heat"><thead><tr><th></th>${cols.map((c) => `<th>${c[0]}</th>`).join('')}<th></th></tr></thead><tbody>${heat}</tbody></table></div>
       </div>
     </div>
     <div class="g2">
       <div class="panel"><h3>Priority breakdown</h3><p>How the ${totals.lectures} lectures split by exam priority.</p>
         <div class="bars">${[['high', cnt.high, '#ffd60a'], ['med', cnt.med, '#8a7500'], ['low', cnt.low, '#4a3f00'], ['new', cnt.new, '#2a2a2a']].map((b) => `<i style="flex:${b[1] || 0.0001};background:${b[2]}" title="${PRI_LABEL[b[0]]}: ${b[1]}"></i>`).join('')}</div>
         <ul class="legend">${[['high', cnt.high, '#ffd60a'], ['med', cnt.med, '#8a7500'], ['low', cnt.low, '#4a3f00'], ['new', cnt.new, '#2a2a2a']].map((b) => `<li><i style="background:${b[2]};border:1px solid #555"></i>${PRI_LABEL[b[0]]}<b>${b[1]}</b></li>`).join('')}</ul></div>
-      <div class="panel"><h3>Ranking</h3><p>Lectures ordered by mid-term weight.</p>
-        <ul class="rank">${ranked.map((l) => `<li><a href="#/cc/lecture/${l.n}"><span class="k">L${l.n}</span><span class="nm">${esc(l.short)}</span><span class="v">${l.past} question${l.past === 1 ? '' : 's'}</span></a></li>`).join('')}
-        <li><a href="#/cc/lecture/8"><span class="k">L8–12</span><span class="nm">Migration to Orchestration</span><span class="v">new in final</span></a></li></ul></div>
+      <div class="panel"><h3>Ranking</h3><p>${cc.rankDesc || 'Lectures ordered by past-paper weight.'}</p>
+        <ul class="rank">${ranked.map((l) => `<li><a href="#/${KEY}/lecture/${l.n}"><span class="k">L${l.n}</span><span class="nm">${esc(l.short)}</span><span class="v">${l.past} question${l.past === 1 ? '' : 's'}</span></a></li>`).join('')}
+        ${cc.rankExtra || ''}</ul></div>
     </div>
     <div class="panel"><h3>High-yield topics by lecture</h3><p>Each block is one topic. Yellow blocks are the topics asked most often or most likely to be asked.</p><div class="hyblocks">${hyRows}</div></div>`;
   }
@@ -185,10 +191,10 @@
     <div class="kv">${cc.format.map((f) => `<div><span>${f[0]}</span>${f[1]}</div>`).join('')}</div>
     <h3 class="eyebrow" style="margin:6px 0 12px">Golden rules</h3>
     <ol class="rules">${cc.golden.map((g) => `<li><b>${g[0]}</b><span>${g[1]}</span></li>`).join('')}</ol>
-    <h3 class="eyebrow" style="margin:6px 0 4px">Keyword → answer cheat table</h3>
-    <p class="muted" style="margin:0 0 6px">Scenario MCQs usually reduce to one of these. Learn them cold.</p>
-    <div class="tw"><table class="tbl cheat"><thead><tr><th>If the question says…</th><th>Answer</th></tr></thead><tbody>
-      ${cc.cheat.map((c) => `<tr><td>${esc(c[0])}</td><td>${esc(c[1])}</td></tr>`).join('')}</tbody></table></div>`;
+    <h3 class="eyebrow" style="margin:6px 0 4px">${cc.cheatTitle || 'Keyword → answer cheat table'}</h3>
+    <p class="muted" style="margin:0 0 6px">${cc.cheatIntro || 'Scenario questions usually reduce to one of these. Learn them cold.'}</p>
+    <div class="tw"><table class="tbl cheat"><thead><tr><th>${(cc.cheatHead || ['If the question says…', 'Answer'])[0]}</th><th>${(cc.cheatHead || ['If the question says…', 'Answer'])[1]}</th></tr></thead><tbody>
+      ${cc.cheat.map((c) => `<tr><td>${cc.cheatHtml ? c[0] : esc(c[0])}</td><td>${cc.cheatHtml ? c[1] : esc(c[1])}</td></tr>`).join('')}</tbody></table></div>`;
   }
 
   /* ---------- contact ---------- */
@@ -220,9 +226,9 @@
     return `
     <div class="eyebrow">Lecture ${lec.n}</div>
     <div class="ph"><div><h1>${esc(lec.title)}</h1><p class="lede">${esc(lec.sub)}</p></div>
-      <a class="btn" href="#/cc/practice" data-practice="${lec.n}">Practice L${lec.n} (${qCount})</a></div>
+      <a class="btn" href="#/${KEY}/practice" data-practice="${lec.n}">Practice L${lec.n} (${qCount})</a></div>
     <div class="lec-top"><span class="pill ${lec.priority}">${PRI_LABEL[lec.priority]}</span>
-      <span class="pill">${lec.past ? lec.past + ' mid-term question' + (lec.past === 1 ? '' : 's') : 'No mid-term data'}</span>
+      <span class="pill">${lec.past ? lec.past + ' ' + (cc.pastLabel || 'mid-term') + ' question' + (lec.past === 1 ? '' : 's') : 'No ' + (cc.pastLabel || 'mid-term') + ' data'}</span>
       <span class="pill">${lec.topics.length} topics · ${lec.hyCount} high yield</span>
       <span class="pill ok" id="lecDone">${lecDone(lec)}/${lec.topics.length} revised</span></div>
     <div class="rule" style="margin:8px 0 20px"></div>
@@ -238,8 +244,8 @@
         ${t.asked ? `<span class="asked">${esc(t.asked)}</span>` : ''}${t.hy ? '<span class="pill hy">High yield</span>' : ''}</button>
       ${topicBody(t)}</section>`).join('')}</div>
     <div class="pager">
-      ${prev ? `<a class="btn ghost" href="#/cc/lecture/${prev.n}">&larr; L${prev.n} ${esc(prev.short)}</a>` : '<span></span>'}
-      ${next ? `<a class="btn" href="#/cc/lecture/${next.n}">Next L${next.n} &rarr;</a>` : `<a class="btn" href="#/cc/practice">Go practise &rarr;</a>`}
+      ${prev ? `<a class="btn ghost" href="#/${KEY}/lecture/${prev.n}">&larr; L${prev.n} ${esc(prev.short)}</a>` : '<span></span>'}
+      ${next ? `<a class="btn" href="#/${KEY}/lecture/${next.n}">Next L${next.n} &rarr;</a>` : `<a class="btn" href="#/${KEY}/practice">Go practise &rarr;</a>`}
     </div>`;
   }
   function bindLecture(lec) {
@@ -281,9 +287,9 @@
       <p class="lede">Mid-term past-paper questions plus practice questions for every lecture. Your results are saved in this browser.</p>
       <div class="rule"></div>
       <div class="tabs" role="tablist">
-        <button class="tab ${sectionTab === 'mcq' ? 'on' : ''}" data-tab="mcq">MCQ <small>${counts.mcq}</small></button>
-        <button class="tab ${sectionTab === 'short' ? 'on' : ''}" data-tab="short">Short answers <small>${counts.short}</small></button>
-        <button class="tab ${sectionTab === 'struct' ? 'on' : ''}" data-tab="struct">Structured / essay <small>${counts.struct}</small></button>
+        <button class="tab ${sectionTab === 'mcq' ? 'on' : ''}" data-tab="mcq">${TAB.mcq} <small>${counts.mcq}</small></button>
+        <button class="tab ${sectionTab === 'short' ? 'on' : ''}" data-tab="short">${TAB.short} <small>${counts.short}</small></button>
+        <button class="tab ${sectionTab === 'struct' ? 'on' : ''}" data-tab="struct">${TAB.struct} <small>${counts.struct}</small></button>
       </div>
       <div class="form">
         <div class="fld"><label for="fLec">Lecture</label><select id="fLec">${lecOptions(setup.lec)}</select></div>
@@ -426,7 +432,7 @@
     <div class="panel"><div class="score"><div class="big">${pct}%</div>
       <div><b style="font-size:20px">${right} / ${qz.list.length} correct</b><div class="muted">${answered} answered · ${qz.list.length - answered} skipped · ${Math.round(((qz.ended || Date.now()) - qz.started) / 1000 / 60 * 10) / 10} min</div>
       <div class="muted">${pct >= 75 ? 'Strong. Keep drilling the misses.' : pct >= 50 ? 'Getting there. Review the explanations below.' : 'Re-read the lecture notes, then retry.'}</div></div></div>
-      <div class="tw"><table class="tbl"><thead><tr><th>Lecture</th><th>Score</th></tr></thead><tbody>${Object.keys(byLec).sort((a, b) => a - b).map((n) => `<tr><td><a href="#/cc/lecture/${n}">L${n} ${esc(lecByN(n).title)}</a></td><td>${byLec[n].r} / ${byLec[n].t}</td></tr>`).join('')}</tbody></table></div>
+      <div class="tw"><table class="tbl"><thead><tr><th>Lecture</th><th>Score</th></tr></thead><tbody>${Object.keys(byLec).sort((a, b) => a - b).map((n) => `<tr><td><a href="#/${KEY}/lecture/${n}">L${n} ${esc(lecByN(n).title)}</a></td><td>${byLec[n].r} / ${byLec[n].t}</td></tr>`).join('')}</tbody></table></div>
       <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn" id="again">New quiz</button>${wrong.length ? `<button class="btn ghost" id="retryWrong">Retry ${wrong.length} wrong</button>` : ''}</div></div>
     ${wrong.length ? `<h3 class="eyebrow" style="margin:20px 0 12px">Review: questions to fix</h3><div class="review">${wrong.map((q) => `
       <div class="qcard">${qMeta(q)}<p class="qtext">${esc(q.q)}</p>
@@ -441,7 +447,7 @@
   function drawShort(body) {
     const list = filt(short);
     if (!list.length) { body.innerHTML = '<div class="empty">No short-answer questions match these filters.</div>'; return; }
-    body.innerHTML = `<p class="muted" style="margin:0 0 14px">Try to answer in your head first, then open the answer. Fill-in-the-blank style, like the mid-term short answers.</p>` +
+    body.innerHTML = `<p class="muted" style="margin:0 0 14px">${cc.shortIntro || 'Try to answer in your head first, then open the answer. Fill-in-the-blank style, like the mid-term short answers.'}</p>` +
       list.map((q) => `<details class="item"><summary><span class="q">${esc(q.q)}</span><span class="pill ${isPast(q) ? 'high' : ''}">${SOURCE_LABEL[q.src]}</span><span class="chev">&#9654;</span></summary>
         <div class="ans"><div class="qmeta" style="margin-top:12px"><span class="pill">L${q.lec} ${esc(lecByN(q.lec).short)}</span></div><div class="ansline"><b>Answer:</b> ${esc(q.a)}</div></div></details>`).join('');
   }

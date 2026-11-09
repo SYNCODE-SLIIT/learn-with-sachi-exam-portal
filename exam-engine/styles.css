@@ -317,6 +317,61 @@ select{width:100%;background:var(--panel2);color:var(--text);border:1px solid va
   .sl-cols.c2,.sl-cols.c3{grid-template-columns:1fr}.sl-cols{gap:10px}.sl-cols ul{font-size:15px;padding:10px 12px}
 }
 
+/* ---------- simple exam map, rules, past papers ---------- */
+.flow{display:flex;align-items:stretch;gap:12px}
+.fcard{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;text-decoration:none;background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--y);padding:18px 20px;transition:border-color .15s,transform .15s}
+.fcard:hover{border-color:var(--y);transform:translateY(-2px)}
+.fq{font:700 11px/1 Consolas,"SF Mono",Menlo,monospace;letter-spacing:.2em;color:var(--y)}
+.fm{font-size:44px;line-height:1.05;font-weight:800;color:var(--text);letter-spacing:-.02em}
+.fm small{font-size:15px;font-weight:600;color:var(--muted);letter-spacing:0}
+.ft{font-size:18px;font-weight:700}
+.fs{font-size:13px;color:var(--muted);line-height:1.4}
+.farrow{align-self:center;color:var(--y);font-size:26px;flex:none}
+.fnote{font-size:13px;margin:10px 0 0}
+.focus{display:flex;flex-direction:column;border:1px solid var(--line)}
+.frow{display:grid;grid-template-columns:44px minmax(150px,1.3fr) minmax(120px,2fr) 112px;gap:16px;align-items:center;padding:13px 18px;text-decoration:none;background:var(--panel);transition:background .15s}
+.frow+.frow{border-top:1px solid var(--line)}
+.frow:hover{background:var(--panel2)}
+.frow .k{font:700 13px Consolas,monospace;color:var(--y)}
+.frow .nm{font-weight:600}
+.fbar{height:10px;background:#1c1c1c;position:relative}
+.fbar i{display:block;height:100%;background:var(--y-dim)}
+.fbar i.high{background:var(--y)}
+.fbar i.low{background:#555}
+.frow .pill{justify-self:start}
+.nextrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
+.recall{margin-top:26px;border:1px solid var(--line);background:var(--panel)}
+.recall summary{cursor:pointer;padding:13px 18px;font-weight:700;color:var(--y)}
+.recall .tw{padding:0 14px 14px}
+.pgroup{margin-bottom:16px}
+.pgl{font:700 11px/1 Consolas,monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-bottom:9px}
+.ptabs{display:flex;gap:8px;flex-wrap:wrap}
+.ptab{display:inline-flex;align-items:center;gap:9px;text-decoration:none;padding:10px 16px;border:1px solid var(--line2);font-size:14px;font-weight:600;color:var(--muted);transition:.15s}
+.ptab:hover{border-color:var(--y);color:var(--y)}
+.ptab.on{background:var(--y);border-color:var(--y);color:#000}
+.ptab small{font-size:11px;font-weight:700;opacity:.65}
+.vbar{display:flex;align-items:center;gap:10px 12px;flex-wrap:wrap;padding:14px 18px;margin-top:6px;border:1px solid var(--line);border-left:4px solid var(--y);background:var(--panel)}
+.vbar .vt{flex:1;min-width:240px}
+.vbar .vt b{display:block;font-size:16px}
+.vbar .vt>span{font-size:12.5px;color:var(--muted)}
+.pfrom{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:9px}
+.pfrom em{font-style:normal;font-size:12px;color:var(--faint);margin-right:4px}
+.pchip{display:inline-flex;gap:6px;align-items:baseline;text-decoration:none;border:1px solid var(--line2);padding:3px 9px;font:700 12px Consolas,monospace;color:var(--text)}
+.pchip small{color:var(--y);font-size:12px}
+.pchip:hover{border-color:var(--y)}
+.vwrap{display:flex;flex-direction:column;align-items:center;gap:16px;min-height:320px;padding:24px 16px;background:#080808;border:1px solid var(--line);border-top:0}
+.vpage{position:relative;width:100%;max-width:1000px;background:#fff;box-shadow:0 6px 28px rgba(0,0,0,.7)}
+.vpage canvas{position:absolute;inset:0;width:100%;height:100%}
+.vpage i{position:absolute;z-index:1;right:10px;bottom:8px;padding:4px 8px;background:#000;color:var(--y);font:700 11px Consolas,monospace;font-style:normal}
+.vmsg{color:var(--muted);padding:40px 10px;text-align:center;max-width:520px}
+@media (max-width:900px){
+  .flow{flex-direction:column}
+  .farrow{transform:rotate(90deg);align-self:center}
+  .frow{grid-template-columns:36px 1fr 92px;gap:10px 12px}
+  .frow .fbar{grid-column:2 / 4;order:5}
+  .vwrap{padding:14px 8px}
+}
+
 @media print{
   .side,.menu,.tools,.pager,.btn{display:none!important}
   .shell{display:block}

@@ -9,6 +9,41 @@ window.PORTAL.modules.ime = {
   blurb: '9 lectures · MCQs + canvas + business plan · 2 hours',
   examDate: '2026-11-13',
   slidesPdf: 'slides/IME-Lecture-Slides.pdf',
+  simple: true,
+  simpleLede: 'Three parts to the paper. Know where the marks are, then spend your time on the lectures that matter most.',
+  flow: [
+    { q: 'Q1', marks: 50, title: 'MCQs', sub: '25 questions · Lectures 1 to 5', href: 'practice' },
+    { q: 'Q2', marks: 35, title: 'Canvas', sub: 'Value Proposition + Business Model · Lecture 6', href: 'lecture/6' },
+    { q: 'Q3', marks: 15, title: 'Business plan', sub: 'Three tests and pitching · Lecture 7', href: 'lecture/7' }
+  ],
+  flowNote: 'Based on the 2025 sample paper. Older papers had 4 essay questions of 25 marks each.',
+  quickFormat: [
+    ['Exam', '13 Nov 2026 · 12:00 PM to 2:00 PM'],
+    ['Paper', '25 MCQs (50) · Canvas (35) · Business plan (15)'],
+    ['Reading time', '10 minutes before you start'],
+    ['To pass', 'At least 30 marks in the written paper']
+  ],
+  quickRules: [
+    ['Fill every canvas block', 'The canvas question is worth 35 marks. No empty blocks.'],
+    ['MCQs can have more than one answer', 'Read every option before you choose.'],
+    ['Define, explain, give an example', 'Use the lecturer\'s words and one real example.'],
+    ['Know your own business plan', 'Idea, customers, revenue, and the three tests.'],
+    ['Plan your time', 'About 40 min MCQs, 45 min canvas, 20 min plan, 5 min review.'],
+    ['Never leave a blank', 'Partial answers earn partial marks.']
+  ],
+  paperGroups: [
+    { t: 'Model papers', items: [
+      { id: 'sample', tab: 'Sample 2025', t: 'Sample paper 2025', sub: 'Shows the new format: 25 MCQs, canvas, business plan', file: 'papers/sample-paper-2025.pdf', paper: 'S25', kb: 112 },
+      { id: 'model1', tab: 'Model Paper 1', t: 'Model Paper 1 (Nov 2023, typed copy)', sub: 'Readable typed version of the Nov 2023 paper', file: 'papers/model-paper-1-nov-2023-typed.pdf', paper: 'N23', kb: 52 }
+    ] },
+    { t: 'Past papers', items: [
+      { id: 'nov24', tab: 'Nov 2024', t: 'IT4050 Final exam, November 2024', sub: 'Scanned paper', file: 'papers/nov-2024.pdf', paper: 'N24', kb: 245 },
+      { id: 'jun24', tab: 'Jun 2024', t: 'IT4050 Final exam, June 2024', sub: 'Scanned paper', file: 'papers/jun-2024.pdf', paper: 'J24', kb: 188 },
+      { id: 'nov23', tab: 'Nov 2023', t: 'IT4050 Final exam, November 2023', sub: 'Scanned paper (typed copy above)', file: 'papers/nov-2023.pdf', paper: 'N23', kb: 1365 },
+      { id: 'nov22', tab: 'Nov 2022', t: 'IT4050 Final exam, November 2022', sub: 'Scanned paper', file: 'papers/nov-2022.pdf', paper: 'N22', kb: 138 },
+      { id: 'jun22', tab: 'Jun 2022', t: 'IT4050 Final exam, June 2022', sub: 'Scanned paper', file: 'papers/jun-2022.pdf', paper: 'J22', kb: 117 }
+    ] }
+  ],
   examTime: '12:00 PM – 2:00 PM',
   examNote: 'Final exam covers all lectures (the 2025 sample paper takes its MCQs from Lectures 1–5)',
   shorts: { 1: 'Introduction to Innovation', 2: 'Innovation Tools & Techniques', 3: 'Ideation & Creativity', 4: 'New Product Development', 5: 'Entrepreneur & Entrepreneurship', 6: 'Value Proposition & Business Model', 7: 'Business Plan & Investors', 8: 'Marketing & Operational Plan', 9: 'Financial Planning & Cash' },

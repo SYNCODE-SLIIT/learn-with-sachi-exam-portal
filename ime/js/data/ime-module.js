@@ -8,6 +8,7 @@ window.PORTAL.modules.ime = {
   year: 'Year 4 · Semester 2',
   blurb: '9 lectures · MCQs + canvas + business plan · 2 hours',
   examDate: '2026-11-13',
+  slidesPdf: 'slides/IME-Lecture-Slides.pdf',
   examTime: '12:00 PM – 2:00 PM',
   examNote: 'Final exam covers all lectures (the 2025 sample paper takes its MCQs from Lectures 1–5)',
   shorts: { 1: 'Introduction to Innovation', 2: 'Innovation Tools & Techniques', 3: 'Ideation & Creativity', 4: 'New Product Development', 5: 'Entrepreneur & Entrepreneurship', 6: 'Value Proposition & Business Model', 7: 'Business Plan & Investors', 8: 'Marketing & Operational Plan', 9: 'Financial Planning & Cash' },

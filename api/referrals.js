@@ -1,14 +1,14 @@
-// Referral sheets: anyone can upload a PDF, everyone can preview and download it, and the uploader can edit it.
+// Referral sheets: anyone can upload a PDF and everyone can preview and download it. Only the uploader's browser
+// (via a code kept in localStorage) or the moderator can delete a sheet.
 // Storage: Upstash Redis (the store connected in the Vercel dashboard), files are kept as base64 chunks.
 // Env: KV_REST_API_URL + KV_REST_API_TOKEN (or UPSTASH_REDIS_REST_URL + UPSTASH_REDIS_REST_TOKEN)
 //      ADMIN_KEY (optional moderator password that can delete any sheet)
 //
 //   GET    /api/referrals                      -> { sheets: [...] }                    (newest first)
 //   GET    /api/referrals?id=ID&chunk=N        -> { data }                             (base64 piece N of the file)
-//   POST   /api/referrals {action:"start"}     -> { id, v, chunks, chunkSize, editKey? }
+//   POST   /api/referrals {action:"start"}     -> { id, v, chunks, chunkSize, editKey }
 //   POST   /api/referrals {action:"chunk"}     -> { ok }
 //   POST   /api/referrals {action:"finish"}    -> { ok, sheet }
-//   POST   /api/referrals {action:"update"}    -> { ok, sheet }                         (rename; needs the edit code)
 //   DELETE /api/referrals?id=ID                -> header x-edit-key or x-admin-key
 
 const crypto = require("crypto");
@@ -110,19 +110,11 @@ module.exports = async (req, res) => {
         if (!Number.isFinite(size) || size < 1 || size > MAX_BYTES) return send(res, 400, { error: "size", message: "The file must be a PDF of 6 MB or less." });
         const [ok] = await redis([["SET", "lws:ref:rl:" + ipHash(req), "1", "EX", 15, "NX"]]);
         if (ok !== "OK") return send(res, 429, { error: "rate", message: "Please wait a few seconds before uploading again." });
-        let id, key, k, v = 1, replace = false;
-        if (b.replaceId) {
-          const meta = await getMeta(b.replaceId);
-          if (!meta) return send(res, 404, { error: "missing", message: "That sheet no longer exists." });
-          if (!canEdit(meta, b.editKey, req)) return send(res, 403, { error: "auth", message: "Wrong edit code." });
-          id = meta.id; k = meta.k; v = meta.v + 1; replace = true;
-        } else {
-          const [n] = await redis([["LLEN", LIST]]);
-          if (n >= MAX_SHEETS) return send(res, 409, { error: "full", message: "The shelf is full. Ask the admin to remove an old sheet." });
-          id = crypto.randomBytes(10).toString("hex"); key = crypto.randomBytes(8).toString("hex"); k = sha(key);
-        }
+        const [n] = await redis([["LLEN", LIST]]);
+        if (n >= MAX_SHEETS) return send(res, 409, { error: "full", message: "The shelf is full. Ask the admin to remove an old sheet." });
+        const id = crypto.randomBytes(10).toString("hex"), key = crypto.randomBytes(8).toString("hex"), k = sha(key), v = 1;
         const chunks = Math.ceil(size / CHUNK);
-        await redis([["SET", PEND(id, v), JSON.stringify({ title, by, name, module, size, chunks, k, replace }), "EX", 3600]]);
+        await redis([["SET", PEND(id, v), JSON.stringify({ title, by, name, module, size, chunks, k }), "EX", 3600]]);
         return send(res, 200, { id, v, chunks, chunkSize: CHUNK, editKey: key });
       }
 
@@ -150,23 +142,9 @@ module.exports = async (req, res) => {
           await redis(keys.map((x) => ["DEL", x]).concat([["DEL", PEND(id, v)]]));
           return send(res, 400, { error: "type", message: "That file is not a PDF." });
         }
-        let old = null;
-        if (pend.replace) old = await getMeta(id);
         const meta = { id, title: pend.title, by: pend.by, name: pend.name, module: pend.module, size, chunks: pend.chunks, v, ts: Date.now(), k: pend.k };
-        const cmds = keys.map((x) => ["PERSIST", x]).concat([["SET", META(id), JSON.stringify(meta)], ["DEL", PEND(id, v)]]);
-        if (old) for (let i = 0; i < old.chunks; i++) cmds.push(["DEL", CHUNK_KEY(id, old.v, i)]);
-        else cmds.push(["LPUSH", LIST, id]);
+        const cmds = keys.map((x) => ["PERSIST", x]).concat([["SET", META(id), JSON.stringify(meta)], ["DEL", PEND(id, v)], ["LPUSH", LIST, id]]);
         await redis(cmds);
-        return send(res, 200, { ok: true, sheet: publicMeta(meta) });
-      }
-
-      if (action === "update") {
-        const meta = await getMeta(b.id);
-        if (!meta) return send(res, 404, { error: "missing", message: "That sheet no longer exists." });
-        if (!canEdit(meta, b.editKey, req)) return send(res, 403, { error: "auth", message: "Wrong edit code." });
-        if (b.title !== undefined) { const t = clean(b.title, 80); if (t.length < 2) return send(res, 400, { error: "title", message: "Please give the sheet a title." }); meta.title = t; }
-        if (b.by !== undefined) meta.by = clean(b.by, 40);
-        await redis([["SET", META(meta.id), JSON.stringify(meta)]]);
         return send(res, 200, { ok: true, sheet: publicMeta(meta) });
       }
 

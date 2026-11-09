@@ -247,16 +247,16 @@
     return j;
   }
   const toB64 = (blob) => new Promise((ok, no) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1] || ''); fr.onerror = no; fr.readAsDataURL(blob); });
-  async function uploadSheet(file, title, by, replace, progress) {
-    const st = await refApi('POST', '', { action: 'start', title, by, name: file.name, size: file.size, module: KEY, replaceId: replace ? replace.id : undefined, editKey: replace ? replace.editKey : undefined });
-    const key = st.editKey || (replace && replace.editKey);
+  async function uploadSheet(file, title, by, progress) {
+    const st = await refApi('POST', '', { action: 'start', title, by, name: file.name, size: file.size, module: KEY });
+    const key = st.editKey;
     for (let i = 0; i < st.chunks; i++) {
       progress(i, st.chunks);
       await refApi('POST', '', { action: 'chunk', id: st.id, v: st.v, i, data: await toB64(file.slice(i * st.chunkSize, (i + 1) * st.chunkSize)), editKey: key });
     }
     progress(st.chunks, st.chunks);
     const fin = await refApi('POST', '', { action: 'finish', id: st.id, v: st.v, editKey: key });
-    return { sheet: fin.sheet, editKey: key, isNew: !!st.editKey };
+    return { sheet: fin.sheet, editKey: key };
   }
   async function sheetBlob(sheet) {
     const k = sheet.id + '@' + sheet.v;
@@ -275,7 +275,7 @@
     $main.innerHTML = `
     <div class="eyebrow">Share</div>
     <h1 style="font-size:clamp(30px,4vw,44px);margin:8px 0 10px">Referral sheets</h1>
-    <p class="lede">Upload your referral sheet so others can preview and download it. You can replace or rename your own sheet later.</p>
+    <p class="lede">Upload your referral sheet so others can preview and download it.</p>
     <div class="rule"></div>
     <form class="rup" id="rForm" autocomplete="off">
       <label>Title<input id="rTitle" type="text" maxlength="80" placeholder="e.g. IME referral sheet, Lectures 1 to 9" required></label>
@@ -288,7 +288,7 @@
     <div id="rList" class="rlist"><div class="vmsg">Loading sheets...</div></div>
     <div id="rView"></div>
     <p class="rfoot"><button type="button" class="linkbtn" id="rMod"></button></p>
-    <input type="file" id="rReplace" accept=".pdf,application/pdf" hidden>`;
+`;
     const $list = document.getElementById('rList'), $view = document.getElementById('rView'), $msg = document.getElementById('rMsg');
     const say = (h, err) => { $msg.innerHTML = h ? `<div class="mm ${err ? 'err' : ''}">${h}</div>` : ''; };
     const mine = (id) => !!keys[id];
@@ -302,7 +302,7 @@
         return `<div class="rcard ${openId === s.id ? 'on' : ''}" data-id="${s.id}">
           <div class="rt"><b>${esc(s.title)}</b><span>${s.by ? 'by ' + esc(s.by) : 'by Anonymous'} &middot; ${dateFmt(s.ts)} &middot; ${bytesFmt(s.size)}</span></div>
           <div class="ra"><button class="btn sm" data-act="view">View</button><button class="btn ghost sm" data-act="download">Download</button>
-            ${own ? '<button class="btn ghost sm" data-act="rename">Rename</button><button class="btn ghost sm" data-act="replace">Replace file</button><button class="btn ghost sm danger" data-act="delete">Delete</button>' : '<button class="btn ghost sm" data-act="edit">Edit</button>'}</div></div>`;
+            ${own ? '<button class="btn ghost sm danger" data-act="delete">Delete</button>' : ''}</div></div>`;
       }).join('') : '<div class="vmsg">No referral sheets yet. Be the first to upload one.</div>';
     }
     async function load() {
@@ -331,35 +331,14 @@
           a.href = url; a.download = s.title.replace(/[^\w\- ]+/g, '') + '.pdf'; document.body.appendChild(a); a.click(); a.remove();
           b.disabled = false; b.textContent = 'Download'; return;
         }
-        if (act === 'rename') {
-          const t = prompt('New title for this sheet', s.title); if (!t) return;
-          await refApi('POST', '', { action: 'update', id: s.id, title: t, editKey: keys[s.id] }, refAdmin ? { 'x-admin-key': refAdmin } : {});
-          return load();
-        }
-        if (act === 'replace') { $msg.dataset.replace = s.id; document.getElementById('rReplace').click(); return; }
         if (act === 'delete') {
           if (!confirm('Delete "' + s.title + '"? This cannot be undone.')) return;
           await refApi('DELETE', '?id=' + s.id, null, hdr(s.id));
           delete keys[s.id]; store.set(REF_KEYS, keys); if (openId === s.id) { openId = ''; $view.innerHTML = ''; }
           return load();
         }
-        if (act === 'edit') {
-          const k = prompt('Enter the edit code you got when you uploaded this sheet'); if (!k) return;
-          await refApi('POST', '', { action: 'update', id: s.id, title: s.title, editKey: k.trim() });
-          saveKey(s.id, k.trim()); say('Edit code accepted. You can now rename, replace or delete this sheet.'); draw();
-        }
       } catch (err) { b.disabled = false; say(err.message, true); }
     });
-    document.getElementById('rReplace').onchange = async (e) => {
-      const f = e.target.files[0], id = $msg.dataset.replace; e.target.value = '';
-      const s = find(id); if (!f || !s) return;
-      if (f.size > 6 * 1048576) return say('The file must be a PDF of 6 MB or less.', true);
-      try {
-        say('Replacing...');
-        await uploadSheet(f, s.title, s.by, { id: s.id, editKey: keys[s.id] || refAdmin }, (i, n) => say(`Uploading piece ${Math.min(i + 1, n)} of ${n}...`));
-        delete refBlobs[s.id + '@' + s.v]; say('File replaced.'); await load(); if (openId === s.id) openSheet(find(s.id));
-      } catch (err) { say(err.message, true); }
-    };
     document.getElementById('rForm').onsubmit = async (e) => {
       e.preventDefault(); say('');
       const f = document.getElementById('rFile').files[0], go = document.getElementById('rGo');
@@ -368,9 +347,9 @@
       if (f.size > 6 * 1048576) return say('The file must be a PDF of 6 MB or less.', true);
       go.disabled = true;
       try {
-        const r = await uploadSheet(f, document.getElementById('rTitle').value, document.getElementById('rBy').value, null, (i, n) => say(`Uploading piece ${Math.min(i + 1, n)} of ${n}...`));
+        const r = await uploadSheet(f, document.getElementById('rTitle').value, document.getElementById('rBy').value, (i, n) => say(`Uploading piece ${Math.min(i + 1, n)} of ${n}...`));
         saveKey(r.sheet.id, r.editKey);
-        say(`Uploaded. Your <b>edit code</b> is <code>${r.editKey}</code>. It is saved in this browser so you can rename, replace or delete the sheet here. Copy it if you want to edit from another device.`);
+        say('Uploaded. Everyone can now view and download your sheet.');
         document.getElementById('rForm').reset(); await load();
       } catch (err) { say(err.message, true); }
       go.disabled = false;

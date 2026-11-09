@@ -345,8 +345,9 @@ select{width:100%;background:var(--panel2);color:var(--text);border:1px solid va
 .recall .tw{padding:0 14px 14px}
 .pgroup{margin-bottom:16px}
 .pgl{font:700 11px/1 Consolas,monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-bottom:9px}
-.ptabs{display:flex;gap:8px;flex-wrap:wrap}
-.ptab{display:inline-flex;align-items:center;gap:9px;text-decoration:none;padding:10px 16px;border:1px solid var(--line2);font-size:14px;font-weight:600;color:var(--muted);transition:.15s}
+.ptabs{display:flex;gap:6px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.ptabs::-webkit-scrollbar{display:none}
+.ptab{flex:none;white-space:nowrap;display:inline-flex;align-items:center;gap:7px;text-decoration:none;padding:9px 12px;border:1px solid var(--line2);font-size:13px;font-weight:600;color:var(--muted);transition:.15s}
 .ptab:hover{border-color:var(--y);color:var(--y)}
 .ptab.on{background:var(--y);border-color:var(--y);color:#000}
 .ptab small{font-size:11px;font-weight:700;opacity:.65}
@@ -371,6 +372,35 @@ select{width:100%;background:var(--panel2);color:var(--text);border:1px solid va
   .frow .fbar{grid-column:2 / 4;order:5}
   .vwrap{padding:14px 8px}
 }
+
+/* ---------- referral sheets ---------- */
+.ph{align-items:flex-start}
+.rup{display:grid;grid-template-columns:2fr 1fr 1.4fr auto;gap:14px;align-items:end;background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--y);padding:18px 20px}
+.rup label{display:flex;flex-direction:column;gap:6px;font:700 11px/1 Consolas,"SF Mono",Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--y);min-width:0}
+.rup label em{font-style:normal;font-weight:500;letter-spacing:0;text-transform:none;color:var(--muted)}
+.rup input[type=text],.rup input[type=file]{width:100%;background:var(--bg);border:1px solid var(--line2);color:var(--text);padding:10px 12px;font:14px "Segoe UI",system-ui,sans-serif;border-radius:0;min-width:0}
+.rup input:focus{border-color:var(--y);outline:0}
+.rup input[type=file]{padding:8px 10px}
+.rmsg{grid-column:1 / -1}
+.rmsg:empty{display:none}
+.mm{padding:11px 14px;border:1px solid var(--line);border-left:4px solid var(--y);background:var(--bg);font-size:14px}
+.mm.err{border-left-color:var(--bad)}
+.mm code{user-select:all}
+.rnote{font-size:12.5px;margin:10px 0 22px}
+.rlist{display:flex;flex-direction:column;gap:10px}
+.rcard{display:flex;justify-content:space-between;align-items:center;gap:12px 18px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--line2);padding:14px 18px;transition:border-color .15s}
+.rcard.on,.rcard:hover{border-left-color:var(--y)}
+.rt{min-width:220px;flex:1}
+.rt b{display:block;font-size:16px}
+.rt span{font-size:12.5px;color:var(--muted)}
+.ra{display:flex;gap:8px;flex-wrap:wrap}
+.btn.danger{color:var(--bad);border-color:#5a2b2b}
+.btn.danger:hover{background:var(--bad);color:#000;border-color:var(--bad)}
+#rView{margin-top:22px}
+.rfoot{margin:26px 0 0;text-align:right}
+.linkbtn{background:none;border:0;border-bottom:1px solid var(--line2);color:var(--faint);font-size:12.5px;padding:0 0 1px}
+.linkbtn:hover{color:var(--y);border-color:var(--y)}
+@media (max-width:900px){.rup{grid-template-columns:1fr}.ra{width:100%}}
 
 @media print{
   .side,.menu,.tools,.pager,.btn{display:none!important}

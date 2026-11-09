@@ -150,19 +150,15 @@
       <span class="fbar"><i class="${l.priority}" style="width:${Math.max(l.past ? 5 : 0, Math.round(l.past / maxPast * 100))}%"></i></span>
       <span class="pill ${l.priority}">${PRI_LABEL[l.priority]}</span></a>`).join('');
     return `
-    <div class="ph"><div><div class="eyebrow">Overview</div><h1>Exam map</h1><p class="lede">${esc(cc.simpleLede || cc.examNote)}</p></div></div>
+    <div class="ph"><div><div class="eyebrow">Overview</div><h1>Exam map</h1><p class="lede">${esc(cc.simpleLede || cc.examNote)}</p></div>
+      ${REFS ? `<a class="btn" href="#/${KEY}/referrals">Referral sheets</a>` : ''}</div>
     <div class="rule"></div>
     <h3 class="eyebrow" style="margin:0 0 12px">The paper</h3>
     <div class="flow">${flow}</div>
     ${cc.flowNote ? `<p class="muted fnote">${esc(cc.flowNote)}</p>` : ''}
     <h3 class="eyebrow" style="margin:30px 0 4px">Where to focus</h3>
     <p class="muted" style="margin:0 0 12px">The bar shows how often each lecture was asked in past papers. Select a lecture to open it.</p>
-    <div class="focus">${rows}</div>
-    <div class="nextrow">
-      ${PAPERS ? `<a class="btn" href="#/${KEY}/papers">Past papers</a>` : ''}
-      ${SLIDES ? `<a class="btn ghost" href="#/${KEY}/slides">Lecture slides</a>` : ''}
-      <a class="btn ghost" href="#/${KEY}/practice">Practice questions</a>
-    </div>`;
+    <div class="focus">${rows}</div>`;
   }
   function viewRulesSimple() {
     const cheat = cc.cheat && cc.cheat.length ? `<details class="recall"><summary>Quick recall lists (${cc.cheat.length})</summary>
@@ -218,7 +214,7 @@
   }
   function renderPapers($main, args) {
     const cur = PAPER_LIST.find((x) => x.id === args[0]) || PAPER_LIST[0];
-    const tabs = PAPERS.map((g) => `<div class="pgroup"><div class="pgl">${esc(g.t)}</div><div class="ptabs">${g.items.map((x) => `<a class="ptab ${x === cur ? 'on' : ''}" href="#/${KEY}/papers/${x.id}">${esc(x.tab)}<small>${fmtKB(x.kb)}</small></a>`).join('')}</div></div>`).join('');
+    const tabs = `<div class="ptabs">${PAPER_LIST.map((x) => `<a class="ptab ${x === cur ? 'on' : ''}" href="#/${KEY}/papers/${x.id}">${esc(x.tab)}<small>${fmtKB(x.kb)}</small></a>`).join('')}</div>`;
     const from = cc.lectures.filter((l) => (l.pastByPaper || {})[cur.paper] > 0).map((l) => `<a class="pchip" href="#/${KEY}/lecture/${l.n}">L${l.n}<small>${l.pastByPaper[cur.paper]}</small></a>`).join('');
     $main.innerHTML = `
     <div class="eyebrow">Papers</div>
@@ -236,6 +232,157 @@
     showPdf(cur.file, document.getElementById('pv'), document.getElementById('pgn'));
   }
 
+  /* ---------- referral sheets: anyone uploads a PDF, everyone previews and downloads (modules with referrals: true) ---------- */
+  const REFS = !!cc.referrals;
+  const REF_KEYS = 'kuppi.' + KEY + '.refkeys';
+  const refBlobs = {};
+  let refAdmin = '';
+  try { refAdmin = sessionStorage.getItem('kuppi.admin') || ''; } catch (e) { /* storage may be blocked */ }
+  const bytesFmt = (n) => (n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB');
+  const dateFmt = (ts) => new Date(ts).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  async function refApi(method, qs, body, hdr) {
+    const r = await fetch('/api/referrals' + (qs || ''), { method, cache: 'no-store', headers: Object.assign(body ? { 'Content-Type': 'application/json' } : {}, hdr || {}), body: body ? JSON.stringify(body) : undefined });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) { const e = new Error(j.message || 'Something went wrong. Please try again.'); e.status = r.status; e.code = j.error; throw e; }
+    return j;
+  }
+  const toB64 = (blob) => new Promise((ok, no) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1] || ''); fr.onerror = no; fr.readAsDataURL(blob); });
+  async function uploadSheet(file, title, by, replace, progress) {
+    const st = await refApi('POST', '', { action: 'start', title, by, name: file.name, size: file.size, module: KEY, replaceId: replace ? replace.id : undefined, editKey: replace ? replace.editKey : undefined });
+    const key = st.editKey || (replace && replace.editKey);
+    for (let i = 0; i < st.chunks; i++) {
+      progress(i, st.chunks);
+      await refApi('POST', '', { action: 'chunk', id: st.id, v: st.v, i, data: await toB64(file.slice(i * st.chunkSize, (i + 1) * st.chunkSize)), editKey: key });
+    }
+    progress(st.chunks, st.chunks);
+    const fin = await refApi('POST', '', { action: 'finish', id: st.id, v: st.v, editKey: key });
+    return { sheet: fin.sheet, editKey: key, isNew: !!st.editKey };
+  }
+  async function sheetBlob(sheet) {
+    const k = sheet.id + '@' + sheet.v;
+    if (refBlobs[k]) return refBlobs[k];
+    const parts = [];
+    for (let i = 0; i < sheet.chunks; i++) {
+      const j = await refApi('GET', '?id=' + sheet.id + '&chunk=' + i);
+      const bin = atob(j.data), u = new Uint8Array(bin.length);
+      for (let n = 0; n < bin.length; n++) u[n] = bin.charCodeAt(n);
+      parts.push(u);
+    }
+    return (refBlobs[k] = new Blob(parts, { type: 'application/pdf' }));
+  }
+  function renderReferrals($main) {
+    let sheets = [], keys = store.get(REF_KEYS, {}), openId = '';
+    $main.innerHTML = `
+    <div class="eyebrow">Share</div>
+    <h1 style="font-size:clamp(30px,4vw,44px);margin:8px 0 10px">Referral sheets</h1>
+    <p class="lede">Upload your referral sheet so others can preview and download it. You can replace or rename your own sheet later.</p>
+    <div class="rule"></div>
+    <form class="rup" id="rForm" autocomplete="off">
+      <label>Title<input id="rTitle" type="text" maxlength="80" placeholder="e.g. IME referral sheet, Lectures 1 to 9" required></label>
+      <label>Your name <em>(optional)</em><input id="rBy" type="text" maxlength="40" placeholder="Shown with your sheet"></label>
+      <label>PDF file <em>(max 6 MB)</em><input id="rFile" type="file" accept=".pdf,application/pdf" required></label>
+      <button class="btn" type="submit" id="rGo">Upload sheet</button>
+      <div class="rmsg" id="rMsg" role="status" aria-live="polite"></div>
+    </form>
+    <p class="muted rnote">Uploads are public. Only share your own sheet or one you have permission to share. PDF files only.</p>
+    <div id="rList" class="rlist"><div class="vmsg">Loading sheets...</div></div>
+    <div id="rView"></div>
+    <p class="rfoot"><button type="button" class="linkbtn" id="rMod"></button></p>
+    <input type="file" id="rReplace" accept=".pdf,application/pdf" hidden>`;
+    const $list = document.getElementById('rList'), $view = document.getElementById('rView'), $msg = document.getElementById('rMsg');
+    const say = (h, err) => { $msg.innerHTML = h ? `<div class="mm ${err ? 'err' : ''}">${h}</div>` : ''; };
+    const mine = (id) => !!keys[id];
+    const saveKey = (id, k) => { keys[id] = k; store.set(REF_KEYS, keys); };
+    const find = (id) => sheets.find((x) => x.id === id);
+    const hdr = (id) => (refAdmin ? { 'x-admin-key': refAdmin } : (keys[id] ? { 'x-edit-key': keys[id] } : {}));
+    function draw() {
+      document.getElementById('rMod').textContent = refAdmin ? 'Moderator mode on (turn off)' : 'Moderator';
+      $list.innerHTML = sheets.length ? sheets.map((s) => {
+        const own = mine(s.id) || !!refAdmin;
+        return `<div class="rcard ${openId === s.id ? 'on' : ''}" data-id="${s.id}">
+          <div class="rt"><b>${esc(s.title)}</b><span>${s.by ? 'by ' + esc(s.by) : 'by Anonymous'} &middot; ${dateFmt(s.ts)} &middot; ${bytesFmt(s.size)}</span></div>
+          <div class="ra"><button class="btn sm" data-act="view">View</button><button class="btn ghost sm" data-act="download">Download</button>
+            ${own ? '<button class="btn ghost sm" data-act="rename">Rename</button><button class="btn ghost sm" data-act="replace">Replace file</button><button class="btn ghost sm danger" data-act="delete">Delete</button>' : '<button class="btn ghost sm" data-act="edit">Edit</button>'}</div></div>`;
+      }).join('') : '<div class="vmsg">No referral sheets yet. Be the first to upload one.</div>';
+    }
+    async function load() {
+      try { const j = await refApi('GET'); sheets = j.sheets; draw(); }
+      catch (e) { sheets = []; $list.innerHTML = `<div class="vmsg">${e.status === 503 ? 'Referral sheets are not available yet.' : 'Could not load the sheets. Please try again.'}</div>`; if (e.status === 503) document.getElementById('rGo').disabled = true; }
+    }
+    async function openSheet(s) {
+      openId = s.id; draw();
+      $view.innerHTML = `<div class="vbar"><div class="vt"><b>${esc(s.title)}</b><span>${esc(s.name)} &middot; <span id="pgn">Loading</span></span></div></div><div class="vwrap" id="pv"><div class="vmsg">Loading preview...</div></div>`;
+      $view.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      try {
+        const url = URL.createObjectURL(await sheetBlob(s));
+        $view.querySelector('.vbar').insertAdjacentHTML('beforeend', `<a class="btn sm" href="${url}" target="_blank" rel="noopener">Open in new tab</a><a class="btn ghost sm" href="${url}" download="${esc(s.title)}.pdf">Download</a>`);
+        showPdf(url, document.getElementById('pv'), document.getElementById('pgn'));
+      } catch (e) { document.getElementById('pv').innerHTML = `<div class="vmsg">${esc(e.message)}</div>`; }
+    }
+    $list.addEventListener('click', async (e) => {
+      const b = e.target.closest('button[data-act]'); if (!b) return;
+      const s = find(b.closest('.rcard').dataset.id); if (!s) return;
+      const act = b.dataset.act;
+      try {
+        if (act === 'view') return openSheet(s);
+        if (act === 'download') {
+          b.disabled = true; b.textContent = 'Preparing...';
+          const url = URL.createObjectURL(await sheetBlob(s)), a = document.createElement('a');
+          a.href = url; a.download = s.title.replace(/[^\w\- ]+/g, '') + '.pdf'; document.body.appendChild(a); a.click(); a.remove();
+          b.disabled = false; b.textContent = 'Download'; return;
+        }
+        if (act === 'rename') {
+          const t = prompt('New title for this sheet', s.title); if (!t) return;
+          await refApi('POST', '', { action: 'update', id: s.id, title: t, editKey: keys[s.id] }, refAdmin ? { 'x-admin-key': refAdmin } : {});
+          return load();
+        }
+        if (act === 'replace') { $msg.dataset.replace = s.id; document.getElementById('rReplace').click(); return; }
+        if (act === 'delete') {
+          if (!confirm('Delete "' + s.title + '"? This cannot be undone.')) return;
+          await refApi('DELETE', '?id=' + s.id, null, hdr(s.id));
+          delete keys[s.id]; store.set(REF_KEYS, keys); if (openId === s.id) { openId = ''; $view.innerHTML = ''; }
+          return load();
+        }
+        if (act === 'edit') {
+          const k = prompt('Enter the edit code you got when you uploaded this sheet'); if (!k) return;
+          await refApi('POST', '', { action: 'update', id: s.id, title: s.title, editKey: k.trim() });
+          saveKey(s.id, k.trim()); say('Edit code accepted. You can now rename, replace or delete this sheet.'); draw();
+        }
+      } catch (err) { b.disabled = false; say(err.message, true); }
+    });
+    document.getElementById('rReplace').onchange = async (e) => {
+      const f = e.target.files[0], id = $msg.dataset.replace; e.target.value = '';
+      const s = find(id); if (!f || !s) return;
+      if (f.size > 6 * 1048576) return say('The file must be a PDF of 6 MB or less.', true);
+      try {
+        say('Replacing...');
+        await uploadSheet(f, s.title, s.by, { id: s.id, editKey: keys[s.id] || refAdmin }, (i, n) => say(`Uploading piece ${Math.min(i + 1, n)} of ${n}...`));
+        delete refBlobs[s.id + '@' + s.v]; say('File replaced.'); await load(); if (openId === s.id) openSheet(find(s.id));
+      } catch (err) { say(err.message, true); }
+    };
+    document.getElementById('rForm').onsubmit = async (e) => {
+      e.preventDefault(); say('');
+      const f = document.getElementById('rFile').files[0], go = document.getElementById('rGo');
+      if (!f) return say('Please choose a PDF file.', true);
+      if (!/\.pdf$/i.test(f.name)) return say('Only PDF files are allowed.', true);
+      if (f.size > 6 * 1048576) return say('The file must be a PDF of 6 MB or less.', true);
+      go.disabled = true;
+      try {
+        const r = await uploadSheet(f, document.getElementById('rTitle').value, document.getElementById('rBy').value, null, (i, n) => say(`Uploading piece ${Math.min(i + 1, n)} of ${n}...`));
+        saveKey(r.sheet.id, r.editKey);
+        say(`Uploaded. Your <b>edit code</b> is <code>${r.editKey}</code>. It is saved in this browser so you can rename, replace or delete the sheet here. Copy it if you want to edit from another device.`);
+        document.getElementById('rForm').reset(); await load();
+      } catch (err) { say(err.message, true); }
+      go.disabled = false;
+    };
+    document.getElementById('rMod').onclick = () => {
+      if (refAdmin) { refAdmin = ''; try { sessionStorage.removeItem('kuppi.admin'); } catch (e) { /* ignore */ } return draw(); }
+      const k = prompt('Moderator password'); if (!k) return;
+      refAdmin = k.trim(); try { sessionStorage.setItem('kuppi.admin', refAdmin); } catch (e) { /* ignore */ } draw();
+    };
+    load();
+  }
+
   /* ---------- module shell ---------- */
   function renderModule(p) {
     if (slKeyHandler) { document.removeEventListener('keydown', slKeyHandler); slKeyHandler = null; }
@@ -251,6 +398,7 @@
     }).join('');
     const navItems = [['map', '#/' + KEY, 'Exam map'], ['rules', '#/' + KEY + '/rules', 'Paper and golden rules']]
       .concat(PAPERS ? [['papers', '#/' + KEY + '/papers', 'Past papers', String(PAPER_LIST.length)]] : [])
+      .concat(REFS ? [['referrals', '#/' + KEY + '/referrals', 'Referral sheets']] : [])
       .concat([['practice', '#/' + KEY + '/practice', 'Practice questions', String(totals.all)]])
       .concat(SLIDES ? [['slides', '#/' + KEY + '/slides', 'Lecture slides', String(SLIDES.reduce((t, d) => t + d.slides.length, 0))]] : []);
     const nav = (key, href, num, label, right) =>
@@ -280,6 +428,7 @@
     const $main = document.getElementById('main');
     if (page === 'rules') { document.title = 'Paper and golden rules | ' + cc.name; $main.innerHTML = cc.simple ? viewRulesSimple() : viewRules(); }
     else if (page === 'papers' && PAPERS) { document.title = 'Past papers | ' + cc.name; renderPapers($main, p.slice(1)); }
+    else if (page === 'referrals' && REFS) { document.title = 'Referral sheets | ' + cc.name; renderReferrals($main); }
     else if (page === 'practice') { document.title = 'Practice | ' + cc.name; renderPractice($main); }
     else if (page === 'slides' && SLIDES) { document.title = 'Lecture slides | ' + cc.name; renderSlides($main, p.slice(1)); }
     else if (page === 'lecture' && lecByN(lecN)) { const lec = lecByN(lecN); document.title = 'L' + lec.n + ' ' + lec.title + ' | ' + cc.name; $main.innerHTML = viewLecture(lec); bindLecture(lec); }

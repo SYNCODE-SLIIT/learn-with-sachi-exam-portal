@@ -41,7 +41,8 @@ a.mcard:hover{border-color:var(--y);transform:translateY(-2px)}
 
 /* ---------- module shell ---------- */
 .shell{display:grid;grid-template-columns:var(--side) minmax(0,1fr);min-height:100vh}
-.side{background:#0d0d0d;border-right:1px solid var(--line);position:sticky;top:0;height:100vh;overflow-y:auto;padding:18px 16px 28px}
+.side{background:#0d0d0d;border-right:1px solid var(--line);position:sticky;top:0;height:100vh;overflow-y:auto;padding:18px 16px 28px;scrollbar-width:none;-ms-overflow-style:none}
+.side::-webkit-scrollbar{display:none;width:0;height:0}
 .side .back{display:inline-flex;gap:8px;align-items:center;text-decoration:none;color:var(--muted);font-size:13px;margin-bottom:16px}
 .side .back:hover{color:var(--y)}
 .side .code{font:700 12px/1 Consolas,monospace;letter-spacing:.12em;color:var(--y);margin-bottom:8px}
@@ -270,12 +271,12 @@ select{width:100%;background:var(--panel2);color:var(--text);border:1px solid va
   .qtext{font-size:16px}
 }
 /* ---------- lecture slides ---------- */
-.sl-lecs{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 16px}
-.sl-lec{background:var(--panel);border:1px solid var(--line2);padding:8px 12px;font-weight:700;font-size:13px;text-align:left}
-.sl-lec small{display:block;font-weight:500;color:var(--muted);font-size:11px;max-width:150px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sl-lec:hover{border-color:var(--y)}
-.sl-lec.on{background:var(--y);color:#000;border-color:var(--y)}
-.sl-lec.on small{color:#222}
+.sl-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px 24px;flex-wrap:wrap}
+.sl-pick{display:flex;flex-direction:column;gap:6px;min-width:260px;margin-top:6px}
+.sl-pick span{font:700 11px/1 Consolas,"SF Mono",Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--y)}
+.sl-pick select{appearance:none;-webkit-appearance:none;background:var(--panel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23ffd60a' stroke-width='3' stroke-linecap='square'%3E%3Cpath d='M5 9l7 7 7-7'/%3E%3C/svg%3E") no-repeat right 14px center;color:var(--text);border:1px solid var(--line2);border-radius:0;padding:11px 40px 11px 14px;font:600 14px "Segoe UI",system-ui,sans-serif;cursor:pointer;width:100%}
+.sl-pick select:hover,.sl-pick select:focus{border-color:var(--y);outline:0}
+.sl-pick option{background:#111;color:var(--text)}
 .sl-wrap{max-width:1180px}
 .sl-stage{aspect-ratio:16/9;container-type:inline-size;background:#000;border:1px solid var(--line2);border-top:4px solid var(--y);position:relative;overflow:hidden}
 .sl-in{position:absolute;inset:0;padding:4.2cqw 5.2cqw;display:flex;flex-direction:column;gap:1.5cqw;overflow:hidden}
@@ -301,17 +302,15 @@ select{width:100%;background:var(--panel2);color:var(--text);border:1px solid va
 .sl-title .sl-b li::before{display:none}
 .sl-bar{display:flex;gap:10px;align-items:center;margin:14px 0;flex-wrap:wrap}
 .sl-count{font:13px Consolas,monospace;color:var(--muted);min-width:84px;text-align:center}
-.sl-script{margin-top:4px;padding:14px 18px;border:1px solid var(--line);border-left:4px solid var(--y);background:var(--panel);font-size:15px;line-height:1.7}
-.sl-script[hidden]{display:none}
-.sl-script b{display:block;color:var(--y);font:700 11px Consolas,monospace;letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px}
 .sl-wrap:fullscreen{background:#000;display:flex;flex-direction:column;justify-content:center;max-width:none;padding:0}
 .sl-wrap:fullscreen .sl-stage{width:min(100vw,177.78vh);margin:0 auto;border:0}
-.sl-wrap:fullscreen .sl-bar,.sl-wrap:fullscreen .sl-script{display:none}
+.sl-wrap:fullscreen .sl-bar{display:none}
 @media (max-width:700px){
   .sl-stage{aspect-ratio:auto;container-type:normal}
   .sl-in{position:relative;inset:auto;padding:20px 16px;gap:10px}
   .sl-in h2{font-size:22px}.sl-title h2{font-size:26px}.sl-in h2::after{width:44px;height:3px;margin-top:8px}
   .sl-lead{font-size:14px}
+  .sl-pick{min-width:0;width:100%}
   .sl-b li{font-size:16px;padding-left:20px}.sl-b li::before{top:7px;width:8px;height:8px}
   .sl-title .sl-b li{font-size:14px;padding:4px 10px}
   .sl-t{font-size:13px}.sl-t th,.sl-t td{padding:6px 8px}

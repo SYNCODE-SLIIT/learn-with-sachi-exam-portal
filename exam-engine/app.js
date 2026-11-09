@@ -77,7 +77,6 @@
   }
   /* ---------- lecture slides (any module that defines <key>Slides) ---------- */
   const SLIDES = P[KEY + 'Slides'] || null;
-  const SL_KEY = 'kuppi.' + KEY + '.slscript';
   let slKeyHandler = null;
   function slideHTML(s) {
     const lead = s.lead ? `<p class="sl-lead">${s.lead}</p>` : '';
@@ -89,47 +88,45 @@
   function renderSlides($main, args) {
     let li = SLIDES.findIndex((d) => d.n === Number(args[0])); if (li < 0) li = 0;
     let si = Math.max(0, (Number(args[1]) || 1) - 1);
-    let showScript = store.get(SL_KEY, false);
     $main.innerHTML = `
-    <div class="eyebrow">Lecture slides</div>
-    <h1 style="font-size:clamp(30px,4vw,44px);margin:8px 0 10px">Lecture slides</h1>
-    <p class="lede">Short, simple slides for every lecture. Use the arrow keys or swipe. Press <b>S</b> for the Sinhala explanation and <b>F</b> for full screen.</p>
+    <div class="sl-head">
+      <div>
+        <div class="eyebrow">Lecture slides</div>
+        <h1 style="font-size:clamp(30px,4vw,44px);margin:8px 0 10px">Lecture slides</h1>
+        <p class="lede">Short, simple slides for every lecture. Use the arrow keys or swipe. Press <b>F</b> for full screen.</p>
+      </div>
+      <label class="sl-pick"><span>Lecture</span>
+        <select id="slSel" aria-label="Choose a lecture">${SLIDES.map((d, i) => `<option value="${i}">L${d.n}: ${esc(d.title)}</option>`).join('')}</select>
+      </label>
+    </div>
     <div class="rule"></div>
-    <div class="sl-lecs" id="slLecs">${SLIDES.map((d, i) => `<button class="sl-lec" data-i="${i}">L${d.n}<small>${esc(d.short)}</small></button>`).join('')}</div>
     <div class="sl-wrap" id="slWrap">
       <div class="sl-stage" id="slStage" aria-live="polite"></div>
       <div class="sl-bar">
         <button class="btn ghost sm" id="slPrev">&larr; Previous</button>
         <span class="sl-count" id="slCount"></span>
         <button class="btn sm" id="slNext">Next &rarr;</button>
-        <button class="btn ghost sm" id="slScriptBtn">Sinhala explanation (S)</button>
         <button class="btn ghost sm" id="slFull">Full screen (F)</button>
         ${cc.slidesPdf ? `<a class="btn ghost sm" href="${esc(cc.slidesPdf)}" download>Download slides (PDF)</a>` : ''}
       </div>
-      <div class="sl-script" id="slScript"></div>
     </div>`;
-    const $stage = document.getElementById('slStage'), $count = document.getElementById('slCount'), $script = document.getElementById('slScript');
+    const $stage = document.getElementById('slStage'), $count = document.getElementById('slCount'), $sel = document.getElementById('slSel');
     const $wrap = document.getElementById('slWrap'), $prev = document.getElementById('slPrev'), $next = document.getElementById('slNext');
     function draw() {
       const d = SLIDES[li]; si = Math.max(0, Math.min(si, d.slides.length - 1));
-      const s = d.slides[si];
-      $stage.innerHTML = slideHTML(s);
+      $stage.innerHTML = slideHTML(d.slides[si]);
       $count.textContent = `L${d.n}  ${si + 1} / ${d.slides.length}`;
-      $script.hidden = !showScript;
-      $script.innerHTML = `<b>Explanation (Sinhala)</b>${esc(s.say || '')}`;
-      document.querySelectorAll('.sl-lec').forEach((b) => b.classList.toggle('on', Number(b.dataset.i) === li));
+      $sel.value = String(li);
       $prev.disabled = li === 0 && si === 0;
       $next.disabled = li === SLIDES.length - 1 && si === d.slides.length - 1;
       history.replaceState(null, '', `#/${KEY}/slides/${d.n}/${si + 1}`);
     }
     const next = () => { const d = SLIDES[li]; if (si < d.slides.length - 1) si++; else if (li < SLIDES.length - 1) { li++; si = 0; } draw(); };
     const prev = () => { if (si > 0) si--; else if (li > 0) { li--; si = SLIDES[li].slides.length - 1; } draw(); };
-    const toggleScript = () => { showScript = !showScript; store.set(SL_KEY, showScript); draw(); };
     const toggleFull = () => { if (document.fullscreenElement) document.exitFullscreen(); else if ($wrap.requestFullscreen) $wrap.requestFullscreen(); };
     $prev.onclick = prev; $next.onclick = next;
-    document.getElementById('slScriptBtn').onclick = toggleScript;
     document.getElementById('slFull').onclick = toggleFull;
-    document.querySelectorAll('.sl-lec').forEach((b) => { b.onclick = () => { li = Number(b.dataset.i); si = 0; draw(); }; });
+    $sel.onchange = () => { li = Number($sel.value); si = 0; draw(); $sel.blur(); };
     let x0 = null;
     $stage.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; }, { passive: true });
     $stage.addEventListener('touchend', (e) => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 50) (dx < 0 ? next : prev)(); });
@@ -137,7 +134,6 @@
       if (e.ctrlKey || e.metaKey || e.altKey || /^(input|textarea|select)$/i.test((e.target.tagName || ''))) return;
       if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); next(); }
       else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
-      else if (e.key === 's' || e.key === 'S') toggleScript();
       else if (e.key === 'f' || e.key === 'F') toggleFull();
     };
     document.addEventListener('keydown', slKeyHandler);

@@ -140,9 +140,106 @@
     draw();
   }
 
+  /* ---------- simple exam map and rules (modules with simple: true) ---------- */
+  function viewMapSimple() {
+    const maxPast = Math.max(1, ...cc.lectures.map((l) => l.past));
+    const flow = (cc.flow || []).map((f, i) => `${i ? '<span class="farrow" aria-hidden="true">&rarr;</span>' : ''}
+      <a class="fcard" href="#/${KEY}/${f.href}"><span class="fq">${esc(f.q)}</span><b class="fm">${esc(f.marks)}<small> marks</small></b><span class="ft">${esc(f.title)}</span><span class="fs">${esc(f.sub)}</span></a>`).join('');
+    const rows = cc.lectures.map((l) => `<a class="frow" href="#/${KEY}/lecture/${l.n}">
+      <span class="k">L${l.n}</span><span class="nm">${esc(l.short)}</span>
+      <span class="fbar"><i class="${l.priority}" style="width:${Math.max(l.past ? 5 : 0, Math.round(l.past / maxPast * 100))}%"></i></span>
+      <span class="pill ${l.priority}">${PRI_LABEL[l.priority]}</span></a>`).join('');
+    return `
+    <div class="ph"><div><div class="eyebrow">Overview</div><h1>Exam map</h1><p class="lede">${esc(cc.simpleLede || cc.examNote)}</p></div></div>
+    <div class="rule"></div>
+    <h3 class="eyebrow" style="margin:0 0 12px">The paper</h3>
+    <div class="flow">${flow}</div>
+    ${cc.flowNote ? `<p class="muted fnote">${esc(cc.flowNote)}</p>` : ''}
+    <h3 class="eyebrow" style="margin:30px 0 4px">Where to focus</h3>
+    <p class="muted" style="margin:0 0 12px">The bar shows how often each lecture was asked in past papers. Select a lecture to open it.</p>
+    <div class="focus">${rows}</div>
+    <div class="nextrow">
+      ${PAPERS ? `<a class="btn" href="#/${KEY}/papers">Past papers</a>` : ''}
+      ${SLIDES ? `<a class="btn ghost" href="#/${KEY}/slides">Lecture slides</a>` : ''}
+      <a class="btn ghost" href="#/${KEY}/practice">Practice questions</a>
+    </div>`;
+  }
+  function viewRulesSimple() {
+    const cheat = cc.cheat && cc.cheat.length ? `<details class="recall"><summary>Quick recall lists (${cc.cheat.length})</summary>
+      <div class="tw"><table class="tbl cheat"><thead><tr><th>${(cc.cheatHead || ['Topic', 'Remember'])[0]}</th><th>${(cc.cheatHead || ['Topic', 'Remember'])[1]}</th></tr></thead><tbody>
+      ${cc.cheat.map((c) => `<tr><td>${cc.cheatHtml ? c[0] : esc(c[0])}</td><td>${cc.cheatHtml ? c[1] : esc(c[1])}</td></tr>`).join('')}</tbody></table></div></details>` : '';
+    return `
+    <div class="eyebrow">Overview</div><h1 style="font-size:clamp(30px,4vw,44px);margin:8px 0 10px">Paper and golden rules</h1>
+    <div class="rule"></div>
+    <div class="kv">${cc.quickFormat.map((f) => `<div><span>${f[0]}</span>${f[1]}</div>`).join('')}</div>
+    <h3 class="eyebrow" style="margin:6px 0 12px">Golden rules</h3>
+    <ol class="rules">${cc.quickRules.map((g) => `<li><b>${g[0]}</b><span>${g[1]}</span></li>`).join('')}</ol>
+    ${cheat}`;
+  }
+
+  /* ---------- past papers: view online and download (modules with paperGroups) ---------- */
+  const PAPERS = cc.paperGroups ? cc.paperGroups : null;
+  const PAPER_LIST = PAPERS ? PAPERS.reduce((a, g) => a.concat(g.items), []) : [];
+  const fmtKB = (k) => (k >= 1024 ? (k / 1024).toFixed(1) + ' MB' : k + ' KB');
+  let pdfLib = null, pvTok = 0;
+  function loadPdfJs() {
+    return pdfLib || (pdfLib = new Promise((ok, no) => {
+      if (window.pdfjsLib) return ok(window.pdfjsLib);
+      const sc = document.createElement('script');
+      sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+      sc.onload = () => { window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'; ok(window.pdfjsLib); };
+      sc.onerror = () => { pdfLib = null; no(new Error('pdf.js')); };
+      document.head.appendChild(sc);
+    }));
+  }
+  async function showPdf(file, box, pgn) {
+    const tok = ++pvTok;
+    try {
+      const pdf = await (await loadPdfJs()).getDocument(file).promise;
+      if (tok !== pvTok) return;
+      if (pgn) pgn.textContent = pdf.numPages + (pdf.numPages > 1 ? ' pages' : ' page');
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const io = new IntersectionObserver((es) => es.forEach(async (e) => {
+        if (!e.isIntersecting) return; io.unobserve(e.target);
+        const pg = await pdf.getPage(Number(e.target.dataset.p)); if (tok !== pvTok) return;
+        const b = pg.getViewport({ scale: 1 }), vp = pg.getViewport({ scale: Math.min(Math.max(e.target.clientWidth, 700), 1000) * dpr / b.width });
+        const cv = document.createElement('canvas'); cv.width = vp.width; cv.height = vp.height;
+        await pg.render({ canvasContext: cv.getContext('2d'), viewport: vp }).promise;
+        if (tok === pvTok) e.target.prepend(cv);
+      }), { rootMargin: '700px 0px' });
+      const pages = [];
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const v = (await pdf.getPage(i)).getViewport({ scale: 1 }), d = document.createElement('div');
+        d.className = 'vpage'; d.dataset.p = i; d.style.aspectRatio = v.width + ' / ' + v.height; d.innerHTML = `<i>${i} / ${pdf.numPages}</i>`; pages.push(d);
+      }
+      if (tok !== pvTok) return;
+      box.innerHTML = ''; pages.forEach((d) => { box.appendChild(d); io.observe(d); });
+    } catch (err) { if (tok === pvTok) box.innerHTML = '<div class="vmsg">The preview is not available right now. Use <b>Open in new tab</b> or <b>Download</b> above.</div>'; }
+  }
+  function renderPapers($main, args) {
+    const cur = PAPER_LIST.find((x) => x.id === args[0]) || PAPER_LIST[0];
+    const tabs = PAPERS.map((g) => `<div class="pgroup"><div class="pgl">${esc(g.t)}</div><div class="ptabs">${g.items.map((x) => `<a class="ptab ${x === cur ? 'on' : ''}" href="#/${KEY}/papers/${x.id}">${esc(x.tab)}<small>${fmtKB(x.kb)}</small></a>`).join('')}</div></div>`).join('');
+    const from = cc.lectures.filter((l) => (l.pastByPaper || {})[cur.paper] > 0).map((l) => `<a class="pchip" href="#/${KEY}/lecture/${l.n}">L${l.n}<small>${l.pastByPaper[cur.paper]}</small></a>`).join('');
+    $main.innerHTML = `
+    <div class="eyebrow">Papers</div>
+    <h1 style="font-size:clamp(30px,4vw,44px);margin:8px 0 10px">Past papers</h1>
+    <p class="lede">Model papers and past papers. View them here or download them.</p>
+    <div class="rule"></div>
+    ${tabs}
+    <div class="vbar">
+      <div class="vt"><b>${esc(cur.t)}</b><span>${esc(cur.sub)} &middot; <span id="pgn">PDF</span></span>
+        ${from ? `<div class="pfrom"><em>Questions in the portal from this paper</em>${from}</div>` : ''}</div>
+      <a class="btn sm" href="${esc(cur.file)}" target="_blank" rel="noopener">Open in new tab</a>
+      <a class="btn ghost sm" href="${esc(cur.file)}" download>Download</a>
+    </div>
+    <div class="vwrap" id="pv"><div class="vmsg">Loading preview...</div></div>`;
+    showPdf(cur.file, document.getElementById('pv'), document.getElementById('pgn'));
+  }
+
   /* ---------- module shell ---------- */
   function renderModule(p) {
     if (slKeyHandler) { document.removeEventListener('keydown', slKeyHandler); slKeyHandler = null; }
+    pvTok++;
     const page = p[0] || 'map';
     const lecN = page === 'lecture' ? Number(p[1]) : null;
     const dl = daysLeft(cc);
@@ -152,6 +249,10 @@
         <span class="k">L${l.n}</span><span class="t">${esc(l.short)}</span>
         <span class="r">${d}/${l.topics.length}</span><i class="dot ${l.priority}" title="${PRI_LABEL[l.priority]}"></i></a>`;
     }).join('');
+    const navItems = [['map', '#/' + KEY, 'Exam map'], ['rules', '#/' + KEY + '/rules', 'Paper and golden rules']]
+      .concat(PAPERS ? [['papers', '#/' + KEY + '/papers', 'Past papers', String(PAPER_LIST.length)]] : [])
+      .concat([['practice', '#/' + KEY + '/practice', 'Practice questions', String(totals.all)]])
+      .concat(SLIDES ? [['slides', '#/' + KEY + '/slides', 'Lecture slides', String(SLIDES.reduce((t, d) => t + d.slides.length, 0))]] : []);
     const nav = (key, href, num, label, right) =>
       `<a class="ni ${page === key ? 'on' : ''}" href="${href}"><span class="k">${num}</span><span class="t">${label}</span>${right ? `<span class="r">${right}</span>` : ''}</a>`;
 
@@ -167,10 +268,7 @@
           <div><b>${cc.examDate ? esc(new Date(cc.examDate + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })) : '2 h'}</b><span>${cc.examDate ? esc(cc.examTime || 'Exam date') : 'Duration'}</span></div>
         </div>
         <div class="navgrp" style="margin-top:0;border:0;padding-top:0">Overview</div>
-        ${nav('map', '#/' + KEY, '01', 'Exam map')}
-        ${nav('rules', '#/' + KEY + '/rules', '02', 'Paper and golden rules')}
-        ${nav('practice', '#/' + KEY + '/practice', '03', 'Practice questions', String(totals.all))}
-        ${SLIDES ? nav('slides', '#/' + KEY + '/slides', '04', 'Lecture slides', String(SLIDES.reduce((t, d) => t + d.slides.length, 0))) : ''}
+        ${navItems.map((it, i) => nav(it[0], it[1], String(i + 1).padStart(2, '0'), it[2], it[3])).join('')}
         <div class="navgrp">Lectures</div>
         ${lecNav}
       </aside>
@@ -180,11 +278,12 @@
     document.querySelector('.side').addEventListener('click', (e) => { if (e.target.closest('a.ni')) document.getElementById('shell').classList.remove('menu-open'); });
 
     const $main = document.getElementById('main');
-    if (page === 'rules') { document.title = 'Paper and golden rules | ' + cc.name; $main.innerHTML = viewRules(); }
+    if (page === 'rules') { document.title = 'Paper and golden rules | ' + cc.name; $main.innerHTML = cc.simple ? viewRulesSimple() : viewRules(); }
+    else if (page === 'papers' && PAPERS) { document.title = 'Past papers | ' + cc.name; renderPapers($main, p.slice(1)); }
     else if (page === 'practice') { document.title = 'Practice | ' + cc.name; renderPractice($main); }
     else if (page === 'slides' && SLIDES) { document.title = 'Lecture slides | ' + cc.name; renderSlides($main, p.slice(1)); }
     else if (page === 'lecture' && lecByN(lecN)) { const lec = lecByN(lecN); document.title = 'L' + lec.n + ' ' + lec.title + ' | ' + cc.name; $main.innerHTML = viewLecture(lec); bindLecture(lec); }
-    else { document.title = 'Exam map | ' + cc.name; $main.innerHTML = viewMap(); }
+    else { document.title = 'Exam map | ' + cc.name; $main.innerHTML = cc.simple ? viewMapSimple() : viewMap(); }
   }
 
   /* ---------- exam map ---------- */

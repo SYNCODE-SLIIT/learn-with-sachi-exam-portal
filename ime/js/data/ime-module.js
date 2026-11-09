@@ -10,6 +10,7 @@ window.PORTAL.modules.ime = {
   examDate: '2026-11-13',
   slidesPdf: 'slides/IME-Lecture-Slides.pdf',
   simple: true,
+  referrals: true,
   simpleLede: 'Three parts to the paper. Know where the marks are, then spend your time on the lectures that matter most.',
   flow: [
     { q: 'Q1', marks: 50, title: 'MCQs', sub: '25 questions · Lectures 1 to 5', href: 'practice' },

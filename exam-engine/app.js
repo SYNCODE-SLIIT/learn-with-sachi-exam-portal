@@ -212,9 +212,55 @@
       box.innerHTML = ''; pages.forEach((d) => { box.appendChild(d); io.observe(d); });
     } catch (err) { if (tok === pvTok) box.innerHTML = '<div class="vmsg">The preview is not available right now. Use <b>Open in new tab</b> or <b>Download</b> above.</div>'; }
   }
+  /* a paper that has model answers (the module sets answers: 'dataName' on the paper): paper on the left, answers one by one on the right */
+  function renderPaperSplit($main, cur, tabs, qid, AN) {
+    const items = AN.items; let k = items.findIndex((x) => x.id === qid); if (k < 0) k = 0;
+    const it = items[k], base = '#/' + KEY + '/papers/' + cur.id, prev = items[k - 1], next = items[k + 1];
+    const stepTabs = items.map((x, i) => `<a class="sa-t ${i === k ? 'on' : ''}" href="${base}/${x.id}"><b>${esc(x.tag)}</b><small>${x.marks} marks</small></a>`).join('');
+    const plan = it.plan.map((r) => `<tr><td>${r[0]}</td><td class="n">${esc(r[1])}</td></tr>`).join('');
+    $main.innerHTML = `
+    <div class="eyebrow">Papers</div>
+    <h1 style="font-size:clamp(30px,4vw,44px);margin:8px 0 10px">Past papers</h1>
+    <p class="lede">Model papers and past papers. View them here or download them. The sample paper also has model answers, one question at a time.</p>
+    <div class="rule"></div>
+    ${tabs}
+    <div class="sa-mob"><button type="button" data-v="paper">Paper</button><button type="button" data-v="ans" class="on">Answers</button></div>
+    <div class="sa" data-view="ans">
+      <section class="sa-l">
+        <div class="vbar">
+          <div class="vt"><b>${esc(cur.t)}</b><span>${esc(cur.sub)} &middot; <span id="pgn">PDF</span></span></div>
+          <a class="btn sm" href="${esc(cur.file)}" target="_blank" rel="noopener">Open in new tab</a>
+          <a class="btn ghost sm" href="${esc(cur.file)}" download>Download</a>
+        </div>
+        <div class="vwrap" id="pv"><div class="vmsg">Loading preview...</div></div>
+      </section>
+      <section class="sa-r">
+        <div class="sa-hd"><span class="eyebrow">Answers, one by one</span><span class="sa-ord">Order: Q2, then Q3, then the MCQs</span></div>
+        <div class="sa-ts">${stepTabs}</div>
+        <article class="sa-card">
+          <header><span class="sa-tag">${esc(it.tag)}</span><h2>${esc(it.short)}</h2><span class="sa-mk">${it.marks} marks</span></header>
+          <div class="sa-q"><em>The question</em>${it.q}</div>
+          <h4 class="sa-h">What the examiner wants</h4><ul>${it.wants.map((x) => `<li>${x}</li>`).join('')}</ul>
+          ${it.body}
+          <h4 class="sa-h">How the marks are earned</h4>
+          <table class="tbl"><tr><th>Part</th><th>Marks</th></tr>${plan}</table><p class="sa-note">${esc(it.planNote)}</p>
+          <h4 class="sa-h">Common mistakes</h4><ul class="sa-bad">${it.mistakes.map((x) => `<li>${x}</li>`).join('')}</ul>
+        </article>
+        <div class="sa-nav">
+          ${prev ? `<a class="btn ghost" href="${base}/${prev.id}">&larr; ${esc(prev.tag)}</a>` : '<span></span>'}
+          ${next ? `<a class="btn" href="${base}/${next.id}">Next: ${esc(next.tag)} &rarr;</a>` : `<a class="btn ghost" href="${base}/${items[0].id}">Back to ${esc(items[0].tag)}</a>`}
+        </div>
+      </section>
+    </div>`;
+    const wrap = $main.querySelector('.sa'), mob = $main.querySelector('.sa-mob');
+    mob.onclick = (e) => { const b = e.target.closest('button'); if (!b) return; wrap.dataset.view = b.dataset.v; mob.querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b)); };
+    showPdf(cur.file, document.getElementById('pv'), document.getElementById('pgn'));
+  }
   function renderPapers($main, args) {
     const cur = PAPER_LIST.find((x) => x.id === args[0]) || PAPER_LIST[0];
     const tabs = `<div class="ptabs">${PAPER_LIST.map((x) => `<a class="ptab ${x === cur ? 'on' : ''}" href="#/${KEY}/papers/${x.id}">${esc(x.tab)}<small>${fmtKB(x.kb)}</small></a>`).join('')}</div>`;
+    const AN = cur.answers && window.PORTAL[cur.answers];
+    if (AN && AN.items) return renderPaperSplit($main, cur, tabs, args[1], AN);
     const from = cc.lectures.filter((l) => (l.pastByPaper || {})[cur.paper] > 0).map((l) => `<a class="pchip" href="#/${KEY}/lecture/${l.n}">L${l.n}<small>${l.pastByPaper[cur.paper]}</small></a>`).join('');
     $main.innerHTML = `
     <div class="eyebrow">Papers</div>

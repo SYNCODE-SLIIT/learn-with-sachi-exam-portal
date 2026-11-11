@@ -34,7 +34,7 @@ window.PORTAL.modules.ime = {
   ],
   paperGroups: [
     { t: 'Model papers', items: [
-      { id: 'sample', tab: 'Sample 2025', t: 'Sample paper 2025', sub: 'Shows the new format: 25 MCQs, canvas, business plan', file: 'papers/sample-paper-2025.pdf', paper: 'S25', kb: 112 },
+      { id: 'sample', tab: 'Sample 2025', t: 'Sample paper 2025', sub: 'Shows the new format: 25 MCQs, canvas, business plan', file: 'papers/sample-paper-2025.pdf', paper: 'S25', kb: 112, answers: 'imeSampleAnswers' },
       { id: 'model1', tab: 'Model Paper 1', t: 'Model Paper 1 (Nov 2023, typed copy)', sub: 'Readable typed version of the Nov 2023 paper', file: 'papers/model-paper-1-nov-2023-typed.pdf', paper: 'N23', kb: 52 }
     ] },
     { t: 'Past papers', items: [

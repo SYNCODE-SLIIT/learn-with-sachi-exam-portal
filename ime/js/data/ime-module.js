@@ -17,10 +17,12 @@ window.PORTAL.modules.ime = {
     { q: 'Q2', marks: 35, title: 'Canvas', sub: 'Value Proposition + Business Model · Lecture 6', href: 'lecture/6' },
     { q: 'Q3', marks: 15, title: 'Business plan', sub: 'Three tests and pitching · Lecture 7', href: 'lecture/7' }
   ],
-  flowNote: 'Based on the 2025 sample paper. Older papers had 4 essay questions of 25 marks each.',
+  flowNote: 'Confirmed in the lecturer briefing: 25 MCQs at 2 marks each, a canvas question for 35 marks and a business plan question for 15 marks. Older papers had 4 essay questions of 25 marks each.',
   quickFormat: [
     ['Exam', '13 Nov 2026 · 12:00 PM to 2:00 PM'],
     ['Paper', '25 MCQs (50) · Canvas (35) · Business plan (15)'],
+    ['How you answer', 'MCQs online (5 choices, more than one can be correct) · essays handwritten in the answer book, diagrams allowed'],
+    ['Allowed', 'One reference sheet, written on both sides'],
     ['Reading time', '10 minutes before you start'],
     ['To pass', 'At least 30 marks in the written paper']
   ],
@@ -29,7 +31,8 @@ window.PORTAL.modules.ime = {
     ['MCQs can have more than one answer', 'Read every option before you choose.'],
     ['Define, explain, give an example', 'Use the lecturer\'s words and one real example.'],
     ['Know your own business plan', 'Idea, customers, revenue, and the three tests.'],
-    ['Plan your time', 'About 40 min MCQs, 45 min canvas, 20 min plan, 5 min review.'],
+    ['Start with the essays', 'Lecturer advice: finish Q2 and Q3 first (about 1 hour), then the MCQs (about 1 hour). Half the marks are MCQs.'],
+    ['Not in the exam', 'Financial planning, marketing plan, operational plan and Lean Canvas are not examined (lecturer briefing).'],
     ['Never leave a blank', 'Partial answers earn partial marks.']
   ],
   paperGroups: [
@@ -46,7 +49,7 @@ window.PORTAL.modules.ime = {
     ] }
   ],
   examTime: '12:00 PM – 2:00 PM',
-  examNote: 'Final exam covers all lectures (the 2025 sample paper takes its MCQs from Lectures 1–5)',
+  examNote: 'MCQs come from Lectures 1 to 5 (including the innovation sweet spot and the classification of entrepreneurs). Financial planning, marketing plan and operational plan are not examined',
   shorts: { 1: 'Introduction to Innovation', 2: 'Innovation Tools & Techniques', 3: 'Ideation & Creativity', 4: 'New Product Development', 5: 'Entrepreneur & Entrepreneurship', 6: 'Value Proposition & Business Model', 7: 'Business Plan & Investors', 8: 'Marketing & Operational Plan', 9: 'Financial Planning & Cash' },
   papers: [
     { id: 'J22', label: 'Jun 22' }, { id: 'N22', label: 'Nov 22' }, { id: 'N23', label: 'Nov 23' },

@@ -214,7 +214,7 @@
   }
   /* a paper that has model answers (the module sets answers: 'dataName' on the paper): paper on the left, answers one by one on the right */
   function renderPaperSplit($main, cur, tabs, qid, AN) {
-    const items = AN.items; let k = items.findIndex((x) => x.id === qid); if (k < 0) k = 0;
+    const items = AN.items; let k = items.findIndex((x) => x.id === qid); if (k < 0) k = Math.max(0, items.findIndex((x) => x.dflt));
     const it = items[k], base = '#/' + KEY + '/papers/' + cur.id, prev = items[k - 1], next = items[k + 1];
     const stepTabs = items.map((x, i) => `<a class="sa-t ${i === k ? 'on' : ''}" href="${base}/${x.id}"><b>${esc(x.tag)}</b><small>${x.marks} marks</small></a>`).join('');
     const plan = it.plan.map((r) => `<tr><td>${r[0]}</td><td class="n">${esc(r[1])}</td></tr>`).join('');
@@ -253,6 +253,8 @@
       </section>
     </div>`;
     const wrap = $main.querySelector('.sa'), mob = $main.querySelector('.sa-mob');
+    $main.querySelector('.sa-card').onclick = (e) => { const f = e.target.closest('.sa-fig'); if (!f) return; const ov = document.createElement('div'); ov.className = 'sa-zoom'; ov.innerHTML = f.querySelector('svg').outerHTML + '<span>Click anywhere or press Esc to close</span>'; ov.onclick = () => ov.remove(); document.body.appendChild(ov); };
+    if (!window.__saEsc) { window.__saEsc = true; document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { const z = document.querySelector('.sa-zoom'); if (z) z.remove(); } }); }
     mob.onclick = (e) => { const b = e.target.closest('button'); if (!b) return; wrap.dataset.view = b.dataset.v; mob.querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b)); };
     showPdf(cur.file, document.getElementById('pv'), document.getElementById('pgn'));
   }

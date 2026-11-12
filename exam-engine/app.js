@@ -282,6 +282,7 @@
 
   /* ---------- referral sheets: anyone uploads a PDF, everyone previews and downloads (modules with referrals: true) ---------- */
   const REFS = !!cc.referrals;
+  const OFF = Array.isArray(cc.refFiles) ? cc.refFiles : [];
   const REF_KEYS = 'kuppi.' + KEY + '.refkeys';
   const refBlobs = {};
   let refAdmin = '';
@@ -323,8 +324,13 @@
     $main.innerHTML = `
     <div class="eyebrow">Share</div>
     <h1 style="font-size:clamp(30px,4vw,44px);margin:8px 0 10px">Referral sheets</h1>
-    <p class="lede">Upload your referral sheet so others can preview and download it.</p>
+    <p class="lede">${OFF.length ? 'Sachithra\'s own referral sheets are first: preview them here or download the PDF or Word file. You can also upload your own sheet.' : 'Upload your referral sheet so others can preview and download it.'}</p>
     <div class="rule"></div>
+    ${OFF.length ? `<div class="eyebrow">By Sachithra</div>
+    <div class="rlist" id="rOff" style="margin:10px 0 26px">${OFF.map((f) => `<div class="rcard" data-off="${esc(f.id)}">
+      <div class="rt"><b>${esc(f.title)}</b><span>${esc(f.sub)} &middot; ${f.kind === 'docx' ? 'Word' : 'PDF'} &middot; ${bytesFmt(f.kb * 1024)}</span></div>
+      <div class="ra"><button class="btn sm" type="button" data-oact="view">View</button><a class="btn ghost sm" href="${esc(f.file)}" download>Download</a></div></div>`).join('')}</div>
+    <div class="eyebrow">Upload your own</div>` : ''}
     <form class="rup" id="rForm" autocomplete="off">
       <label>Title<input id="rTitle" type="text" maxlength="80" placeholder="e.g. IME referral sheet, Lectures 1 to 9" required></label>
       <label>Your name <em>(optional)</em><input id="rBy" type="text" maxlength="40" placeholder="Shown with your sheet"></label>
@@ -367,6 +373,20 @@
         showPdf(url, document.getElementById('pv'), document.getElementById('pgn'));
       } catch (e) { document.getElementById('pv').innerHTML = `<div class="vmsg">${esc(e.message)}</div>`; }
     }
+    /* Sachithra's own sheets: View shows the PDF (a Word entry shows its PDF twin), Download is the file itself */
+    const $off = document.getElementById('rOff');
+    if ($off) $off.addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-oact]'); if (!b) return;
+      const f = OFF.find((x) => x.id === b.closest('.rcard').dataset.off); if (!f) return;
+      $off.querySelectorAll('.rcard').forEach((c) => c.classList.toggle('on', c.dataset.off === f.id));
+      const show = f.twin || f.file;
+      $view.innerHTML = `<div class="vbar"><div class="vt"><b>${esc(f.title)}</b><span>${f.kind === 'docx' ? 'Preview of the same sheet as PDF &middot; ' : ''}<span id="pgn">PDF</span></span></div>
+        <a class="btn sm" href="${esc(show)}" target="_blank" rel="noopener">Open in new tab</a>
+        <a class="btn ghost sm" href="${esc(f.file)}" download>${f.kind === 'docx' ? 'Download Word file' : 'Download'}</a></div>
+        <div class="vwrap" id="pv"><div class="vmsg">Loading preview...</div></div>`;
+      $view.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      showPdf(show, document.getElementById('pv'), document.getElementById('pgn'));
+    });
     $list.addEventListener('click', async (e) => {
       const b = e.target.closest('button[data-act]'); if (!b) return;
       const s = find(b.closest('.rcard').dataset.id); if (!s) return;

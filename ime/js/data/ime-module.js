@@ -11,6 +11,13 @@ window.PORTAL.modules.ime = {
   slidesPdf: 'slides/IME-Lecture-Slides.pdf',
   simple: true,
   referrals: true,
+  /* Sachithra's own referral sheets, shown first on the Referral sheets page (a Word entry previews its PDF twin) */
+  refFiles: [
+    { id: 'sp', title: 'Referral sheet, portrait (PDF)', sub: 'A4 portrait, 2 sides · Lectures 1 to 7 and the VPC and BMC templates', kind: 'pdf', file: 'referral/sachi-ime-referral-portrait.pdf', kb: 331 },
+    { id: 'sl', title: 'Referral sheet, landscape (PDF)', sub: 'A4 landscape, 2 sides · 4 columns · same content as the portrait sheet', kind: 'pdf', file: 'referral/sachi-ime-referral-landscape.pdf', kb: 323 },
+    { id: 'wp', title: 'Referral sheet, portrait (Word)', sub: 'Editable .docx of the portrait sheet', kind: 'docx', file: 'referral/sachi-ime-referral-portrait.docx', twin: 'referral/sachi-ime-referral-portrait.pdf', kb: 196 },
+    { id: 'wl', title: 'Referral sheet, landscape (Word)', sub: 'Editable .docx of the landscape sheet', kind: 'docx', file: 'referral/sachi-ime-referral-landscape.docx', twin: 'referral/sachi-ime-referral-landscape.pdf', kb: 196 }
+  ],
   simpleLede: 'Three parts to the paper. Know where the marks are, then spend your time on the lectures that matter most.',
   flow: [
     { q: 'Q1', marks: 50, title: 'MCQs', sub: '25 questions · Lectures 1 to 5', href: 'practice' },

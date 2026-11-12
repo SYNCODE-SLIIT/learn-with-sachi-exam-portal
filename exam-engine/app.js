@@ -482,7 +482,7 @@
     else if (page === 'referrals' && REFS) { document.title = 'Referral sheets | ' + cc.name; renderReferrals($main); }
     else if (page === 'mcq' && MCQD && P.renderMcq) {
       document.title = 'MCQ practice | ' + cc.name;
-      P.renderMcq($main, { data: MCQD, key: 'kuppi.' + KEY + '.mcqp', back: '#/' + KEY, lectures: cc.lectures.map((l) => ({ n: l.n, title: l.title })) });
+      P.renderMcq($main, { data: MCQD, key: 'kuppi.' + KEY + '.mcqp', back: '#/' + KEY, code: cc.code, lectures: cc.lectures.map((l) => ({ n: l.n, title: l.title })) });
     }
     else if (page === 'practice') { document.title = 'Practice | ' + cc.name; renderPractice($main); }
     else if (page === 'slides' && SLIDES) { document.title = 'Lecture slides | ' + cc.name; renderSlides($main, p.slice(1)); }

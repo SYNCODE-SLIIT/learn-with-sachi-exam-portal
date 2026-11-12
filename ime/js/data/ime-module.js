@@ -11,6 +11,7 @@ window.PORTAL.modules.ime = {
   slidesPdf: 'slides/IME-Lecture-Slides.pdf',
   simple: true,
   referrals: true,
+  mcqPractice: true,
   /* Sachithra's own referral sheets, shown first on the Referral sheets page (a Word entry previews its PDF twin) */
   refFiles: [
     { id: 'sp', title: 'Referral sheet, portrait (PDF)', sub: 'A4 portrait, 2 sides · Lectures 1 to 7 and the VPC and BMC templates', kind: 'pdf', file: 'referral/sachi-ime-referral-portrait.pdf', kb: 331 },
@@ -20,7 +21,7 @@ window.PORTAL.modules.ime = {
   ],
   simpleLede: 'Three parts to the paper. Know where the marks are, then spend your time on the lectures that matter most.',
   flow: [
-    { q: 'Q1', marks: 50, title: 'MCQs', sub: '25 questions · Lectures 1 to 5', href: 'practice' },
+    { q: 'Q1', marks: 50, title: 'MCQs', sub: '25 questions · Lectures 1 to 5', href: 'mcq' },
     { q: 'Q2', marks: 35, title: 'Canvas', sub: 'Value Proposition + Business Model · Lecture 6', href: 'lecture/6' },
     { q: 'Q3', marks: 15, title: 'Business plan', sub: 'Three tests and pitching · Lecture 7', href: 'lecture/7' }
   ],

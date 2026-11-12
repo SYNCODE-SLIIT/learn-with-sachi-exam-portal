@@ -283,6 +283,9 @@
   /* ---------- referral sheets: anyone uploads a PDF, everyone previews and downloads (modules with referrals: true) ---------- */
   const REFS = !!cc.referrals;
   const OFF = Array.isArray(cc.refFiles) ? cc.refFiles : [];
+  /* MCQ practice page (modules that set mcqPractice: true and load <key>Mcq data plus exam-engine/mcq.js) */
+  const MCQD = cc.mcqPractice ? (P[KEY + 'Mcq'] || null) : null;
+  const mcqTotal = MCQD ? Object.keys(MCQD).reduce((t, n) => t + Object.keys(MCQD[n]).reduce((u, lv) => u + MCQD[n][lv].length, 0), 0) : 0;
   const REF_KEYS = 'kuppi.' + KEY + '.refkeys';
   const refBlobs = {};
   let refAdmin = '';
@@ -446,6 +449,7 @@
     const navItems = [['map', '#/' + KEY, 'Exam map'], ['rules', '#/' + KEY + '/rules', 'Paper and golden rules']]
       .concat(PAPERS ? [['papers', '#/' + KEY + '/papers', 'Past papers', String(PAPER_LIST.length)]] : [])
       .concat(REFS ? [['referrals', '#/' + KEY + '/referrals', 'Referral sheets']] : [])
+      .concat(MCQD ? [['mcq', '#/' + KEY + '/mcq', 'MCQ practice', String(mcqTotal)]] : [])
       .concat([['practice', '#/' + KEY + '/practice', 'Practice questions', String(totals.all)]])
       .concat(SLIDES ? [['slides', '#/' + KEY + '/slides', 'Lecture slides', String(SLIDES.reduce((t, d) => t + d.slides.length, 0))]] : []);
     const nav = (key, href, num, label, right) =>
@@ -476,6 +480,10 @@
     if (page === 'rules') { document.title = 'Paper and golden rules | ' + cc.name; $main.innerHTML = cc.simple ? viewRulesSimple() : viewRules(); }
     else if (page === 'papers' && PAPERS) { document.title = 'Past papers | ' + cc.name; renderPapers($main, p.slice(1)); }
     else if (page === 'referrals' && REFS) { document.title = 'Referral sheets | ' + cc.name; renderReferrals($main); }
+    else if (page === 'mcq' && MCQD && P.renderMcq) {
+      document.title = 'MCQ practice | ' + cc.name;
+      P.renderMcq($main, { data: MCQD, key: 'kuppi.' + KEY + '.mcqp', back: '#/' + KEY, lectures: cc.lectures.map((l) => ({ n: l.n, title: l.title })) });
+    }
     else if (page === 'practice') { document.title = 'Practice | ' + cc.name; renderPractice($main); }
     else if (page === 'slides' && SLIDES) { document.title = 'Lecture slides | ' + cc.name; renderSlides($main, p.slice(1)); }
     else if (page === 'lecture' && lecByN(lecN)) { const lec = lecByN(lecN); document.title = 'L' + lec.n + ' ' + lec.title + ' | ' + cc.name; $main.innerHTML = viewLecture(lec); bindLecture(lec); }

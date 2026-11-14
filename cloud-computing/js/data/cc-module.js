@@ -6,26 +6,66 @@ window.PORTAL.modules.cc = {
   shorts: { 1: 'Introduction to Cloud', 2: 'Core Services & Infrastructure', 3: 'Compute & Storage', 4: 'Cloud Networking', 5: 'HA & Disaster Recovery', 6: 'Security & Monitoring', 7: 'Database & Analytics', 8: 'Cloud Migration', 9: 'Cloud Native Apps', 10: 'Infrastructure as Code', 11: 'Containerization', 12: 'Container Orchestration' },
   priority: { high: 10, med: 3 },
   newFrom: 8,
+  simple: true,
   lecturesStat: 'Lectures in exam (L1–L12)',
-  mapLede: 'Priority comes from how often each lecture appeared in the mid-term past papers, because no final paper was available.',
-  mapNote: '<b>Honest scope note.</b> The past-paper analysis covers <b>Lectures 1–7 only</b> (mid-term). Lectures 8–12 are examined in the final but had no past questions, so they are marked <b>New in final</b> and their notes are written from the course outline since the slides were not in the folder.',
-  shareDesc: 'Mid-term questions per lecture (MCQ, short answer, structured).',
-  heatDesc: 'Questions per lecture by type.',
-  rankDesc: 'Lectures ordered by mid-term weight.',
-  rankExtra: '<li><a href="#/cc/lecture/8"><span class="k">L8–12</span><span class="nm">Migration to Orchestration</span><span class="v">new in final</span></a></li>',
+  simpleLede: 'Four questions of 25 marks, each with 5 MCQs and a few structured questions. Know where the marks are, then spend your time on the lectures that matter most.',
+  flow: [
+    { q: 'Q1', marks: 25, title: 'Cloud basics and services', sub: '5 MCQs + structured · Lectures 1 to 7', href: 'lecture/1' },
+    { q: 'Q2', marks: 25, title: 'Case study', sub: 'A scenario across the course · past papers', href: 'papers' },
+    { q: 'Q3', marks: 25, title: 'Migration and cloud native', sub: '5 MCQs + structured · Lectures 8 and 9', href: 'lecture/8' },
+    { q: 'Q4', marks: 25, title: 'Microservices, containers, IaC', sub: '5 MCQs + structured · Lectures 9 to 12', href: 'lecture/10' }
+  ],
+  flowNote: 'From the official exam brief: every main question has 5 MCQs and a few structured or essay questions. Q2 is a case study. Lecture 13 (Cloud in Enterprises and Cloud Design Frameworks) is not examined.',
+  quickFormat: [
+    ['Exam', '16 Nov 2026 · 9:00 AM to 11:00 AM'],
+    ['Mode', 'Computer-based'],
+    ['Duration', '2 hours · no additional reading time'],
+    ['Paper', 'Q1 basics and services (25) · Q2 case study (25) · Q3 migration and cloud native (25) · Q4 microservices, containers, IaC (25)'],
+    ['Topics', 'Lectures 1 to 12 · nothing from Lecture 13'],
+    ['Question types', 'MCQs · short answers · structured / essay']
+  ],
+  quickRules: [
+    ['No reading time', 'The 2 hours start at once. Do the MCQs fast, then spend the time on the structured answers and the case study.'],
+    ['Q2 is a case study', 'Read the scenario twice and use its business name and facts in every answer. Pick a service model and a deployment model, then explain scalability, security, availability and cost.'],
+    ['Each question has 5 MCQs', 'Q1 to Q4 each carry 5 MCQs. Read every option and underline the keyword before you answer.'],
+    ['Practise with past papers', 'Open the Past papers page. The final papers 2022 to 2024 show how the lecturer asks: compare, justify, explain with a diagram.'],
+    ['Skip Lecture 13 topics', 'Old papers ask about the Well-Architected Framework, barriers to IT innovation and multi-cloud. Those belong to Lecture 13 and are not examined this time.'],
+    ['Structured answers', 'Define → explain → example or diagram → benefit or trade-off. Name real services (VPC, ALB, ASG, RDS Multi-AZ, S3).'],
+    ['Never leave a blank', 'Partial answers earn partial marks. Write what you know.']
+  ],
+  paperGroups: [
+    { t: 'Final exam papers', items: [
+      { id: 'jun24', tab: 'Jun 2024', t: 'IT4090 Final exam, June 2024', sub: '4 questions of 25 marks · scanned paper (Q4 is Lecture 13, skip it)', file: 'papers/jun-2024.pdf', paper: 'J24', kb: 125 },
+      { id: 'nov23', tab: 'Nov 2023', t: 'IT4090 Final exam, November 2023', sub: '4 questions of 25 marks · scanned paper (Q4 d, e, f are Lecture 13)', file: 'papers/nov-2023.pdf', paper: 'N23', kb: 1599 },
+      { id: 'nov22', tab: 'Nov 2022', t: 'IT4090 Final exam, November 2022', sub: '4 questions · scanned paper (Q4 is Lecture 13, skip it)', file: 'papers/nov-2022.pdf', paper: 'N22', kb: 174 },
+      { id: 'jun22', tab: 'Jun 2022', t: 'IT4090 Repeat exam, June 2022', sub: '5 questions of 20 marks · scanned paper (Q5 is Lecture 13, skip it)', file: 'papers/jun-2022.pdf', paper: 'J22', kb: 141 }
+    ] },
+    { t: 'Mid-term', items: [
+      { id: 'mid', tab: 'Mid-term', t: 'Mid-term past papers collection', sub: 'Source of the MCQs in the practice section', file: 'papers/midterm-collection.pdf', paper: 'MID', kb: 9903 }
+    ] }
+  ],
+  /* final-paper questions per lecture (each lettered part counted once; Lecture 13 topics left out) */
+  fromLabel: 'Questions per lecture in this paper',
+  paperMap: {
+    J22: { 1: 2, 6: 5, 7: 4, 8: 1, 9: 3 },
+    N22: { 1: 3, 5: 1, 6: 5, 9: 5, 11: 1 },
+    N23: { 1: 6, 2: 2, 6: 3, 7: 1, 8: 3, 9: 6 },
+    J24: { 1: 4, 6: 7, 8: 1, 9: 5 }
+  },
   code: 'IT4090',
   name: 'Cloud Computing',
   year: 'Year 4 · Semester 2',
-  blurb: '12 lectures · MCQ + short answers + structured · 2 hours',
+  blurb: '12 lectures · 4 questions · MCQ + short + structured · 2 hours',
   examDate: '2026-11-16',   // YYYY-MM-DD. null shows "TBA" in the sidebar.
   examTime: '9:00 AM – 11:00 AM',
-  examNote: 'Final exam: Lectures 1–12 (no questions from Lecture 13)',
+  examNote: 'Final exam: Lectures 1–12 (no questions from Lecture 13, Cloud in Enterprises and Cloud Design Frameworks)',
+  cheatHead: ['If the question says', 'Answer with'],
   format: [
     ['Date and time', '16 Nov 2026 · 9:00 AM – 11:00 AM'],
-    ['Duration', '2 hours'],
+    ['Duration', '2 hours · no additional reading time'],
     ['Question types', 'MCQs · short answers · structured / essay'],
-    ['Coverage', 'Lectures 1–12 (Lecture 13 Microservices &amp; Serverless is <b>not</b> examined)'],
-    ['Practice with', 'Mid-term past-paper questions in this portal']
+    ['Coverage', 'Lectures 1–12 (Lecture 13 Cloud in Enterprises and Cloud Design Frameworks is <b>not</b> examined)'],
+    ['Practice with', 'Final and mid-term past papers in this portal']
   ],
   lectureSources: {
     slides: 'Built from your lecture slides.',

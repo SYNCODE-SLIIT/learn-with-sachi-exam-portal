@@ -324,6 +324,10 @@
     }
     return (refBlobs[k] = new Blob(parts, { type: 'application/pdf' }));
   }
+  const VARS = OFF.length && Array.isArray(cc.refVariants) ? cc.refVariants : [];
+  const offCards = (list) => list.map((f) => `<div class="rcard" data-off="${esc(f.id)}">
+      <div class="rt"><b>${esc(f.title)}</b><span>${esc(f.sub)} &middot; ${f.kind === 'docx' ? 'Word' : 'PDF'} &middot; ${bytesFmt(f.kb * 1024)}</span></div>
+      <div class="ra"><button class="btn sm" type="button" data-oact="view">View</button><a class="btn ghost sm" href="${esc(f.file)}" download>Download</a></div></div>`).join('');
   function renderReferrals($main) {
     let sheets = [], keys = store.get(REF_KEYS, {}), openId = '';
     $main.innerHTML = `
@@ -332,9 +336,11 @@
     <p class="lede">${OFF.length ? 'Sachithra\'s own referral sheets are first: preview them here or download the PDF or Word file. You can also upload your own sheet.' : 'Upload your referral sheet so others can preview and download it.'}</p>
     <div class="rule"></div>
     ${OFF.length ? `<div class="eyebrow">By Sachithra</div>
-    <div class="rlist" id="rOff" style="margin:10px 0 26px">${OFF.map((f) => `<div class="rcard" data-off="${esc(f.id)}">
-      <div class="rt"><b>${esc(f.title)}</b><span>${esc(f.sub)} &middot; ${f.kind === 'docx' ? 'Word' : 'PDF'} &middot; ${bytesFmt(f.kb * 1024)}</span></div>
-      <div class="ra"><button class="btn sm" type="button" data-oact="view">View</button><a class="btn ghost sm" href="${esc(f.file)}" download>Download</a></div></div>`).join('')}</div>
+    ${VARS.length ? `<h2 class="rask">Do you need the past paper answers?</h2>
+    <div class="rvars" id="rVars">${VARS.map((v) => { const n = OFF.filter((f) => f.variant === v.id).length; return `<button type="button" class="rvar ${n ? '' : 'soon'}" data-v="${esc(v.id)}" ${n ? '' : 'aria-disabled="true"'}>
+      <span class="rvt"><b>${esc(v.title)}</b>${n ? '' : '<em>Coming soon</em>'}</span><span class="rvs">${esc(v.sub)}</span>${n ? `<span class="rvn">${n} files · PDF and Word, portrait and landscape</span>` : ''}</button>`; }).join('')}</div>
+    <div class="rpick muted" id="rPick">Pick one above to see the files.</div>` : ''}
+    <div class="rlist" id="rOff" style="margin:10px 0 26px">${VARS.length ? '' : offCards(OFF)}</div>
     <div class="eyebrow">Upload your own</div>` : ''}
     <form class="rup" id="rForm" autocomplete="off">
       <label>Title<input id="rTitle" type="text" maxlength="80" placeholder="${esc(cc.refPlaceholder || 'e.g. IME referral sheet, Lectures 1 to 9')}" required></label>
@@ -380,6 +386,24 @@
     }
     /* Sachithra's own sheets: View shows the PDF (a Word entry shows its PDF twin), Download is the file itself */
     const $off = document.getElementById('rOff');
+    /* version chooser: show only the files of the picked version (the pick is remembered in this browser) */
+    const $vars = document.getElementById('rVars');
+    if ($vars) {
+      const pick = (id) => {
+        const list = OFF.filter((f) => f.variant === id); if (!list.length) return;
+        const v = VARS.find((x) => x.id === id);
+        $vars.querySelectorAll('.rvar').forEach((b) => b.classList.toggle('on', b.dataset.v === id));
+        document.getElementById('rPick').textContent = 'Showing: ' + v.title;
+        $off.innerHTML = offCards(list); $view.innerHTML = ''; store.set('kuppi.' + KEY + '.refvar', id);
+      };
+      $vars.addEventListener('click', (e) => {
+        const b = e.target.closest('.rvar'); if (!b) return;
+        if (b.classList.contains('soon')) { document.getElementById('rPick').textContent = 'The version with past paper answers is being prepared. Check back soon, or use the version without answers for now.'; return; }
+        pick(b.dataset.v);
+      });
+      const saved = store.get('kuppi.' + KEY + '.refvar', '');
+      if (saved && OFF.some((f) => f.variant === saved)) pick(saved);
+    }
     if ($off) $off.addEventListener('click', (e) => {
       const b = e.target.closest('button[data-oact]'); if (!b) return;
       const f = OFF.find((x) => x.id === b.closest('.rcard').dataset.off); if (!f) return;

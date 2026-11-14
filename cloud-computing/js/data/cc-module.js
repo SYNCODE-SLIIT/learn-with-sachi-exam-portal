@@ -10,6 +10,17 @@ window.PORTAL.modules.cc = {
   referrals: true,
   refOwnOnly: true,
   refPlaceholder: 'e.g. Cloud Computing referral sheet, Lectures 1 to 12',
+  /* Sachithra's own referral sheets: the reader first picks a version, then only that version's files are shown. Add the "with" files here later and the option switches on by itself. */
+  refVariants: [
+    { id: 'without', title: 'Without past paper answers', sub: 'Lecture notes only, Lectures 1 to 12 on 2 pages. Best if you want a clean sheet to add your own answers.' },
+    { id: 'with', title: 'With past paper answers', sub: 'The same lecture notes plus worked answers from the past final papers.' }
+  ],
+  refFiles: [
+    { id: 'wp-pdf', variant: 'without', title: 'Portrait sheet (PDF)', sub: 'A4 portrait, 2 pages, 2 columns · Lectures 1 to 12', kind: 'pdf', file: 'referral/sachi-cc-referral-portrait-without-pp.pdf', kb: 432 },
+    { id: 'wl-pdf', variant: 'without', title: 'Landscape sheet (PDF)', sub: 'A4 landscape, 2 pages, 4 columns · same content', kind: 'pdf', file: 'referral/sachi-cc-referral-landscape-without-pp.pdf', kb: 434 },
+    { id: 'wp-doc', variant: 'without', title: 'Portrait sheet (Word)', sub: 'Editable .docx of the portrait sheet', kind: 'docx', file: 'referral/sachi-cc-referral-portrait-without-pp.docx', twin: 'referral/sachi-cc-referral-portrait-without-pp.pdf', kb: 72 },
+    { id: 'wl-doc', variant: 'without', title: 'Landscape sheet (Word)', sub: 'Editable .docx of the landscape sheet', kind: 'docx', file: 'referral/sachi-cc-referral-landscape-without-pp.docx', twin: 'referral/sachi-cc-referral-landscape-without-pp.pdf', kb: 72 }
+  ],
   practiceRail: true,
   sourceLabels: { final: 'Final paper' },
   slidesPdf: 'slides/CC-Lecture-Slides.pdf',

@@ -103,6 +103,25 @@
 .mq-foot .mid{display:flex;gap:8px;flex-wrap:wrap}
 .mq-tip{font:11px/1.4 Consolas,"SF Mono",Menlo,monospace;color:var(--faint);letter-spacing:.04em;margin-top:8px;flex:none}
 
+/* ---------- question type tabs, short answers and essays ---------- */
+.mq-lvb[data-lv=past] i{background:var(--y)}.mq-lvb[data-lv=practice] i{background:var(--ok)}.mq-lvb[data-lv=final] i{background:var(--bad)}
+.mq-types{display:flex;gap:8px;flex-wrap:wrap}
+.mq-ty{display:inline-flex;align-items:center;gap:9px;padding:9px 16px;border:1px solid var(--line2);background:var(--panel);font-weight:700;font-size:14px;color:var(--muted);transition:border-color .12s,color .12s,background .12s}
+.mq-ty small{font:700 11px/1 Consolas,monospace;color:var(--faint)}
+.mq-ty:hover{border-color:var(--ydim);color:var(--text)}
+.mq-ty.on{background:var(--y);border-color:var(--y);color:#000}.mq-ty.on small{color:rgba(0,0,0,.6)}
+.mq-etitle{margin:0 0 6px;font:700 12px/1.3 Consolas,monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--y)}
+.mq-q.sm{font-size:clamp(15px,2.2vh,19px);font-weight:600;line-height:1.5}
+.mq-think{border:1px dashed var(--line2);padding:18px 20px;color:var(--muted);font-size:15px}
+.mq-ans{color:#e4e4e4;font-size:15px;line-height:1.6}
+.mq-ans p{margin:0 0 8px}.mq-ans ul,.mq-ans ol{margin:0 0 8px;padding-left:20px}.mq-ans li{margin:3px 0}.mq-ans b{color:var(--y)}
+.mq-ans pre{background:#000;border:1px solid var(--line2);padding:10px 12px;overflow:auto;font:13px/1.5 Consolas,monospace;margin:8px 0}
+.mq-ans code{font-family:Consolas,monospace;color:var(--y)}
+.mq-tw{overflow:auto;margin:8px 0}.mq-ans table{border-collapse:collapse;width:100%;font-size:13.5px}
+.mq-ans th{background:var(--y);color:#000;text-align:left;padding:6px 10px}.mq-ans td{border:1px solid var(--line2);padding:6px 10px;vertical-align:top}
+.mq-self{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px;font:700 11px/1 Consolas,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.mq-b.pri.bad{background:var(--bad);color:#000}
+
 /* ---------- results ---------- */
 .mq-res{overflow:hidden}
 .mq-res h2{margin:0 0 4px;font-size:clamp(20px,3.4vh,28px);letter-spacing:-.01em}

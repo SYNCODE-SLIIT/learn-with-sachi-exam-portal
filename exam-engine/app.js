@@ -337,7 +337,7 @@
       <div class="ra"><button class="btn sm" type="button" data-oact="view">View</button><a class="btn ghost sm" href="${esc(f.file)}" download>Download</a></div></div>`).join('')}</div>
     <div class="eyebrow">Upload your own</div>` : ''}
     <form class="rup" id="rForm" autocomplete="off">
-      <label>Title<input id="rTitle" type="text" maxlength="80" placeholder="e.g. IME referral sheet, Lectures 1 to 9" required></label>
+      <label>Title<input id="rTitle" type="text" maxlength="80" placeholder="${esc(cc.refPlaceholder || 'e.g. IME referral sheet, Lectures 1 to 9')}" required></label>
       <label>Your name <em>(optional)</em><input id="rBy" type="text" maxlength="40" placeholder="Shown with your sheet"></label>
       <label>PDF file <em>(max 6 MB)</em><input id="rFile" type="file" accept=".pdf,application/pdf" required></label>
       <button class="btn" type="submit" id="rGo">Upload sheet</button>
@@ -365,7 +365,7 @@
       }).join('') : '<div class="vmsg">No referral sheets yet. Be the first to upload one.</div>';
     }
     async function load() {
-      try { const j = await refApi('GET'); sheets = j.sheets; draw(); }
+      try { const j = await refApi('GET'); sheets = cc.refOwnOnly ? j.sheets.filter((x) => (x.module || '') === KEY) : j.sheets; draw(); }
       catch (e) { sheets = []; $list.innerHTML = `<div class="vmsg">${e.status === 503 ? 'Referral sheets are not available yet.' : 'Could not load the sheets. Please try again.'}</div>`; if (e.status === 503) document.getElementById('rGo').disabled = true; }
     }
     async function openSheet(s) {
@@ -485,6 +485,14 @@
     else if (page === 'mcq' && MCQD && P.renderMcq) {
       document.title = 'MCQ practice | ' + cc.name;
       P.renderMcq($main, { data: MCQD, key: 'kuppi.' + KEY + '.mcqp', back: '#/' + KEY, code: cc.code, lectures: cc.lectures.map((l) => ({ n: l.n, title: l.title })) });
+    }
+    else if (page === 'practice' && cc.practiceRail && P.renderMcq) {
+      document.title = 'Practice | ' + cc.name;
+      const lv = {}, shorts = {}, essays = {};
+      mcq.forEach((q) => { const k = isPast(q) ? 'past' : 'practice'; ((lv[q.lec] = lv[q.lec] || { past: [], practice: [] })[k]).push([q.q, q.opts, q.ans.map((i) => L[i]).join(''), q.exp, q.src === 'adapted' ? 'Options reworded' : '']); });
+      short.forEach((q) => { (shorts[q.lec] = shorts[q.lec] || []).push([q.q, q.a, SOURCE_LABEL[q.src] || '']); });
+      struct.forEach((q) => { (essays[q.lec] = essays[q.lec] || []).push([q.title, q.q, q.a, q.hint || '', SOURCE_LABEL[q.src] || '']); });
+      P.renderMcq($main, { data: lv, short: shorts, essay: essays, levels: [['past', 'Past paper'], ['practice', 'Practice']], markEach: 0, title: 'Practice', topicsLabel: 'Lectures', mcqLabel: 'MCQ', shortLabel: 'Short answers', essayLabel: 'Essay', key: 'kuppi.' + KEY + '.prac2', back: '#/' + KEY, code: cc.code, lectures: cc.lectures.map((l) => ({ n: l.n, title: l.short })) });
     }
     else if (page === 'practice') { document.title = 'Practice | ' + cc.name; renderPractice($main); }
     else if (page === 'slides' && SLIDES) { document.title = 'Lecture slides | ' + cc.name; renderSlides($main, p.slice(1)); }

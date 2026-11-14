@@ -9,11 +9,6 @@ window.PORTAL.modules.cc = {
   simple: true,
   referrals: true,
   slidesPdf: 'slides/CC-Lecture-Slides.pdf',
-  /* Sachithra's own referral sheets, shown first on the Referral sheets page */
-  refFiles: [
-    { id: 'sp', title: 'Referral sheet, portrait (PDF)', sub: 'A4 portrait · Lectures 1 to 12 on one page', kind: 'pdf', file: 'referral/sachi-cc-referral-portrait.pdf', kb: 151 },
-    { id: 'sl', title: 'Referral sheet, landscape (PDF)', sub: 'A4 landscape · 4 columns · same content as the portrait sheet', kind: 'pdf', file: 'referral/sachi-cc-referral-landscape.pdf', kb: 151 }
-  ],
   lecturesStat: 'Lectures in exam (L1–L12)',
   simpleLede: 'Four questions of 25 marks, each with 5 MCQs and a few structured questions. Know where the marks are, then spend your time on the lectures that matter most.',
   flow: [

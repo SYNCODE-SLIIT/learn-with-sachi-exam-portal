@@ -7,6 +7,13 @@ window.PORTAL.modules.cc = {
   priority: { high: 10, med: 3 },
   newFrom: 8,
   simple: true,
+  referrals: true,
+  slidesPdf: 'slides/CC-Lecture-Slides.pdf',
+  /* Sachithra's own referral sheets, shown first on the Referral sheets page */
+  refFiles: [
+    { id: 'sp', title: 'Referral sheet, portrait (PDF)', sub: 'A4 portrait · Lectures 1 to 12 on one page', kind: 'pdf', file: 'referral/sachi-cc-referral-portrait.pdf', kb: 151 },
+    { id: 'sl', title: 'Referral sheet, landscape (PDF)', sub: 'A4 landscape · 4 columns · same content as the portrait sheet', kind: 'pdf', file: 'referral/sachi-cc-referral-landscape.pdf', kb: 151 }
+  ],
   lecturesStat: 'Lectures in exam (L1–L12)',
   simpleLede: 'Four questions of 25 marks, each with 5 MCQs and a few structured questions. Know where the marks are, then spend your time on the lectures that matter most.',
   flow: [
@@ -39,9 +46,6 @@ window.PORTAL.modules.cc = {
       { id: 'nov23', tab: 'Nov 2023', t: 'IT4090 Final exam, November 2023', sub: '4 questions of 25 marks · scanned paper (Q4 d, e, f are Lecture 13)', file: 'papers/nov-2023.pdf', paper: 'N23', kb: 1599 },
       { id: 'nov22', tab: 'Nov 2022', t: 'IT4090 Final exam, November 2022', sub: '4 questions · scanned paper (Q4 is Lecture 13, skip it)', file: 'papers/nov-2022.pdf', paper: 'N22', kb: 174 },
       { id: 'jun22', tab: 'Jun 2022', t: 'IT4090 Repeat exam, June 2022', sub: '5 questions of 20 marks · scanned paper (Q5 is Lecture 13, skip it)', file: 'papers/jun-2022.pdf', paper: 'J22', kb: 141 }
-    ] },
-    { t: 'Mid-term', items: [
-      { id: 'mid', tab: 'Mid-term', t: 'Mid-term past papers collection', sub: 'Source of the MCQs in the practice section', file: 'papers/midterm-collection.pdf', paper: 'MID', kb: 9903 }
     ] }
   ],
   /* final-paper questions per lecture (each lettered part counted once; Lecture 13 topics left out) */
@@ -65,7 +69,7 @@ window.PORTAL.modules.cc = {
     ['Duration', '2 hours · no additional reading time'],
     ['Question types', 'MCQs · short answers · structured / essay'],
     ['Coverage', 'Lectures 1–12 (Lecture 13 Cloud in Enterprises and Cloud Design Frameworks is <b>not</b> examined)'],
-    ['Practice with', 'Final and mid-term past papers in this portal']
+    ['Practice with', 'Final past papers in this portal']
   ],
   lectureSources: {
     slides: 'Built from your lecture slides.',

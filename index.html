@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Exam Kuppi Portal</title>
+<title>Learn with SACHI | Exam Kuppi Portal</title>
 <style>
 :root{
   --bg:#000; --side:#0a0a0a; --surf:#111; --surf2:#181818; --line:#2a2a2a; --line2:#3c3c3c;
@@ -792,7 +792,7 @@ function renderLanding(){
   L.classList.toggle("yel",!Y);
   $("#ysub").hidden=!!Y;$("#ysub").textContent="Choose your year to open your modules";L.querySelector(".lfoot").hidden=!!Y;L.querySelector(".syncfoot").hidden=!!Y;
   if(!Y){
-    bk.hidden=true;h1.innerHTML='Sachi-Portal';
+    bk.hidden=true;h1.innerHTML='Learn with SACHI';
     $("#mods").innerHTML=YEARBOX.map(y=>{
       const ms=y.mods.map(modOf),known=ms.filter(m=>!m.soon),lec=known.reduce((a,m)=>a+(m.lectures.length||m.lectures),0);
       return `<a class="mcard" href="#${y.key}" data-year><span class="ynum" aria-hidden="true">${y.num}</span><div class="code">YEAR ${y.num}</div><h2>${y.name} Year</h2><p>${y.desc}</p>

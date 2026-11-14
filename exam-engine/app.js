@@ -33,6 +33,8 @@
     lec.pastBy = { mcq: pastCount(lec.n, 'mcq'), short: pastCount(lec.n, 'short'), struct: pastCount(lec.n, 'struct') };
     lec.pastByPaper = {};
     (cc.papers || []).forEach((pp) => { lec.pastByPaper[pp.id] = [mcq, short, struct].reduce((t, arr) => t + arr.filter((q) => q.lec === lec.n && isPast(q) && (q.paper || '').split(',').includes(pp.id)).length, 0); });
+    /* paperMap: { paperId: { lectureNo: count } } adds past-paper questions that are not in the question bank (for example final papers that are only shown as PDFs) */
+    Object.keys(cc.paperMap || {}).forEach((pid) => { const c = (cc.paperMap[pid] || {})[lec.n] || 0; if (c) { lec.pastByPaper[pid] = (lec.pastByPaper[pid] || 0) + c; lec.past += c; } });
     const th = cc.priority || { high: 10, med: 3 };
     lec.priority = lec.past >= th.high ? 'high' : lec.past >= th.med ? 'med' : lec.past >= 1 ? 'low' : (lec.n >= (cc.newFrom || 999) ? 'new' : 'none');
     lec.hyCount = lec.topics.filter((t) => t.hy).length;
@@ -272,7 +274,7 @@
     ${tabs}
     <div class="vbar">
       <div class="vt"><b>${esc(cur.t)}</b><span>${esc(cur.sub)} &middot; <span id="pgn">PDF</span></span>
-        ${from ? `<div class="pfrom"><em>Questions in the portal from this paper</em>${from}</div>` : ''}</div>
+        ${from ? `<div class="pfrom"><em>${esc(cc.fromLabel || 'Questions in the portal from this paper')}</em>${from}</div>` : ''}</div>
       <a class="btn sm" href="${esc(cur.file)}" target="_blank" rel="noopener">Open in new tab</a>
       <a class="btn ghost sm" href="${esc(cur.file)}" download>Download</a>
     </div>

@@ -333,13 +333,10 @@
     $main.innerHTML = `
     <div class="eyebrow">Share</div>
     <h1 style="font-size:clamp(30px,4vw,44px);margin:8px 0 10px">Referral sheets</h1>
-    <p class="lede">${OFF.length ? 'Sachithra\'s own referral sheets are first: preview them here or download the PDF or Word file. You can also upload your own sheet.' : 'Upload your referral sheet so others can preview and download it.'}</p>
+    <p class="lede">${VARS.length ? 'Choose a version, then preview it here or download the PDF or Word file.' : OFF.length ? 'Sachithra\'s own referral sheets are first: preview them here or download the PDF or Word file. You can also upload your own sheet.' : 'Upload your referral sheet so others can preview and download it.'}</p>
     <div class="rule"></div>
     ${OFF.length ? `<div class="eyebrow">By Sachithra</div>
-    ${VARS.length ? `<h2 class="rask">Do you need the past paper answers?</h2>
-    <div class="rvars" id="rVars">${VARS.map((v) => { const n = OFF.filter((f) => f.variant === v.id).length; return `<button type="button" class="rvar ${n ? '' : 'soon'}" data-v="${esc(v.id)}" ${n ? '' : 'aria-disabled="true"'}>
-      <span class="rvt"><b>${esc(v.title)}</b>${n ? '' : '<em>Coming soon</em>'}</span><span class="rvs">${esc(v.sub)}</span>${n ? `<span class="rvn">${n} files · PDF and Word, portrait and landscape</span>` : ''}</button>`; }).join('')}</div>
-    <div class="rpick muted" id="rPick">Pick one above to see the files.</div>` : ''}
+    ${VARS.length ? `<div class="rbar"><span id="rPick">No version chosen yet.</span><button type="button" class="linkbtn" id="rChange">Choose version</button></div>` : ''}
     <div class="rlist" id="rOff" style="margin:10px 0 26px">${VARS.length ? '' : offCards(OFF)}</div>
     <div class="eyebrow">Upload your own</div>` : ''}
     <form class="rup" id="rForm" autocomplete="off">
@@ -386,23 +383,33 @@
     }
     /* Sachithra's own sheets: View shows the PDF (a Word entry shows its PDF twin), Download is the file itself */
     const $off = document.getElementById('rOff');
-    /* version chooser: show only the files of the picked version (the pick is remembered in this browser) */
-    const $vars = document.getElementById('rVars');
-    if ($vars) {
-      const pick = (id) => {
-        const list = OFF.filter((f) => f.variant === id); if (!list.length) return;
-        const v = VARS.find((x) => x.id === id);
-        $vars.querySelectorAll('.rvar').forEach((b) => b.classList.toggle('on', b.dataset.v === id));
-        document.getElementById('rPick').textContent = 'Showing: ' + v.title;
-        $off.innerHTML = offCards(list); $view.innerHTML = ''; store.set('kuppi.' + KEY + '.refvar', id);
+    /* version chooser: a popup opens every time this page is opened, then only the picked version's files are shown (a version with no files yet shows "Coming soon") */
+    if (VARS.length) {
+      const $pick = document.getElementById('rPick');
+      const show = (id) => {
+        const v = VARS.find((x) => x.id === id), list = OFF.filter((f) => f.variant === id);
+        $pick.innerHTML = 'Showing: <b>' + esc(v.title) + '</b>';
+        $view.innerHTML = '';
+        $off.innerHTML = list.length ? offCards(list) : `<div class="rsoon"><em>Coming soon</em><b>${esc(v.title)}</b><span>These sheets are being prepared. Check back soon, or choose the version without past paper answers for now.</span></div>`;
       };
-      $vars.addEventListener('click', (e) => {
-        const b = e.target.closest('.rvar'); if (!b) return;
-        if (b.classList.contains('soon')) { document.getElementById('rPick').textContent = 'The version with past paper answers is being prepared. Check back soon, or use the version without answers for now.'; return; }
-        pick(b.dataset.v);
-      });
-      const saved = store.get('kuppi.' + KEY + '.refvar', '');
-      if (saved && OFF.some((f) => f.variant === saved)) pick(saved);
+      const closeModal = () => { const m = document.getElementById('rModal'); if (m) m.remove(); document.removeEventListener('keydown', onKey); };
+      const onKey = (e) => { if (e.key === 'Escape') closeModal(); };
+      const openModal = () => {
+        closeModal();
+        const m = document.createElement('div'); m.className = 'rmodal'; m.id = 'rModal'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'rModT');
+        m.innerHTML = `<div class="rbox"><h2 id="rModT">Do you need the past paper answers?</h2><p class="muted">Pick a version and I will show only those sheets.</p>
+          <div class="rvars">${VARS.map((v) => { const n = OFF.filter((f) => f.variant === v.id).length; return `<button type="button" class="rvar ${n ? '' : 'soon'}" data-v="${esc(v.id)}">
+            <span class="rvt"><b>${esc(v.title)}</b>${n ? '' : '<em>Coming soon</em>'}</span><span class="rvs">${esc(v.sub)}</span></button>`; }).join('')}</div></div>`;
+        m.addEventListener('click', (e) => {
+          const b = e.target.closest('.rvar');
+          if (b) { show(b.dataset.v); closeModal(); } else if (e.target === m) closeModal();
+        });
+        document.body.appendChild(m); document.addEventListener('keydown', onKey);
+        window.addEventListener('hashchange', closeModal, { once: true });
+        const first = m.querySelector('.rvar'); if (first) first.focus();
+      };
+      document.getElementById('rChange').onclick = openModal;
+      openModal();
     }
     if ($off) $off.addEventListener('click', (e) => {
       const b = e.target.closest('button[data-oact]'); if (!b) return;

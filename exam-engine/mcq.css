@@ -11,6 +11,9 @@
 
 /* ---------- sidebar ---------- */
 .mq-side{display:flex;flex-direction:column;min-height:0;background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--y);padding:18px 18px 16px}
+.mq-backlink{display:flex;align-items:center;gap:10px;margin:-4px 0 14px;padding:9px 12px;border:1px solid var(--line2);background:var(--panel2);color:var(--text);text-decoration:none;font-weight:700;font-size:13.5px;transition:border-color .12s,color .12s}
+.mq-backlink:hover{border-color:var(--y);color:var(--y)}
+.mq-backm{display:none;text-decoration:none;color:var(--text)}
 .mq-brand{display:flex;align-items:center;gap:12px}
 .mq-logo{width:42px;height:42px;background:var(--y);color:#000;display:grid;place-items:center;flex:none}
 .mq-brand b{display:block;font-size:15px;letter-spacing:.14em;text-transform:uppercase;line-height:1.2}
@@ -146,6 +149,7 @@
 @media (max-width:900px){
   .mq-wrap{grid-template-columns:1fr;padding:10px;gap:10px}
   .mq-menu{display:inline-flex}
+  .mq-backlink{display:none}
   .mq-prog{display:none}
   .mq-side{position:fixed;left:0;right:0;bottom:0;max-height:84vh;z-index:6;transform:translateY(105%);transition:transform .22s ease;overflow:auto;border-top:3px solid var(--y)}
   .mcqp.open .mq-side{transform:none}

@@ -19,7 +19,7 @@
   cc.lectures = P[KEY + 'Lectures'].slice().sort((a, b) => a.n - b.n);
   const mcq = P[KEY + 'McqRaw'].map((r, i) => ({
     id: 'm' + (i + 1), kind: 'mcq', lec: r[0], src: r[1], q: r[2], opts: r[3],
-    ans: r[4].split('').map((c) => L.indexOf(c)), exp: r[5]
+    ans: r[4].split('').map((c) => L.indexOf(c)), exp: r[5], lvl: r[6]
   }));
   const short = P[KEY + 'ShortRaw'].map((r, i) => ({ id: 's' + (i + 1), kind: 'short', lec: r[0], src: r[1], q: r[2], a: r[3], paper: r[4] }));
   const struct = P[KEY + 'StructuredRaw'].map((r, i) => ({ id: 't' + (i + 1), kind: 'struct', lec: r[0], src: r[1], title: r[2], q: r[3], a: r[4], hint: r[5], paper: r[6] }));
@@ -489,10 +489,12 @@
     else if (page === 'practice' && cc.practiceRail && P.renderMcq) {
       document.title = 'Practice | ' + cc.name;
       const lv = {}, shorts = {}, essays = {};
-      mcq.forEach((q) => { const k = isPast(q) ? 'past' : 'practice'; ((lv[q.lec] = lv[q.lec] || { past: [], practice: [] })[k]).push([q.q, q.opts, q.ans.map((i) => L[i]).join(''), q.exp, q.src === 'adapted' ? 'Options reworded' : '']); });
+      /* difficulty: set on the question, otherwise estimated: several correct answers or a long scenario = hard, short and simple = easy */
+      const level = (q) => q.lvl || (q.ans.length > 1 || q.q.length > 230 ? 'hard' : (q.q.length < 115 && q.opts.every((o) => o.length < 60) ? 'easy' : 'medium'));
+      mcq.forEach((q) => { const k = level(q); ((lv[q.lec] = lv[q.lec] || { easy: [], medium: [], hard: [] })[k]).push([q.q, q.opts, q.ans.map((i) => L[i]).join(''), q.exp, q.src === 'past' ? 'Past paper' : q.src === 'adapted' ? 'Past paper, options reworded' : '']); });
       short.forEach((q) => { (shorts[q.lec] = shorts[q.lec] || []).push([q.q, q.a, SOURCE_LABEL[q.src] || '']); });
       struct.forEach((q) => { (essays[q.lec] = essays[q.lec] || []).push([q.title, q.q, q.a, q.hint || '', SOURCE_LABEL[q.src] || '']); });
-      P.renderMcq($main, { data: lv, short: shorts, essay: essays, levels: [['past', 'Past paper'], ['practice', 'Practice']], markEach: 0, title: 'Practice', topicsLabel: 'Lectures', mcqLabel: 'MCQ', shortLabel: 'Short answers', essayLabel: 'Essay', key: 'kuppi.' + KEY + '.prac2', back: '#/' + KEY, code: cc.code, lectures: cc.lectures.map((l) => ({ n: l.n, title: l.short })) });
+      P.renderMcq($main, { data: lv, short: shorts, essay: essays, markEach: 0, title: 'Practice', topicsLabel: 'Lectures', mcqLabel: 'MCQ', shortLabel: 'Short answers', essayLabel: 'Essay', key: 'kuppi.' + KEY + '.prac2', back: '#/' + KEY, code: cc.code, lectures: cc.lectures.map((l) => ({ n: l.n, title: l.short })) });
     }
     else if (page === 'practice') { document.title = 'Practice | ' + cc.name; renderPractice($main); }
     else if (page === 'slides' && SLIDES) { document.title = 'Lecture slides | ' + cc.name; renderSlides($main, p.slice(1)); }

@@ -8,6 +8,10 @@ window.PORTAL.modules.cc = {
   newFrom: 8,
   simple: true,
   referrals: true,
+  refOwnOnly: true,
+  refPlaceholder: 'e.g. Cloud Computing referral sheet, Lectures 1 to 12',
+  practiceRail: true,
+  sourceLabels: { final: 'Final paper' },
   slidesPdf: 'slides/CC-Lecture-Slides.pdf',
   lecturesStat: 'Lectures in exam (L1–L12)',
   simpleLede: 'Four questions of 25 marks, each with 5 MCQs and a few structured questions. Know where the marks are, then spend your time on the lectures that matter most.',
@@ -27,13 +31,12 @@ window.PORTAL.modules.cc = {
     ['Question types', 'MCQs · short answers · structured / essay']
   ],
   quickRules: [
-    ['No reading time', 'The 2 hours start at once. Do the MCQs fast, then spend the time on the structured answers and the case study.'],
-    ['Q2 is a case study', 'Read the scenario twice and use its business name and facts in every answer. Pick a service model and a deployment model, then explain scalability, security, availability and cost.'],
-    ['Each question has 5 MCQs', 'Q1 to Q4 each carry 5 MCQs. Read every option and underline the keyword before you answer.'],
-    ['Practise with past papers', 'Open the Past papers page. The final papers 2022 to 2024 show how the lecturer asks: compare, justify, explain with a diagram.'],
-    ['Skip Lecture 13 topics', 'Old papers ask about the Well-Architected Framework, barriers to IT innovation and multi-cloud. Those belong to Lecture 13 and are not examined this time.'],
-    ['Structured answers', 'Define → explain → example or diagram → benefit or trade-off. Name real services (VPC, ALB, ASG, RDS Multi-AZ, S3).'],
-    ['Never leave a blank', 'Partial answers earn partial marks. Write what you know.']
+    ['Start fast', 'No reading time. Do the 20 MCQs first, then the structured answers.'],
+    ['Q2 is a case study', 'Use the facts in the scenario. Choose a service model and a deployment model, then cover scalability, security, availability and cost.'],
+    ['Compare = table', 'For compare and contrast, draw a small table with examples.'],
+    ['Name real services', 'VPC, ALB, Auto Scaling, RDS Multi-AZ, S3, Docker, Terraform.'],
+    ['Skip Lecture 13', 'Well-Architected Framework, multi-cloud and innovation barriers are not examined.'],
+    ['Never leave a blank', 'Partial answers earn partial marks.']
   ],
   paperGroups: [
     { t: 'Final exam papers', items: [

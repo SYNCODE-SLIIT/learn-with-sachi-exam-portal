@@ -169,6 +169,7 @@
       const legend = mcqMode ? `<span><i style="background:var(--y)"></i>Current</span><span><i style="background:var(--ydim)"></i>Answered</span>${anyChecked ? '<span><i style="background:var(--ok)"></i>Right</span><span><i style="background:var(--bad)"></i>Wrong</span>' : ''}` : `<span><i style="background:var(--y)"></i>Current</span><span><i style="background:var(--ok)"></i>Got it</span><span><i style="background:var(--bad)"></i>Revise</span>`;
       root.innerHTML = `<div class="mq-wrap">
         <aside class="mq-side" aria-label="Question set and topics">
+          <a class="mq-backlink" href="${esc(o.back || '#')}">${IC.left}<span>${esc(o.backLabel || 'Back to portal')}</span></a>
           <div class="mq-brand"><div class="mq-logo">${IC.cap}</div><div><b>${esc(o.title || 'MCQ Practice')}</b><span>${esc(o.code || '')}${o.code ? ' &middot; ' : ''}Lectures 1 to ${lecs[lecs.length - 1].n}</span></div></div>
           <div class="mq-sec"><div class="mq-sh"><h3>Question set</h3><span>${answered()}/${n} ${mcqMode ? 'answered' : 'marked'}</span></div>
             <div class="mq-grid">${grid}</div>
@@ -178,6 +179,7 @@
         </aside>
         <main class="mq-main">
           <header class="mq-top">
+            <a class="mq-menu mq-backm" href="${esc(o.back || '#')}" aria-label="Back to portal">${IC.left}</a>
             <button class="mq-menu" data-act="menu" aria-label="Open the question list">${IC.grid}Questions</button>
             <div class="mq-title"><span class="eyebrow">Lecture ${st.lec}</span><h1>${esc(lec().title)}</h1></div>
             <div class="mq-prog"><div class="row"><span>Progress</span><b>${pct}%</b></div><div class="mq-bar"><i style="width:${pct}%"></i></div></div>

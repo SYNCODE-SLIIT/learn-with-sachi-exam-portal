@@ -287,6 +287,9 @@
   const OFF = Array.isArray(cc.refFiles) ? cc.refFiles : [];
   /* MCQ practice page (modules that set mcqPractice: true and load <key>Mcq data plus exam-engine/mcq.js) */
   const MCQD = cc.mcqPractice ? (P[KEY + 'Mcq'] || null) : null;
+  /* Mid MCQs page (modules that set midQuiz: true and load <key>Mid data plus exam-engine/mid.js) */
+  const MIDD = cc.midQuiz ? (P[KEY + 'Mid'] || null) : null;
+  const midTotal = MIDD ? MIDD.reduce((s, g) => s + g.items.length, 0) : 0;
   const mcqTotal = MCQD ? Object.keys(MCQD).reduce((t, n) => t + Object.keys(MCQD[n]).reduce((u, lv) => u + MCQD[n][lv].length, 0), 0) : 0;
   const REF_KEYS = 'kuppi.' + KEY + '.refkeys';
   const refBlobs = {};
@@ -483,6 +486,7 @@
       .concat(PAPERS ? [['papers', '#/' + KEY + '/papers', 'Past papers', String(PAPER_LIST.length)]] : [])
       .concat(REFS ? [['referrals', '#/' + KEY + '/referrals', 'Referral sheets']] : [])
       .concat(MCQD ? [['mcq', '#/' + KEY + '/mcq', 'MCQ practice', String(mcqTotal)]] : [])
+      .concat(MIDD ? [['mid', '#/' + KEY + '/mid', 'Mid MCQs', String(midTotal)]] : [])
       .concat([['practice', '#/' + KEY + '/practice', 'Practice questions', String(totals.all)]])
       .concat(SLIDES ? [['slides', '#/' + KEY + '/slides', 'Lecture slides', String(SLIDES.reduce((t, d) => t + d.slides.length, 0))]] : []);
     const nav = (key, href, num, label, right) =>
@@ -516,6 +520,10 @@
     else if (page === 'mcq' && MCQD && P.renderMcq) {
       document.title = 'MCQ practice | ' + cc.name;
       P.renderMcq($main, { data: MCQD, key: 'kuppi.' + KEY + '.mcqp', back: '#/' + KEY, code: cc.code, lectures: cc.lectures.map((l) => ({ n: l.n, title: l.title })) });
+    }
+    else if (page === 'mid' && MIDD && P.renderMid) {
+      document.title = 'Mid MCQs | ' + cc.name;
+      P.renderMid($main, { groups: MIDD, key: 'kuppi.' + KEY + '.mid', back: '#/' + KEY, args: p.slice(1) });
     }
     else if (page === 'practice' && cc.practiceRail && P.renderMcq) {
       document.title = 'Practice | ' + cc.name;

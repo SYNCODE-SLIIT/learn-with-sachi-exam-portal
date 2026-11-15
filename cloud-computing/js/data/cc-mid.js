@@ -156,6 +156,56 @@ window.PORTAL.ccMid = [
      "mid/ghvu6571.jpg",
      "mid/lhwt8890.jpg"
     ]
+   },
+   {
+    "id": "y140",
+    "q": "________ makes institutional knowledge visible, accessible, and usable for decision making.",
+    "a": [
+     "Knowledge Codification"
+    ],
+    "kind": "short",
+    "worked": false,
+    "photos": [],
+    "note": "Answer taken from your answer sheet (questions - merged.pdf)."
+   },
+   {
+    "id": "y141",
+    "q": "________ is a structured process, focused on a topic or construct of interest, involving input from one or more participants, that produces an interpretable pictorial view (concept map) of their ideas and how they are interrelated.",
+    "a": [
+     "Concept mapping"
+    ],
+    "kind": "short",
+    "worked": false,
+    "photos": [],
+    "note": "Answer taken from your answer sheet (questions - merged.pdf)."
+   },
+   {
+    "id": "y142",
+    "q": "The ________ allows systems and services to be accessible within an organization.",
+    "a": [
+     "Private cloud"
+    ],
+    "kind": "mcq",
+    "worked": false,
+    "photos": [
+     "mid/ans_002.jpg"
+    ],
+    "note": "Option marked in the photo."
+   },
+   {
+    "id": "y170",
+    "q": "XYZ is a software company with a small data center at its main branch. Consultants recommend: Office 365 as a SaaS service, some software run as a PaaS service, and moving aging infrastructure to an IaaS provider. (a) Explain the critical points (other than cost) to consider when migrating from local infrastructure to an IaaS provider. (b) Describe the drawbacks of an IaaS model in a public cloud. (c) The system should have high availability: explain how you would do that and how CloudWatch relates to it.",
+    "a": [
+     "a) Security and compliance (where the data lives, encryption, regulations), service level agreement and uptime guarantees, performance and network latency, integration with the systems that stay on premises, vendor lock-in and how easy it is to move out later, skills and training for the staff, backup and disaster recovery, and a migration plan with a rollback.",
+     "b) Less control than your own data center, a shared (multi-tenant) environment, you still manage the operating system, patching and security, running cost can grow with usage, dependence on the internet and on the provider's outages, and data protection and compliance concerns.",
+     "c) Spread the servers across 2 or more Availability Zones behind an Elastic Load Balancer, use Auto Scaling to replace failed instances and add capacity, and use Multi-AZ for the database. CloudWatch collects metrics and logs, raises alarms on thresholds (for example CPU or latency), sends notifications through SNS, and can trigger Auto Scaling actions."
+    ],
+    "kind": "essay",
+    "worked": true,
+    "photos": [
+     "mid/wixt8288.jpg"
+    ],
+    "note": "Model answer written for this site. It is not from your answer PDFs, so check it against your lecture notes."
    }
   ]
  },
@@ -174,7 +224,8 @@ window.PORTAL.ccMid = [
     "photos": [
      "mid/atly9117.jpg",
      "mid/hbwb4047.jpg",
-     "mid/keke5007.jpg"
+     "mid/keke5007.jpg",
+     "mid/lpow7364.jpg"
     ]
    },
    {
@@ -249,8 +300,31 @@ window.PORTAL.ccMid = [
      "mid/mxgz1880.jpg",
      "mid/smtt5152.jpg",
      "mid/qlmr3769.jpg",
-     "mid/jllu3988.jpg"
+     "mid/jllu3988.jpg",
+     "mid/xexz3880.jpg"
     ]
+   },
+   {
+    "id": "y143",
+    "q": "What is the latest default region in AWS?",
+    "a": [
+     "US East (Ohio) (us-east-2)"
+    ],
+    "kind": "short",
+    "worked": false,
+    "photos": [],
+    "note": "Answer taken from your answer sheet (questions - merged.pdf)."
+   },
+   {
+    "id": "y144",
+    "q": "Which statement best describes Availability Zones?",
+    "a": [
+     "Distinct locations from within an AWS region that are engineered to be isolated from failures"
+    ],
+    "kind": "mcq",
+    "worked": false,
+    "photos": [],
+    "note": "Answer taken from your answer sheet (questions - merged.pdf)."
    }
   ]
  },
@@ -297,7 +371,8 @@ window.PORTAL.ccMid = [
     "worked": false,
     "photos": [
      "mid/djkl6655.jpg"
-    ]
+    ],
+    "note": "Another sheet lists only the two server-side options (KMS keys and customer-provided keys). Client-side encryption with your own master key also encrypts the data before it reaches S3."
    },
    {
     "id": "a19",
@@ -476,7 +551,8 @@ window.PORTAL.ccMid = [
     "photos": [
      "mid/atly9117.jpg",
      "mid/lpil3261.jpg",
-     "mid/jkct7351.jpg"
+     "mid/jkct7351.jpg",
+     "mid/lpow7364.jpg"
     ]
    },
    {
@@ -566,6 +642,34 @@ window.PORTAL.ccMid = [
      "mid/ghvu6571.jpg",
      "mid/lhwt8890.jpg"
     ]
+   },
+   {
+    "id": "y145",
+    "q": "In which ways does Amazon S3 object storage differ from block and file storage? (Select the correct statements)",
+    "a": [
+     "Objects can be any size",
+     "Objects contain both data and metadata",
+     "Objects are stored in buckets"
+    ],
+    "kind": "mcq",
+    "worked": false,
+    "photos": [
+     "mid/ans_080.jpg"
+    ],
+    "note": "Options ticked in the photo. S3 does not store data in fixed-size blocks and does not address objects by a numbered address."
+   },
+   {
+    "id": "y146",
+    "q": "When you need to move data over long distances using the Internet, for instance across continents, which method or service will you use?",
+    "a": [
+     "S3 Transfer Acceleration"
+    ],
+    "kind": "short",
+    "worked": false,
+    "photos": [
+     "mid/vafv9236.jpg"
+    ],
+    "note": "Answer typed in the photo."
    }
   ]
  },
@@ -637,7 +741,8 @@ window.PORTAL.ccMid = [
     "photos": [
      "mid/qoex9935.jpg",
      "mid/dwbf2073.jpg",
-     "mid/gsep6008.jpg"
+     "mid/gsep6008.jpg",
+     "mid/hgvj6783.jpg"
     ]
    },
    {
@@ -965,6 +1070,99 @@ window.PORTAL.ccMid = [
      "mid/aehr3212.jpg",
      "mid/haew8659.jpg"
     ]
+   },
+   {
+    "id": "y147",
+    "q": "Which is a function that Amazon Route 53 does not perform?",
+    "a": [
+     "Store data"
+    ],
+    "kind": "mcq",
+    "worked": false,
+    "photos": [
+     "mid/ans_079.jpg"
+    ],
+    "note": "Option highlighted in the photo. Route 53 does domain registration, DNS and health checks (and DNS-based routing), but it does not store data."
+   },
+   {
+    "id": "y148",
+    "q": "What is the AWS networking service that enables a company to create a virtual network within AWS?",
+    "a": [
+     "Amazon Virtual Private Cloud (Amazon VPC)"
+    ],
+    "kind": "short",
+    "worked": false,
+    "photos": [],
+    "note": "Answer taken from your answer sheet (questions - merged.pdf)."
+   },
+   {
+    "id": "y149",
+    "q": "Security groups act like a firewall at the instance level, whereas ________ are an additional layer of security that control traffic in and out of a subnet.",
+    "a": [
+     "Network ACLs"
+    ],
+    "kind": "short",
+    "worked": false,
+    "photos": [],
+    "note": "Answer taken from your answer sheet (questions - merged.pdf)."
+   },
+   {
+    "id": "y150",
+    "q": "Why do you make subnets?",
+    "a": [
+     "To segment the VPC network into smaller parts: separate public and private resources, spread across Availability Zones for high availability, control traffic with route tables and network ACLs, and use IP addresses efficiently"
+    ],
+    "kind": "short",
+    "worked": true,
+    "photos": [
+     "mid/vafv9236.jpg"
+    ],
+    "note": "Model answer written for this site. It is not from your answer PDFs, so check it against your lecture notes."
+   },
+   {
+    "id": "y167",
+    "q": "ABC is a business and software company. Design an AWS infrastructure for: 25 public load balancers, 20 private load balancers, 15 private EC2 instances and 10 private DB instances. High availability is a priority. (a) Describe how you calculate an optimal CIDR block. (b) Briefly explain the subnets you choose. (c) Why are DB instances better created as private instances?",
+    "a": [
+     "a) Count the addresses: 25 + 20 + 15 + 10 = 70 resources. AWS keeps 5 addresses in every subnet, and high availability means every tier needs a subnet in 2 Availability Zones, so size each subnet for half the resources plus the 5 reserved.",
+     "a) Public LB tier: about 13 per AZ, so 13 + 5 = 18, which needs a /27 (27 usable). Private LB tier: 10 per AZ, so 15, which needs a /28 (11 usable). EC2 tier: 8 per AZ, so 13, which needs a /28. DB tier: 5 per AZ, so 10, which needs a /28.",
+     "a) Total = 2 x 32 + 6 x 16 = 160 addresses, so a /25 (128) is too small and a /24 (256) fits with room to grow. VPC CIDR: 10.0.0.0/24.",
+     "b) Public subnets (route to an internet gateway) hold the internet-facing load balancers: 10.0.0.0/27 (AZ-a) and 10.0.0.32/27 (AZ-b). Private subnets hold everything else: internal load balancers 10.0.0.64/28 and 10.0.0.80/28, EC2 instances 10.0.0.96/28 and 10.0.0.112/28, DB instances 10.0.0.128/28 and 10.0.0.144/28. A NAT gateway in a public subnet gives private instances outbound access.",
+     "c) A private DB instance has no public IP and no route to the internet, so it cannot be attacked directly. Only the application tier is allowed in through a security group on the DB port, which shrinks the attack surface and protects the data (and helps compliance). Admins reach it through a bastion host or VPN."
+    ],
+    "kind": "essay",
+    "worked": true,
+    "photos": [
+     "mid/gdhd4785.jpg"
+    ],
+    "note": "Model answer written for this site. It is not from your answer PDFs, so check it against your lecture notes."
+   },
+   {
+    "id": "y168",
+    "q": "ABC company (second version): 24 public load balancers, 10 private load balancers, 12 private EC2 instances and 6 private DB instances. Describe the CIDR calculation, the subnets, and why DB instances should be private.",
+    "a": [
+     "The method is the same. Per AZ: public LB 12 + 5 = 17, so a /27; private LB 5 + 5 = 10, so a /28; EC2 6 + 5 = 11, so a /28 (exactly 11 usable); DB 3 + 5 = 8, so a /28.",
+     "Total = 2 x 32 + 6 x 16 = 160 addresses, so the VPC CIDR is 10.0.0.0/24 with the same subnet layout as the first version (two /27 public subnets, six /28 private subnets, across 2 AZs).",
+     "DB instances stay private so they are not reachable from the internet. Only the application tier can connect to them."
+    ],
+    "kind": "essay",
+    "worked": true,
+    "photos": [
+     "mid/uokh0022.jpg"
+    ],
+    "note": "Model answer written for this site. It is not from your answer PDFs, so check it against your lecture notes."
+   },
+   {
+    "id": "y169",
+    "q": "ABC company (third version): 15 public load balancers, 5 private load balancers, 30 private EC2 instances and 5 private DB instances. Describe the CIDR calculation, the subnets, and why DB instances should be private.",
+    "a": [
+     "Per AZ: public LB 8 + 5 = 13, so a /28 (11 usable); private LB 3 + 5 = 8, so a /28; EC2 15 + 5 = 20, so a /27 (27 usable); DB 3 + 5 = 8, so a /28.",
+     "Total = 4 x 16 + 2 x 32 + 2 x 16 = 160 addresses, so the VPC CIDR is 10.0.0.0/24. Example: public 10.0.0.0/28 and 10.0.0.16/28; private LB 10.0.0.32/28 and 10.0.0.48/28; EC2 10.0.0.64/27 and 10.0.0.96/27; DB 10.0.0.128/28 and 10.0.0.144/28.",
+     "The DB tier is private so it has no public IP and no internet route. Only the EC2 tier can reach it through a security group."
+    ],
+    "kind": "essay",
+    "worked": true,
+    "photos": [],
+    "note": "Model answer written for this site. It is not from your answer PDFs, so check it against your lecture notes."
    }
   ]
  },
@@ -1096,7 +1294,8 @@ window.PORTAL.ccMid = [
     "worked": false,
     "photos": [
      "mid/qsqg5347.jpg"
-    ]
+    ],
+    "note": "Another sheet in your folder (questions - merged.pdf) lists \"Configure Dynamic Scaling and use a Target tracking scaling policy\". The answer PDF says Scheduled scaling, which fits a campaign that starts on a known date. Check with your notes."
    },
    {
     "id": "a52",
@@ -1145,7 +1344,8 @@ window.PORTAL.ccMid = [
     "kind": "mcq",
     "worked": false,
     "photos": [
-     "mid/rxie2623.jpg"
+     "mid/rxie2623.jpg",
+     "mid/vntz4595.jpg"
     ]
    },
    {
@@ -1237,6 +1437,53 @@ window.PORTAL.ccMid = [
     "photos": [
      "mid/gbxw7380.jpg"
     ]
+   },
+   {
+    "id": "y151",
+    "q": "A sys admin is maintaining an application on AWS with ELB and Auto Scaling. Considering a future load increase, the user wants to launch new servers proactively so they get registered with the ELB. How can the user add these instances with Auto Scaling?",
+    "a": [
+     "Increase the desired capacity of the Auto Scaling group"
+    ],
+    "kind": "mcq",
+    "worked": false,
+    "photos": [],
+    "note": "Answer taken from your answer sheet (questions - merged.pdf)."
+   },
+   {
+    "id": "y152",
+    "q": "Which of the following are the minimum required elements to create an Auto Scaling launch configuration?",
+    "a": [
+     "Launch configuration name, Amazon Machine Image (AMI) and instance type"
+    ],
+    "kind": "mcq",
+    "worked": false,
+    "photos": [],
+    "note": "Answer taken from your answer sheet (questions - merged.pdf)."
+   },
+   {
+    "id": "y153",
+    "q": "When an EC2 instance registered with an Elastic Load Balancing load balancer using connection draining is deregistered or unhealthy, which of the following will happen? (Choose 2)",
+    "a": [
+     "Keep the connections open to that instance, and attempt to complete in-flight requests",
+     "Redirect the requests to a user-defined error page like \"Oops this is embarrassing\" or \"Under Construction\""
+    ],
+    "kind": "mcq",
+    "worked": false,
+    "photos": [],
+    "note": "Answer taken from your answer sheet (questions - merged.pdf)."
+   },
+   {
+    "id": "y171",
+    "q": "ABC is a startup that has been asked to migrate an existing 3-tier HR system to AWS. (a) Explain how you would migrate it and make it highly available and accessible only from the company network (the company VPN range is 192.10.0.1/22). (b) The HR system is slow and sometimes unresponsive, and memory is 100% used on both servers (t3.medium). How would you fix it? (c) How would you provide VPC-level security?",
+    "a": [
+     "a) Plan and assess the system, then build a VPC with web, application and database subnets in 2 Availability Zones. Use an internal (private) load balancer and Auto Scaling for the web and app tiers, and RDS Multi-AZ for the database. Connect the company network with a Site-to-Site VPN (or Direct Connect) and allow only 192.10.0.0/22 in the security groups, so nothing is exposed to the internet. Move the servers and data with AWS Application Migration Service and Database Migration Service, test, then cut over.",
+     "b) Memory is not a default CloudWatch metric, so install the CloudWatch agent to track it. Then move to a memory-optimized instance type (for example r5), or scale out with Auto Scaling on a memory metric behind the load balancer. Also check the application for memory leaks and add caching such as ElastiCache.",
+     "c) Private subnets with no internet gateway route for the app and database tiers, security groups (stateful) and network ACLs (stateless), VPN-only access, VPC flow logs, IAM roles instead of keys, encryption with KMS, and CloudTrail for auditing."
+    ],
+    "kind": "essay",
+    "worked": true,
+    "photos": [],
+    "note": "Model answer written for this site. It is not from your answer PDFs, so check it against your lecture notes."
    }
   ]
  },
@@ -1344,7 +1591,8 @@ window.PORTAL.ccMid = [
     "worked": false,
     "photos": [
      "mid/srvg5951.jpg"
-    ]
+    ],
+    "note": "Another sheet lists only CPU, Status and Disk. The AWS default (basic) monitoring covers CPU, network, disk and status checks."
    },
    {
     "id": "a59",
@@ -1401,6 +1649,40 @@ window.PORTAL.ccMid = [
      "mid/ghvu6571.jpg",
      "mid/lhwt8890.jpg"
     ]
+   },
+   {
+    "id": "y154",
+    "q": "A user has a refrigerator plant and measures the temperature every 15 minutes. If the user wants to send the data to CloudWatch to view it visually, which statement is true?",
+    "a": [
+     "The user needs to use AWS CLI or API to upload the data"
+    ],
+    "kind": "mcq",
+    "worked": false,
+    "photos": [],
+    "note": "Answer taken from your answer sheet (questions - merged.pdf)."
+   },
+   {
+    "id": "y155",
+    "q": "There is an urgent requirement to monitor some database metrics for a database hosted on AWS and send notifications. Which AWS services can accomplish this?",
+    "a": [
+     "Amazon CloudWatch",
+     "Amazon Simple Notification Service (SNS)"
+    ],
+    "kind": "mcq",
+    "worked": false,
+    "photos": [],
+    "note": "Answer taken from your answer sheet (questions - merged.pdf)."
+   },
+   {
+    "id": "y156",
+    "q": "In regard to IAM, you can edit user properties later, but you cannot use the console to change the ________.",
+    "a": [
+     "Username"
+    ],
+    "kind": "short",
+    "worked": false,
+    "photos": [],
+    "note": "Answer taken from your answer sheet (questions - merged.pdf)."
    }
   ]
  },
@@ -1541,6 +1823,40 @@ window.PORTAL.ccMid = [
     "kind": "mcq",
     "worked": false,
     "photos": []
+   },
+   {
+    "id": "y157",
+    "q": "Which AWS database service is best suited for non-relational databases?",
+    "a": [
+     "Amazon DynamoDB"
+    ],
+    "kind": "mcq",
+    "worked": false,
+    "photos": [],
+    "note": "Answer taken from your answer sheet (questions - merged.pdf)."
+   },
+   {
+    "id": "y158",
+    "q": "________ is a fast, reliable graph database built for the cloud.",
+    "a": [
+     "Amazon Neptune"
+    ],
+    "kind": "short",
+    "worked": false,
+    "photos": [],
+    "note": "Answer taken from your answer sheet (questions - merged.pdf)."
+   },
+   {
+    "id": "y159",
+    "q": "You have been tasked with ensuring that data stored in your organization's RDS instance exists in a minimum of two geographically distributed locations. Which solutions are valid approaches?",
+    "a": [
+     "Enable RDS in a Multi-AZ configuration",
+     "Enable RDS in a cross-region read replica configuration"
+    ],
+    "kind": "mcq",
+    "worked": false,
+    "photos": [],
+    "note": "Answer taken from your answer sheet (questions - merged.pdf)."
    }
   ]
  },
@@ -1623,8 +1939,37 @@ window.PORTAL.ccMid = [
     "kind": "short",
     "worked": true,
     "photos": [
-     "mid/vocd4867.jpg"
+     "mid/vocd4867.jpg",
+     "mid/xxzp3894.jpg",
+     "mid/trpe4408.jpg"
     ]
+   },
+   {
+    "id": "y164",
+    "q": "________ is also called Rx. It is a design pattern which allows collecting results by calling multiple services and then compiling a combined response. It is a popular tool in distributed systems and works exactly opposite to legacy flows.",
+    "a": [
+     "Reactive microservices (Rx)"
+    ],
+    "kind": "short",
+    "worked": true,
+    "photos": [
+     "mid/lpbx7306.jpg"
+    ],
+    "note": "Answer as typed in the photo. Check it with your notes."
+   },
+   {
+    "id": "y165",
+    "q": "This architecture is similar to a big container wherein all the software components of an application are assembled together and tightly packaged. What is this microservices-related architecture?",
+    "a": [
+     "Monolithic architecture"
+    ],
+    "kind": "short",
+    "worked": true,
+    "photos": [
+     "mid/lpbx7306.jpg",
+     "mid/rcow2000.jpg"
+    ],
+    "note": "The photo shows \"Docker\" typed, but a single tightly-packaged application is a monolith. Model answer written for this site. It is not from your answer PDFs, so check it against your lecture notes."
    }
   ]
  },
@@ -1680,6 +2025,39 @@ window.PORTAL.ccMid = [
     "photos": [
      "mid/nonm1613.jpg"
     ]
+   },
+   {
+    "id": "y160",
+    "q": "The default scripting language for CloudFormation is ________.",
+    "a": [
+     "JSON"
+    ],
+    "kind": "short",
+    "worked": false,
+    "photos": [],
+    "note": "Answer taken from your answer sheet (questions - merged.pdf)."
+   },
+   {
+    "id": "y161",
+    "q": "Your organization uses Chef heavily for its deployment automation. What AWS cloud service provides integration with Chef recipes to start new application server instances, configure application server software, and deploy applications?",
+    "a": [
+     "AWS OpsWorks"
+    ],
+    "kind": "mcq",
+    "worked": false,
+    "photos": [],
+    "note": "Answer taken from your answer sheet (questions - merged.pdf)."
+   },
+   {
+    "id": "y162",
+    "q": "A user is planning to use AWS CloudFormation. Which of the following functionalities does not help him to correctly understand CloudFormation?",
+    "a": [
+     "CloudFormation follows the DevOps model for the creation of Dev & Test"
+    ],
+    "kind": "mcq",
+    "worked": false,
+    "photos": [],
+    "note": "Answer taken from your answer sheet (questions - merged.pdf)."
    }
   ]
  },
@@ -1736,6 +2114,30 @@ window.PORTAL.ccMid = [
     "photos": [
      "mid/xbov7489.jpg"
     ]
+   },
+   {
+    "id": "y163",
+    "q": "________ is a fully managed container orchestration service.",
+    "a": [
+     "Amazon Elastic Container Service (Amazon ECS)"
+    ],
+    "kind": "short",
+    "worked": false,
+    "photos": [],
+    "note": "Answer taken from your answer sheet (questions - merged.pdf)."
+   },
+   {
+    "id": "y166",
+    "q": "It is one of the most important features, which helps you access the current state of an application running in production. There are multiple metrics which can be used to check the current state, and it provides endpoints of RESTful web services. What Spring Boot feature does this describe?",
+    "a": [
+     "Spring Boot Actuator"
+    ],
+    "kind": "short",
+    "worked": false,
+    "photos": [
+     "mid/trpe4408.jpg"
+    ],
+    "note": "Answer typed in the photo."
    }
   ]
  }

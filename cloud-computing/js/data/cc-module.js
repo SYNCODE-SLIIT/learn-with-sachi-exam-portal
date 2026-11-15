@@ -19,7 +19,11 @@ window.PORTAL.modules.cc = {
     { id: 'wp-pdf', variant: 'without', title: 'Portrait sheet (PDF)', sub: 'A4 portrait, 2 pages, 2 columns · Lectures 1 to 12', kind: 'pdf', file: 'referral/sachi-cc-referral-portrait-without-pp.pdf', kb: 432 },
     { id: 'wl-pdf', variant: 'without', title: 'Landscape sheet (PDF)', sub: 'A4 landscape, 2 pages, 4 columns · same content', kind: 'pdf', file: 'referral/sachi-cc-referral-landscape-without-pp.pdf', kb: 434 },
     { id: 'wp-doc', variant: 'without', title: 'Portrait sheet (Word)', sub: 'Editable .docx of the portrait sheet', kind: 'docx', file: 'referral/sachi-cc-referral-portrait-without-pp.docx', twin: 'referral/sachi-cc-referral-portrait-without-pp.pdf', kb: 72 },
-    { id: 'wl-doc', variant: 'without', title: 'Landscape sheet (Word)', sub: 'Editable .docx of the landscape sheet', kind: 'docx', file: 'referral/sachi-cc-referral-landscape-without-pp.docx', twin: 'referral/sachi-cc-referral-landscape-without-pp.pdf', kb: 72 }
+    { id: 'wl-doc', variant: 'without', title: 'Landscape sheet (Word)', sub: 'Editable .docx of the landscape sheet', kind: 'docx', file: 'referral/sachi-cc-referral-landscape-without-pp.docx', twin: 'referral/sachi-cc-referral-landscape-without-pp.pdf', kb: 72 },
+    { id: 'c45-pdf', variant: 'with', title: 'Compacted + past papers, 4.5pt (PDF)', sub: 'A4 landscape, 2 pages, 4.5pt · Lectures 1 to 12 plus Q1 to Q4 past paper answers · easier to read', kind: 'pdf', file: 'referral/sachi-cc-referral-landscape-compacted-pp-4-5pt.pdf', kb: 450 },
+    { id: 'c45-doc', variant: 'with', title: 'Compacted + past papers, 4.5pt (Word)', sub: 'Editable .docx of the 4.5pt sheet', kind: 'docx', file: 'referral/sachi-cc-referral-landscape-compacted-pp-4-5pt.docx', twin: 'referral/sachi-cc-referral-landscape-compacted-pp-4-5pt.pdf', kb: 76 },
+    { id: 'c4-pdf', variant: 'with', title: 'Compacted + past papers, 4pt (PDF)', sub: 'A4 landscape, 2 pages, 4pt · same plus the full lecture text (nothing trimmed)', kind: 'pdf', file: 'referral/sachi-cc-referral-landscape-compacted-pp.pdf', kb: 480 },
+    { id: 'c4-doc', variant: 'with', title: 'Compacted + past papers, 4pt (Word)', sub: 'Editable .docx of the 4pt sheet', kind: 'docx', file: 'referral/sachi-cc-referral-landscape-compacted-pp.docx', twin: 'referral/sachi-cc-referral-landscape-compacted-pp.pdf', kb: 78 }
   ],
   practiceRail: true,
   midQuiz: true,

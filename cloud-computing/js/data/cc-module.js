@@ -22,6 +22,7 @@ window.PORTAL.modules.cc = {
     { id: 'wl-doc', variant: 'without', title: 'Landscape sheet (Word)', sub: 'Editable .docx of the landscape sheet', kind: 'docx', file: 'referral/sachi-cc-referral-landscape-without-pp.docx', twin: 'referral/sachi-cc-referral-landscape-without-pp.pdf', kb: 72 }
   ],
   practiceRail: true,
+  midQuiz: true,
   sourceLabels: { final: 'Final paper' },
   slidesPdf: 'slides/CC-Lecture-Slides.pdf',
   lecturesStat: 'Lectures in exam (L1–L12)',
